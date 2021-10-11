@@ -1,7 +1,7 @@
 
 CC=PACC
 CFLAGS=-Bs -Zg -O -I..
-LIBDIR=d:/tools/c/lib
+LIBDIR=c:/pacific/lib
 
 OBJECTS0=desktop.obj  
 OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj 
@@ -25,6 +25,9 @@ desktop.exe:	$(OBJECTS)
 	libr r tmp.lib $(OBJECTS5)
 	$(CC) -Mtest.map $(OBJECTS0) tmp.lib $(LIBDIR)/ppdgem-s.lib
 	del tmp.lib
+
+desktop.obj:	../desktop.c ../deskprot.h ../desktop.h ../ppddesk.h
+	$(CC) -O$@ -Bs -O -I.. -c $<
 
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
 	$(CC) -O$@ $(CFLAGS) -c $<

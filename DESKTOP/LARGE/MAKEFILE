@@ -1,7 +1,7 @@
 
 CC=PACC
 CFLAGS=-Bl -Zg -I..
-LIBDIR=d:/tools/c/lib
+LIBDIR=c:/pacific/lib
 
 OBJECTS0=desktop.obj  
 OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj 
