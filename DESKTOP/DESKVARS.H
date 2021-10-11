@@ -53,7 +53,8 @@ EXT WORD gl_iconstart;	/* Was gl_pstart. Renamed so I can check all
 EXT BYTE gl_lngstr[256];
 
 #if MULTIAPP
-
+EXT BYTE	gl_bootdr;
+EXT WORD	gl_untop;
 EXT LONG	pr_beggem;
 EXT LONG	pr_begacc;
 EXT LONG	pr_begdsk;
@@ -63,6 +64,8 @@ EXT LONG	pr_ssize;
 EXT LONG	pr_itbl;
 EXT WORD	pr_kbytes;
 EXT WORD	gl_fmemflg;
+EXT ACCNODE     gl_caccs[3];
+EXT WORD	gl_keepac;
 #endif
 
 EXT GLOBES	G;

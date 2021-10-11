@@ -18,9 +18,21 @@
 #define INSTANTIATE
 #include "ppddesk.h"
 
+/* For tracing a problem in SD256: Set the SD256 debugging flag 
+#define TRACE_ON   { LPBYTE fp = MK_FP(0, 0x501); *fp = 1; }
+#define TRACE_OFF  { LPBYTE fp = MK_FP(0, 0x501); *fp = 0; }
+*/
 
 /* DESKTOP v1.2: Different sets of illegal items */
-GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,0};
+#if MULTIAPP
+ #ifdef SMALL_DATA
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,TYPITEM, 0};
+ #else
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
+ #endif
+#else
+ GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,IACCITEM, 0};
+#endif
 GLOBAL BYTE	ILL_FILE[] = {FORMITEM,IDSKITEM,0};
 GLOBAL BYTE	ILL_DOCU[] = {FORMITEM,IDSKITEM,IAPPITEM,0};
 GLOBAL BYTE	ILL_FOLD[] = {OUTPITEM,FORMITEM,TYPITEM,IDSKITEM,IAPPITEM,0};
@@ -1172,7 +1184,8 @@ VOID cnx_get(VOID)
 	G.g_ctimeform = G.g_cnxsave.ctmfm_save;
 	G.g_cdateform = G.g_cnxsave.cdtfm_save;
 	G.g_cdclkpref = evnt_dclick(G.g_cdclkpref, TRUE);
-	G.g_cmclkpref = menu_click(G.g_cmclkpref, TRUE);
+	if (global[0] < MIN_MENU_CLICK) G.g_cmclkpref = 0;
+	else G.g_cmclkpref = menu_click(G.g_cmclkpref, TRUE);
 	G.g_detdrives = G.g_cnxsave.cdetd_save;
 	G.g_probedrives = G.g_cnxsave.cdetn_save;
 
@@ -1221,8 +1234,8 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 #if MULTIAPP
 	WORD		junk1, junk2;
 	LONG		csize;
-	LONG		templn, templn2;
-	BYTE		memszstr[4];
+	LPVOID		templn;
+	BYTE		memszstr[8];
 #endif
 	BYTE		docopyrt;
 /* initialize libraries	*/
@@ -1284,16 +1297,18 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 
 
 #if MULTIAPP
+/* Not done in FreeGEM desktop since it only has an icon, not a graphical
+ * title 
 	templn = G.a_trees[ADDINFO];
 	if (gl_height <= 300)
-	{					/* get lo-res images	*/
+	{
 	  templn2 = G.a_trees[ADLRSINF];	
 	  copy_icon(templn, templn2, DEICON, LDEICON);
 	  copy_icon(templn, templn2, DENAME1, LDENAME1);
 	  copy_icon(templn, templn2, DENAME2, LDENAME2);
 	  copy_icon(templn, templn2, DENAME3, LDENAME3);
 	  copy_icon(templn, templn2, DENAME4, LDENAME4);
-	}
+	} */
 #endif
 
 /* Not done in DESKTOP v1.2 since it has 
@@ -1316,8 +1331,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	  hsave[1] = plong[1][0];
 	  plong[0][0] = 12*gl_hchar;
 	  plong[1][0] =  7*gl_hchar;
-	  tree[AUTHOR1].ob_flags |= 0x80;
-	  tree[AUTHOR2].ob_flags |= 0x80;
+	  tree[DEMEMCAP].ob_flags |= HIDETREE;
+	  tree[DEMEMSIZ].ob_flags |= HIDETREE;
+	  tree[AUTHOR1].ob_flags |= HIDETREE;
+	  tree[AUTHOR2].ob_flags |= HIDETREE;
 	  show_hide(FMD_START, tree);
 	}
 
@@ -1344,6 +1361,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	}
 
 #if MULTIAPP
+#define LOFFSET(x) ((((x)&0xFFFF0000l)>>12)+((x)&0x0FFFFl))
 	lstlcpy(G.a_cmd, ADDR("GEMVDI.EXE"), sizeof(G.a_cmd));	
 						/* get boot drive */
 	shel_find(G.a_cmd);
@@ -1352,8 +1370,9 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 
 	proc_shrink(DESKPID);
 
-	proc_info(DESKPID,&junk1,&junk2,&pr_begdsk,&csize,&pr_topmem,
-						&pr_ssize,&pr_itbl);
+	proc_info(DESKPID,&junk1,&junk2,(LPVOID *)&pr_begdsk,
+			&csize,(LPVOID *)&pr_topmem,
+			&pr_ssize,(LPVOID *)&pr_itbl);
 
 	pr_begdsk = LOFFSET(pr_begdsk);		/* start of desk	*/
 	pr_topdsk = pr_begdsk + csize;		/* addr above desktop	*/
@@ -1363,12 +1382,17 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	merge_str(&memszstr[0], "%L", csize);		/* to ASCII	*/
 	iac_strcop(G.a_trees[ADDINFO], DEMEMSIZ, ADDR(&memszstr[0]));
 	
-	proc_info(GEMPID,&junk1,&junk2,&pr_beggem,&csize,&templn,
-						&pr_ssize,&templn);
+	proc_info(GEMPID,&junk1,&junk2,(LPVOID *)&pr_beggem,&csize,
+			&templn, &pr_ssize, &templn);
 	pr_beggem = LOFFSET(pr_beggem);
 	pr_begacc = pr_beggem + csize;			/* start of acc's */
 	iac_init();
-
+	G.a_trees[ADDINFO][DEMEMSIZ].ob_flags &= ~HIDETREE;
+	G.a_trees[ADDINFO][DEMEMCAP].ob_flags &= ~HIDETREE;
+#else
+	/* Hide XM-only fields */
+	G.a_trees[ADDINFO][DEMEMSIZ].ob_flags |= HIDETREE;
+	G.a_trees[ADDINFO][DEMEMCAP].ob_flags |= HIDETREE;
 #endif
 	if (docopyrt)
 	{
@@ -1425,8 +1449,8 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	{
 	  plong[0][0] = hsave[0];			// ABOUT height restored
 	  plong[1][0] = hsave[1]; 
-	  tree[AUTHOR1].ob_flags &= ~0x80;
-	  tree[AUTHOR2].ob_flags &= ~0x80;
+	  tree[AUTHOR1].ob_flags &= ~HIDETREE;
+	  tree[AUTHOR2].ob_flags &= ~HIDETREE;
 	  show_hide(FMD_FINISH, tree);	// copyright notice	
 	}
 /*

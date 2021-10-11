@@ -500,6 +500,14 @@ inf_pref()
 	tree[SPCO].ob_state |=  cyes;
 	tree[SPCO].ob_state &= ~cno;
 
+	/* GEM pre 3.0 does not support mn_click */
+	if (global[0] < MIN_MENU_CLICK)
+	{
+		tree[SPMNCLKN].ob_state |= SELECTED; 
+		tree[SPMNCLKY].ob_state &= ~SELECTED;
+		tree[SPMNCLKN].ob_state |= DISABLED;
+		tree[SPMNCLKY].ob_state |= DISABLED;
+	}
 	if (G.g_cmclkpref) 
 	{
 		tree[SPMNCLKY].ob_state |= SELECTED; 
@@ -561,7 +569,9 @@ inf_pref()
 	  G.g_cmclkpref = (tree[SPMNCLKY].ob_state & SELECTED) ? 1 : 0;
 	  G.g_detdrives = (tree[SPNOSCAN].ob_state & SELECTED) ? 0 : 1;
 	  G.g_probedrives=(tree[SPNONET ].ob_state & SELECTED) ? 0 : 1;
-	  G.g_cmclkpref = menu_click(G.g_cmclkpref, TRUE);
+	  if (global[0] < MIN_MENU_CLICK) G.g_cmclkpref = 0;
+	  else G.g_cmclkpref = menu_click(G.g_cmclkpref, TRUE);
+	 
 	  G.g_cdclkpref = inf_gindex(tree, SPDC1, 5);
 	  G.g_cdclkpref = evnt_dclick(G.g_cdclkpref, TRUE);
 	  sndefpref     = (tree[SPSE].ob_state & SELECTED) ? 1 : 0;

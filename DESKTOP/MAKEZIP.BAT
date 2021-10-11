@@ -1,10 +1,8 @@
 @echo off
-copy small\desktop.app desktop.app
-copy large\desktop.app desktopL.app
 set TARGET=ppddesk3.zip
 del %TARGET%
 pkzip %TARGET% desktop.prj desktopL.prj makefile
-pkzip -rP %TARGET% small\makefile large\makefile
+pkzip -rP %TARGET% small\makefile large\makefile smallm\makefile largem\makefile
 pkzip %TARGET% makezip.bat desktop.rsc desktop.dfn desktop.h
 pkzip %TARGET% DESKTOP.C
 pkzip %TARGET% DESKACT.C
@@ -27,6 +25,7 @@ pkzip %TARGET% DESKOSIF.AS
 pkzip %TARGET% DESKINF.C
 pkzip %TARGET% DESKDIR.C
 pkzip %TARGET% DESKGSX.C
+pkzip %TARGET% DESKIACC.C
 pkzip %TARGET% DESKTYPE.C
 pkzip %TARGET% DESKCDS.C
 pkzip %TARGET% ICN2XML.C
@@ -39,9 +38,11 @@ pkzip %TARGET% DESKPROT.H DESKFPD.H PPDDESK.H DESKDEFS.H DESKVARS.H
 pkzip %TARGET% DESKBIND.H DESKWIN.H DESKAPP.H INFODEF.H
 pkzip %TARGET% COPYING.TXT README.TXT
 pkzip %TARGET% DESKTOPL.APP DESKTOP.APP DESKHI.ICN DESKLO.ICN
+pkzip %TARGET% DESKLM.APP DESKSM.APP
 
 set TARGET=desk3bin.zip
 del %TARGET%
 pkzip %TARGET% desktop.rsc 
 pkzip %TARGET% COPYING.TXT README.TXT
 pkzip %TARGET% DESKTOPL.APP DESKTOP.APP DESKHI.ICN DESKLO.ICN
+pkzip %TARGET% DESKLM.APP DESKSM.APP

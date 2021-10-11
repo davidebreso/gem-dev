@@ -314,7 +314,7 @@ WORD do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 	isover = (pa->a_flags & AF_ISFMEM) ? 2 : -1;
 	if ((isover == 2) && gl_keepac)		/* full-step ok?	*/
 	{
-	  rsrc_gaddr(R_STRING, STNOFSTP, &G.a_alert);
+	  rsrc_gaddr(R_STRING, STNOFSTP, (LPVOID *)&G.a_alert);
 	  form_alert(1, G.a_alert);
 	  return(FALSE);
 	}

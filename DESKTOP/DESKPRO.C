@@ -24,19 +24,14 @@
 
 	/* in pro_chcalc long addresses are flattened out with no segment */
 
-	VOID
-pro_chcalc(appsize, begaddr, chsize)
-	LONG		appsize;
-	LONG		*begaddr;
-	LONG		*chsize;
-	
+VOID pro_chcalc(LONG appsize, LPBYTE *begaddr, LONG *chsize)
 {
 	static LONG	begfree = 0l;
 	LONG		maxmem;
 
 	if (appsize == -1)			/* full step	*/
 	{
-	  *begaddr = LSEGOFF(pr_beggem); 
+	  *begaddr = (LPBYTE)LSEGOFF(pr_beggem); 
 	  *chsize = pr_topmem - pr_beggem;
 	  return;
 	}
@@ -47,9 +42,9 @@ pro_chcalc(appsize, begaddr, chsize)
 	*chsize = LMIN(appsize+pr_ssize, maxmem);
 
 	if ((begfree + *chsize) < pr_topmem)
-	  *begaddr = LSEGOFF(begfree);
+	  *begaddr = (LPBYTE)LSEGOFF(begfree);
 	else
-	  *begaddr = LSEGOFF(pr_topmem - *chsize);
+	  *begaddr = (LPBYTE)LSEGOFF(pr_topmem - *chsize);
 	begfree += *chsize;	
 }
 #endif
@@ -175,7 +170,8 @@ WORD pro_exec(WORD isgraf, WORD isover, LPBYTE pcmd, LPBYTE ptail)
 	WORD		ret;
 #if MULTIAPP
 	WORD		chnum;
-	LONG		begaddr, csize;
+	LPBYTE		begaddr;
+	LONG		csize;
 
 	if (isover != 3)
 #endif

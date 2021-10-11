@@ -34,7 +34,7 @@ VOID rsrc_init(VOID)
 	
 	rsrc_load(ADDR("DESKTOP.RSC"));
 
-	for (n = ADFILEIN; n <= ADSETPRE; n++) ini_tree(n);
+	for (n = ADFILEIN; n <= ADINSACC; n++) ini_tree(n);
 
 	if (!(gl_xbuf.abilities & ABLE_X3D)) 
 	{

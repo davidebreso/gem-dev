@@ -1,4 +1,4 @@
-GEM/3 Desktop: Pacific C version (Release 3.2.3-pacc10)
+GEM/3 Desktop: Pacific C version (Release 3.2.4-pacc11)
 =======================================================
 
   This is a GEM desktop, based on Digital Research's GEM Desktop 3.0. Features 
@@ -8,27 +8,46 @@ that have been added include:
 * ViewMAX look and feel
 * 'Show contents' function (from ViewMAX)
 
-  There are two APPs in this package. DESKTOP.APP is compiled in the small
-model, while DESKTOPL.APP is compiled in the large model.
+  There are four APPs in this package:
 
-Recent Changes 
-==============
+DESKTOP.APP  - small model, for single-tasking GEM.
+DESKTOPL.APP - large model, for single-tasking GEM.
+DESKSM.APP   - small model, for GEM/XM.
+DESKLM.APP   - large model, for GEM/XM.
+
+Recent Changes (most recent at the top)
+=======================================
+
+* Checks the GEM version before calling menu_click(); this allows the desktop
+to be run on GEM/2 and GEM/XM systems without "Invalid Function #" errors. 
+A note to any future GEM/XM maintainer: If you add the functionality of
+menu_click(), please bump the version number to 0x301 or higher so the Desktop
+can tell that this function is present.
+
+* Builds have been added for multi-tasking GEM. This has mainly involved 
+adding the "Install Accessories" screen (completely untested, I might add)
+and getting the sections in #if MULTIAPP to compile. The About box has also
+been redesigned to accommodate the free memory message. Note that "Show 
+Contents" is not available in the small-model MULTIAPP desktop owing to lack 
+of space in the code segment; and on my machine, it fails to launch in the 
+large-model MULTIAPP desktop citing a lack of memory.
+
 * Bugfix: String length-checking broke 'Enter DOS Commands'. Unbreak it.
 
-* By using "Install Application" on the Desktop itself, you can get it to 
-open certain file types in its internal viewer when you double-click them. 
-I recommend you do this by manually editing DESKTOP.INF, and adding 
-(near to the top) a line something like:
+* By using "Install Application" on the Desktop itself, you can get it to open 
+certain file types in its internal viewer when you double-click them. I 
+recommend you do this by manually editing DESKTOP.INF, and adding (near to the 
+top) a line something like:
 
 #G082A DESKTOP.APP@ *.TXT,*.ME,*.INF@
 
   though you could also do it with the 'configure application' screen.
 Doing it by manually editing DESKTOP.INF has two benefits:
   1. Earlier entries in DESKTOP.INF are superseded by later ones, so by 
-    inserting the Desktop entry at the top we can be sure that any 
-    associations made by the user will supersede it if necessary.
-  2. The line I've given uses the 'generic' application icon, but the 
-    'word processor' document icon. The Desktop's configure screen can't
+inserting the Desktop entry at the top we can be sure that any associations 
+made by the user will supersede it if necessary.
+  2. The line I've given uses the 'generic' application icon, but the 'word 
+processor' document icon. The Desktop's configure screen can't
     do this.
 
 * The 'path depth' warnings from GEM/3 have been brought back. The Desktop 
@@ -56,5 +75,5 @@ Pacific C compiler
 and my GEM bindings for it:
 <http://www.seasip.demon.co.uk/Gem/>
 
-John Elliott, 26 August 2005.
+John Elliott, 26 March 2006
 

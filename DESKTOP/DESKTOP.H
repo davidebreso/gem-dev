@@ -64,13 +64,13 @@
 #define PREFITEM 33  	/* OBJECT in TREE #0 */
 #define SAVEITEM 34  	/* OBJECT in TREE #0 */
 #define DOSITEM 35  	/* OBJECT in TREE #0 */
-#define ICONITEM 37  	/* OBJECT in TREE #0 */
-#define TEXTITEM 38  	/* OBJECT in TREE #0 */
-#define L4ITEM 39  	/* OBJECT in TREE #0 */
-#define NAMEITEM 40  	/* OBJECT in TREE #0 */
-#define DATEITEM 41  	/* OBJECT in TREE #0 */
-#define SIZEITEM 42  	/* OBJECT in TREE #0 */
-#define TYPEITEM 43  	/* OBJECT in TREE #0 */
+#define ICONITEM 38  	/* OBJECT in TREE #0 */
+#define TEXTITEM 39  	/* OBJECT in TREE #0 */
+#define L4ITEM 40  	/* OBJECT in TREE #0 */
+#define NAMEITEM 41  	/* OBJECT in TREE #0 */
+#define DATEITEM 42  	/* OBJECT in TREE #0 */
+#define SIZEITEM 43  	/* OBJECT in TREE #0 */
+#define TYPEITEM 44  	/* OBJECT in TREE #0 */
 #define FIOK 2  	/* OBJECT in TREE #1 */
 #define FICNCL 3  	/* OBJECT in TREE #1 */
 #define FITIME 6  	/* OBJECT in TREE #1 */
@@ -200,4 +200,36 @@
 #define SPNOSCAN 36  	/* OBJECT in TREE #13 */
 #define SPNONET 38  	/* OBJECT in TREE #13 */
 #define STDEEPPA 47  	/* STRING */
+#define DEMEMSIZ 19  	/* OBJECT in TREE #4 */
+#define DEMEMCAP 20  	/* OBJECT in TREE #4 */
+#define STEXTDSK 48  	/* STRING */
+#define IACCITEM 36  	/* OBJECT in TREE #0 */
+#define STNOROOM 49  	/* STRING */
+#define APMEMSZ 36  	/* OBJECT in TREE #8 */
+#define STNOFSTP 50  	/* STRING */
+#define STACFMEM 51  	/* STRING */
+#define ADINSACC 14  	/* TREE */
+#define ACINST 2  	/* OBJECT in TREE #14 */
+#define ACCNCL 3  	/* OBJECT in TREE #14 */
+#define ACNAMBOX 7  	/* OBJECT in TREE #14 */
+#define ACFDNARO 30  	/* OBJECT in TREE #14 */
+#define ACFUPARO 31  	/* OBJECT in TREE #14 */
+#define ACFSVSLI 32  	/* OBJECT in TREE #14 */
+#define ACFSELEV 33  	/* OBJECT in TREE #14 */
+#define ACA1NAME 8  	/* OBJECT in TREE #14 */
+#define ACA2NAME 9  	/* OBJECT in TREE #14 */
+#define ACA3NAME 10  	/* OBJECT in TREE #14 */
+#define ACA4NAME 11  	/* OBJECT in TREE #14 */
+#define ACA5NAME 12  	/* OBJECT in TREE #14 */
+#define ACA6NAME 13  	/* OBJECT in TREE #14 */
+#define ACA7NAME 14  	/* OBJECT in TREE #14 */
+#define ACA8NAME 15  	/* OBJECT in TREE #14 */
+#define ACREMV 17  	/* OBJECT in TREE #14 */
+#define ACC1FMEM 18  	/* OBJECT in TREE #14 */
+#define ACC2FMEM 19  	/* OBJECT in TREE #14 */
+#define ACC3FMEM 20  	/* OBJECT in TREE #14 */
+#define STACCMEM 52  	/* STRING */
+#define ACC1NAME 24  	/* OBJECT in TREE #14 */
+#define ACC2NAME 25  	/* OBJECT in TREE #14 */
+#define ACC3NAME 26  	/* OBJECT in TREE #14 */
 

@@ -510,7 +510,9 @@ WORD ins_app(BYTE *pfname, ANODE *pa)
 	
 	tree = G.a_trees[ADINSAPP];
 #if MULTIAPP
-	tree[APMEMBOX].ob_next = APMEMSZ;
+/*	tree[APMEMBOX].ob_next = APMEMSZ; */
+#else
+	tree[APMEMSZ].ob_flags |= HIDETREE;
 #endif
 
 	
@@ -558,7 +560,12 @@ WORD ins_app(BYTE *pfname, ANODE *pa)
 	change = FALSE;
 
 #if MULTIAPP
-	nmemsz = ins_latoi(LLGET(LLGET(OB_SPEC(APMEMSZ))));
+	{
+		LPTEDI tedi = (LPTEDI)tree[APMEMSZ].ob_spec;
+		LPBYTE text = tedi->te_ptext;
+		nmemsz = ins_latoi(text);
+	}
+	/* nmemsz = ins_latoi(LLGET(LLGET(OB_SPEC(APMEMSZ)))); */
 #endif
 
 						/* set memory flag	*/

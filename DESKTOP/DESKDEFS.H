@@ -7,6 +7,15 @@
 *                                                                       
 */
 
+/* The minimum GEM version that supports menu_click(). 
+ * Single-tasking GEM 3.0 supports it, but multitasking GEM/XM 2.3 (which
+ * reports 3.0) does not. If you add menu_click() support to GEM/XM, please
+ * bump the version number to match. */
+#if MULTIAPP
+#define MIN_MENU_CLICK 0x301
+#else
+#define MIN_MENU_CLICK 0x300
+#endif
 
 #define abs(x) ( (x) < 0 ? -(x) : (x) )
 
@@ -88,5 +97,6 @@ typedef struct over_blk
 
 #define E_PASSWFAIL 0x56
 
+#define LSEGOFF(x) ((((x)+15)&0xFFFFFFF0)<<12)
 
 

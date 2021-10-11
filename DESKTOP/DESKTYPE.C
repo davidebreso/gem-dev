@@ -87,6 +87,15 @@ extern BYTE ILL_TYPE[];
 
 typedef signed long SLONG;
 
+#if (defined(SMALL_DATA) && defined(MULTIAPP))
+WORD do_type(WORD curr)
+{
+	form_alert(0, "[3][This function is not available in the |"
+			"small-model MULTIAPP desktop][ Cancel ]");
+}
+
+#else
+
 /* Local data */
 
 MLOCAL BYTE	GOOD_TYPE[] = { CLOSITEM, 0 };
@@ -1291,7 +1300,7 @@ WORD do_type(WORD curr)
     return(return_value);
 } /* do_type() */
 
-
+#endif
 /*
  *	EOF:	desktype.c
  */

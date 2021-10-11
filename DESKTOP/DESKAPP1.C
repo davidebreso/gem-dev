@@ -173,10 +173,7 @@ BYTE *save_2(BYTE *pcurr, UWORD wd)
 *	default memory size -- DEFMEMREQ.
 */
 
-	BYTE
-*scan_memsz(pcurr, pwd)
-	BYTE		*pcurr;
-	UWORD		*pwd;
+BYTE *scan_memsz(BYTE *pcurr, UWORD *pwd)
 {
 	UWORD		temp1, temp2;
 	
@@ -186,8 +183,8 @@ BYTE *save_2(BYTE *pcurr, UWORD wd)
 	if (*pcurr == 'R')
 	{
 	  pcurr++;				
-	  pcurr = scan_2(pcurr, &temp1);		/* hi byte	*/
-	  pcurr = scan_2(pcurr, &temp2);		/* lo byte	*/
+	  pcurr = scan_2(pcurr, (WORD *)&temp1);	/* hi byte	*/
+	  pcurr = scan_2(pcurr, (WORD *)&temp2);	/* lo byte	*/
 	  temp1 = ((temp1 << 8) & 0xff00) | temp2;
 	}
 	if (temp1 == 0)
@@ -200,10 +197,7 @@ BYTE *save_2(BYTE *pcurr, UWORD wd)
 *	Reverse of scan_memsz().
 */
 
-	BYTE
-*save_memsz(pcurr, wd)
-	BYTE		*pcurr;
-	UWORD		wd;
+BYTE *save_memsz(BYTE *pcurr, UWORD wd)
 {
 	*pcurr++ = 'R';
 	pcurr = save_2(pcurr, LHIBT(wd));
@@ -437,7 +431,7 @@ BYTE *app_parse(BYTE *pcurr, ANODE *pa)
 	pcurr = scan_str(pcurr, &pa->a_pdata);
 #if MULTIAPP
 	if (!(pa->a_flags & AF_ISDESK))			/* only for apps */
-	  pcurr = scan_memsz(pcurr, &pa->a_memreq);
+	  pcurr = scan_memsz(pcurr, (UWORD *)&pa->a_memreq);
 #endif
 	return(pcurr);
 }

@@ -10,6 +10,8 @@ WORD app_getfh(WORD openit, BYTE *pname, WORD attr);
 BYTE *app_parse(BYTE *pcurr, ANODE *pa);
 BYTE *scan_2(BYTE *pcurr, WORD *pwd);
 BYTE *save_2(BYTE *pcurr, UWORD wd);
+BYTE *save_memsz(BYTE *pcurr, UWORD wd);
+BYTE *scan_memsz(BYTE *pcurr, UWORD *pwd);
 VOID strlcpy(char *dest, char *src, int maxlen);
 VOID strlcat(char *dest, char *src, int maxlen);
 VOID lstlcpy(LPBYTE dest, LPBYTE src, int maxlen);
@@ -174,7 +176,7 @@ WORD obj_ialloc(WORD wparent, WORD x, WORD y, WORD w, WORD h);
 
 /* deskpro.c */
 
-VOID pro_chcalc(LONG appsize, LONG *begaddr, LONG *chsize);
+VOID pro_chcalc(LONG appsize, LPBYTE *begaddr, LONG *chsize);
 WORD pro_chdir(WORD drv, BYTE *ppath);
 WORD pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag);
 WORD pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr);
@@ -302,5 +304,20 @@ VOID crashdump(BYTE ch);
 VOID debugbreak(VOID);
 #endif
 
+
+#if MULTIAPP
+VOID iac_init(VOID);
+VOID iac_strcop(LPTREE tree, WORD obj, LPBYTE src);
+VOID iac_schar(LPTREE tree, WORD obj, BYTE ch);
+VOID iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth);
+WORD iac_isnam(LPBYTE lst);
+VOID ins_acc(VOID);
+WORD iac_dial(LPTREE tree);
+VOID iac_save(LPTREE tree);
+WORD iac_names(LPTREE tree);
+VOID iac_elev(LPTREE tree, WORD currtop, WORD count);
+WORD iac_comp(VOID);
+VOID iac_mvnames(LPTREE tree, WORD start, WORD num);
+#endif
 
 

@@ -26,9 +26,18 @@ desktop.exe:	$(OBJECTS)
 	$(CC) -Bl $(OBJECTS0) tmp.lib $(LIBDIR)/ppdgem-l.lib
 	del tmp.lib
 
+desktop.obj:	../desktop.c ../deskprot.h ../desktop.h ../ppddesk.h
+	$(CC) -O$@ -Bl -O -I.. -c $<
+
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
 	$(CC) -O$@ $(CFLAGS) -c $<
 
 %.obj:	../%.as
 	$(CC) -O$@ $(CFLAGS) -c $<	
+
+clean:
+	erase *.obj 
+	erase *.exe 
+	erase *.app 
+	erase *.lib
 
