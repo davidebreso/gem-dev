@@ -1,6 +1,6 @@
 INSTDIR=C:\GEMAPPS\GEMSYS
 
-all:	desktopl.app \
+all:	desktop.app desktopl.app \
 	icn2xml.exe xml2icn.exe desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn.exe
@@ -48,9 +48,9 @@ smallm/desktop.exe:	*.c *.h
 	make
 	cd ..
 
-install:	desktopl.app deskhi.icn desklo.icn
+install:	desktop.app deskhi.icn desklo.icn
 	copy deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
-	copy desktopl.app $(INSTDIR)\desktop.app
+	copy desktop.app $(INSTDIR)\desktop.app
 	
 clean:
 	cd small

@@ -4,7 +4,7 @@ CFLAGS=-Bl -Zg -I..
 LIBDIR=c:/pacific/lib
 
 OBJECTS0=desktop.obj  
-OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj 
+OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj  nooptim.obj
 OBJECTS2=deskpro.obj  deskppd.obj  deskobj.obj  deskfpd.obj  deskins.obj 
 OBJECTS3=deskapp1.obj deskapp2.obj deskapp3.obj deskgraf.obj deskrsrc.obj 
 OBJECTS4=deskosif.obj deskinf.obj  deskdir.obj  deskgsx.obj  main.obj 
@@ -26,8 +26,8 @@ desktop.exe:	$(OBJECTS)
 	$(CC) -Bl $(OBJECTS0) tmp.lib $(LIBDIR)/ppdgem-l.lib
 	del tmp.lib
 
-desktop.obj:	../desktop.c ../deskprot.h ../desktop.h ../ppddesk.h
-	$(CC) -O$@ -Bl -O -I.. -c $<
+nooptim.obj:	../nooptim.c ../deskprot.h ../desktop.h ../ppddesk.h
+	$(CC) -O$@ -Bl -I.. -c $<
 
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
 	$(CC) -O$@ $(CFLAGS) -c $<

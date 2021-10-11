@@ -136,23 +136,6 @@ BYTE uhex_dig(WORD wd)
 	
 
 /*
-*	Scan off and convert the next two hex digits and return with
-*	pcurr pointing one space past the end of the four hex digits
-*/
-
-BYTE *scan_2(BYTE *pcurr, WORD *pwd)
-{
-	UWORD		temp;
-	
-	temp = 0x0;
-	temp |= hex_dig(*pcurr++) << 4;
-	temp |= hex_dig(*pcurr++);
-	if (temp == 0x00ff) temp = NIL;
-	*pwd = temp;
-	return(	pcurr );
-}
-
-/*
 *	Reverse of scan_2().
 */
 

@@ -64,6 +64,7 @@ ANODE *app_alloc(WORD tohead);
 void   app_free(ANODE *pa);
 BYTE *scan_str(BYTE *pcurr, BYTE **ppstr);
 WORD app_start(VOID);
+WORD hex_dig(BYTE achar);
 
 /* desk1.c */
 WORD true_closewnd(WNODE *pw);

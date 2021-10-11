@@ -4,7 +4,7 @@ CFLAGS=-Bs -Zg -O -I..
 LIBDIR=c:/pacific/lib
 
 OBJECTS0=desktop.obj  
-OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj 
+OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj nooptim.obj
 OBJECTS2=deskpro.obj  deskppd.obj  deskobj.obj  deskfpd.obj  deskins.obj 
 OBJECTS3=deskapp1.obj deskapp2.obj deskapp3.obj deskgraf.obj deskrsrc.obj 
 OBJECTS4=deskosif.obj deskinf.obj  deskdir.obj  deskgsx.obj  main.obj 
@@ -26,13 +26,7 @@ desktop.exe:	$(OBJECTS)
 	$(CC) -Mtest.map $(OBJECTS0) tmp.lib $(LIBDIR)/ppdgem-s.lib
 	del tmp.lib
 
-desktop.obj:	../desktop.c ../deskprot.h ../desktop.h ../ppddesk.h
-	$(CC) -O$@ -Bs -O -I.. -c $<
-
-deskapp1.obj:	../deskapp1.c ../deskprot.h ../desktop.h ../ppddesk.h
-	$(CC) -O$@ -Bs -O -I.. -c $<
-
-optimize.obj:	../optimize.c ../deskprot.h ../desktop.h ../ppddesk.h
+nooptim.obj:	../nooptim.c ../deskprot.h ../desktop.h ../ppddesk.h
 	$(CC) -O$@ -Bs -O -I.. -c $<
 
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
@@ -46,3 +40,4 @@ clean:
 	erase *.exe 
 	erase *.app 
 	erase *.lib
+	erase *.map

@@ -272,58 +272,6 @@ VOID merge_str(BYTE *pdst, BYTE *ptmp, ...)
 	
 }
 
-VOID merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
-{
-	WORD		do_value;
-	BYTE		lholder[12];
-	BYTE		*pnum, *psrc;
-	LONG		lvalue, divten;
-	WORD		digit;
-	
-	while(*ptmp)
-	{
-		if (*ptmp != '%') 
-		{
-			*pdst++ = *ptmp++;
-			continue;
-		}
-	    ptmp++;
-	    do_value = FALSE;
-	    switch(*ptmp++)
-	    {
-	      case '%':
-			*pdst++ = '%'; break;
-	      case 'L':
-			lvalue = va_arg(ap, LONG);
-			do_value = TRUE;
-			break;
-	      case 'W':
-			lvalue = va_arg(ap, UWORD);
-			do_value = TRUE;
-			break;
-	      case 'S':
-			psrc = va_arg(ap, BYTE *);
-			while(*psrc)
-		  		*pdst++ = *psrc++;
-			break;
-	    }
-	    if (do_value)
-	    {
-	    	pnum = &lholder[0];
-	     	while(lvalue)
-	    	{
-				divten = lvalue / 10;
-				digit  = lvalue % 10;
-				*pnum++ = '0' + ((BYTE) digit);
-				lvalue = divten;
-	      	}
-	      	if ( pnum == ((BYTE *) &lholder[0]) ) *pdst++ = '0';
-	      	else while(pnum != ((BYTE *) &lholder[0]) )
-		  		*pdst++ = *--pnum;
-	    }
-	}
-	*pdst = 0;
-}
 
 /*
 *	Routine to see if the test filename matches one of a set of 

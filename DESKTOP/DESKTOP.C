@@ -218,15 +218,6 @@ ANODE *i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 }
 
 /*
-*	Enable/Disable the menu items in dlist
-*/
-VOID men_list(LPTREE mlist, BYTE *dlist, WORD enable)
-{
-	while (*dlist)
-	  menu_ienable(mlist, *dlist++, enable);
-}
-
-/*
 * 	Based on current selected icons, figure out which
 *	menu items should be selected (deselected)
 */
