@@ -1,0 +1,31 @@
+
+all:	desktop.app desktopl.app icn2xml.exe xml2icn.exe desklo.icn deskhi.icn
+
+desklo.icn:	desklo.xml xml2icn.exe
+	xml2icn $< $@
+
+deskhi.icn:	deskhi.xml xml2icn.exe
+	xml2icn $< $@
+
+icn2xml.exe:	icn2xml.c
+	pacc -Bl $<
+
+xml2icn.exe:	xml2icn.c
+	pacc -Bl $<
+
+desktop.app:	small/desktop.exe
+	copy small\desktop.exe $@
+
+desktopl.app:	large/desktop.exe
+	copy large\desktop.exe $@
+
+large/desktop.exe:	*.c *.h
+	cd large
+	make
+	cd ..
+
+small/desktop.exe:	*.c *.h
+	cd small
+	make
+	cd ..
+

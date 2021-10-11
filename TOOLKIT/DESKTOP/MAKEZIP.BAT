@@ -1,0 +1,47 @@
+@echo off
+copy small\desktop.app desktop.app
+copy large\desktop.app desktopL.app
+set TARGET=ppddesk3.zip
+del %TARGET%
+pkzip %TARGET% desktop.prj desktopL.prj makefile
+pkzip -rP %TARGET% small\makefile large\makefile
+pkzip %TARGET% makezip.bat desktop.rsc desktop.dfn desktop.h
+pkzip %TARGET% DESKTOP.C
+pkzip %TARGET% DESKACT.C
+pkzip %TARGET% DESK1.C
+pkzip %TARGET% DESKFUN.C
+pkzip %TARGET% DESKWIN.C
+pkzip %TARGET% DESKPRO.C
+pkzip %TARGET% DESKPPD.C
+pkzip %TARGET% DESKOBJ.C
+pkzip %TARGET% DESKFPD.C
+pkzip %TARGET% DESKINS.C
+pkzip %TARGET% DESKAPP1.C
+pkzip %TARGET% DESKAPP2.C
+pkzip %TARGET% DESKAPP3.C
+pkzip %TARGET% OPTIMIZE.C
+pkzip %TARGET% DESKGRAF.C
+pkzip %TARGET% DESKRSRC.C
+pkzip %TARGET% DESKSUPP.C
+pkzip %TARGET% DESKOSIF.AS
+pkzip %TARGET% DESKINF.C
+pkzip %TARGET% DESKDIR.C
+pkzip %TARGET% DESKGSX.C
+pkzip %TARGET% DESKTYPE.C
+pkzip %TARGET% DESKCDS.C
+pkzip %TARGET% ICN2XML.C
+pkzip %TARGET% XML2ICN.C
+pkzip %TARGET% desklo.xml
+pkzip %TARGET% deskhi.xml
+pkzip %TARGET% MAIN.C
+pkzip %TARGET% INT3.C INT3.AS INT3L.AS
+pkzip %TARGET% DESKPROT.H DESKFPD.H PPDDESK.H DESKDEFS.H DESKVARS.H
+pkzip %TARGET% DESKBIND.H DESKWIN.H DESKAPP.H INFODEF.H
+pkzip %TARGET% COPYING.TXT README.TXT
+pkzip %TARGET% DESKTOPL.APP DESKTOP.APP DESKHI.ICN DESKLO.ICN
+
+set TARGET=desk3bin.zip
+del %TARGET%
+pkzip %TARGET% desktop.rsc 
+pkzip %TARGET% COPYING.TXT README.TXT
+pkzip %TARGET% DESKTOPL.APP DESKTOP.APP DESKHI.ICN DESKLO.ICN

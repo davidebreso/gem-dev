@@ -1,0 +1,15 @@
+cd libsrc
+make tidy
+cd ..
+cd samples
+make tidy
+cd ..
+cd exe2acc
+make tidy
+cd ..
+cd bin
+make tidy
+cd ..
+cd lib
+make tidy 
+cd ..
