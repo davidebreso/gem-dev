@@ -58,3 +58,7 @@ toolkit/samples/*.rsc
 
 # Directories
 pacific/
+gemapps/
+
+# Files
+gem.bat
