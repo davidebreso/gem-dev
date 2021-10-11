@@ -56,6 +56,7 @@ WORD pro_chdir(WORD drv, BYTE *ppath)
 						/* change to directory	*/
 						/*   that application	*/
 						/*   is in		*/
+	// dbg("pro_chdir: %d %s\n", drv, ppath);
 	if (!drv)
 	  return( (DOS_ERR = TRUE) );
 
@@ -63,19 +64,31 @@ WORD pro_chdir(WORD drv, BYTE *ppath)
 	{
 	  tmpdrv = dos_gdrv();
 	  dos_sdrv(drv - 'A');
+	  /***** remove error check
 	  if (DOS_ERR)
 	  {
+	    // dbg("deskpro.c:66 Error %d in dos_sdrv(%d)\n", DOS_ERR, drv - 'A');
 	    dos_sdrv(tmpdrv);
+	    // dbg("deskpro.c:71 Error %d in dos_sdrv(%d)\n", DOS_ERR, tmpdrv);
 	    return(FALSE);
 	  }
+	  ********/
 	  G.g_srcpth[0] = drv;
 	  G.g_srcpth[1] = ':';
 	  G.g_srcpth[2] = '\\';
 	  strcpy(G.g_srcpth + 3, ppath);
 	  dos_chdir(ADDR(&G.g_srcpth[0]));
+	  if (DOS_ERR)
+	  {
+	    // dbg("deskpro.c:80 Error %d in dos_chdir( )\n", DOS_ERR);
+	    dos_sdrv(tmpdrv);
+	    return(FALSE);
+	  }
 	}
-	else
-	  dos_sdrv(gl_stdrv);		/* don't leave closed drive hot	*/
+	else {
+	  dos_sdrv(gl_stdrv);		/* don't leave closed drive hot */
+	  // dbg("deskpro.c: 63 drv == '@'\n", DOS_ERR, gl_stdrv);
+	}
 	return(TRUE);
 } /* pro_chdir */
 
@@ -99,6 +112,7 @@ WORD pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag)
 				/* change to drive specified by COMSPEC	*/
 	    drv = G.g_cmd[i - 2] - 'A';
 	    dos_sdrv(drv);
+	    // dbg("deskpro.c:106 Error %d in dos_sdrv(%d)\n", DOS_ERR, drv);
 				/* chdir to path specified by COMSPEC	*/
 /* mdf */
 	    ii = strlen(&G.g_cmd[0]);

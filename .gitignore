@@ -56,6 +56,10 @@ dkms.conf
 # Sample programs resource files
 toolkit/samples/*.rsc
 
+# Generated icon files
+desktop/deskhi.icn
+desktop/desklo.icn
+
 # Directories
 pacific/
 gemapps/

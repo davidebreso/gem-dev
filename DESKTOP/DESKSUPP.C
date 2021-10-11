@@ -306,6 +306,8 @@ WORD do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 	BYTE		*ptmp, *pcmd, *ptail;
 	BYTE		name[13];
 
+	// dbg("do_aopen: %c %s %s\n", drv, ppath, pname);
+
 	done = FALSE;
 						/* set flags		*/
 	isgraf = pa->a_flags & AF_ISGRAF;

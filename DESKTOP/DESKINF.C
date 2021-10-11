@@ -602,6 +602,7 @@ WORD opn_appl(BYTE *papname, BYTE *papparms, BYTE *pcmd, BYTE *ptail,
 	LPTREE		tree;
 	BYTE		poname[13];
 
+	// dbg("opn_appl: %s %s %s %s\n", papname, papparms, pcmd, ptail);
 	tree = G.a_trees[ADOPENAP];
 
 	fmt_str(papname, &poname[0]);

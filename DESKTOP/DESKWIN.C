@@ -286,7 +286,12 @@ VOID win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart)
 						/* zero out obid ptrs	*/
 						/*   in flist and count	*/
 						/*   up # of files in	*/
-						/*   virtual file space	*/
+						/*   virtual file space */
+	if (wfit < 1)
+	    wfit = 1;
+	if (hfit < 1)
+	    hfit = 1;
+
 	cnt = 0;
 	for( pf=pwin->w_path->p_flist; pf; pf=pf->f_next)
 	{
@@ -296,24 +301,20 @@ VOID win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart)
 						/* set windows virtual	*/
 						/*   number of rows and	*/
 						/*   columns		*/
-	pwin->w_vncol = (cnt < G.g_incol) ? cnt : G.g_incol;
-	pwin->w_vnrow = cnt / G.g_incol;
-	if (cnt % G.g_incol)
-	  pwin->w_vnrow += 1;
-	if (!pwin->w_vnrow)
-	  pwin->w_vnrow++;
-	if (!pwin->w_vncol)
-	  pwin->w_vncol++;
-						/* backup cvrow & cvcol	*/
+	pwin->w_vncol = wfit;
+	pwin->w_vnrow = (cnt + wfit - 1) / wfit;
+
+	if (pwin->w_vnrow < 1)
+	  pwin->w_vnrow = 1;
+	if (pwin->w_vncol < 1)
+	  pwin->w_vncol = 1;
+						/* backup cvrow & cvcol */
 						/*   to account for	*/
 						/*   more space in wind.*/
-	if (!wfit)
-	  wfit++;
-	w_space = pwin->w_pncol = min(wfit, pwin->w_vncol);
+	pwin->w_pncol = wfit;
+	w_space = min(wfit, pwin->w_vncol);
 	while( (pwin->w_vncol - pwin->w_cvcol) < w_space )
 	  pwin->w_cvcol--;
-	if (!hfit)
-	  hfit++;
 	w_space = pwin->w_pnrow = min(hfit, pwin->w_vnrow);
 	while( (pwin->w_vnrow - pwin->w_cvrow) < w_space )
 	  pwin->w_cvrow--;
@@ -323,7 +324,7 @@ VOID win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart)
 						/*   column calculate	*/
 						/*   the start and stop	*/
 						/*   files		*/
-	start = (pwin->w_cvrow * G.g_incol) + pwin->w_cvcol;
+	start = (pwin->w_cvrow * pwin->w_vncol) + pwin->w_cvcol;
 	pf = pwin->w_path->p_flist;
 	while ( (start--) && pf)
 	  pf = pf->f_next;
@@ -391,6 +392,7 @@ VOID win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 	  if (!obid)
 	  {
 	    /* error case, no more obs */
+	    break;
 	  }
 						/* remember it		*/
 	  pstart->f_obid = obid;
@@ -496,8 +498,7 @@ VOID win_blt(WNODE *pw, BOOLEAN vertical, WORD newcv)
 	win_bldview(pw, c.g_x, c.g_y, c.g_w, c.g_h);
 						/* see if any part is	*/
 						/*   off the screen	*/
-	rc_copy(&c, &t);
-	rc_intersect(&gl_rfull, &t);
+	wind_get(pw->w_id, WF_FIRSTXYWH, &t.g_x, &t.g_y, &t.g_w, &t.g_h);
 	if ( rc_equal(&c, &t) )
 	{
 						/* blt as much as we can*/

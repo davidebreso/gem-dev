@@ -273,7 +273,8 @@ VOID app_detect()
       if (statinf[i]=='^')
         sichar = i;
 
-    ndisks = dos_sdrv(gl_stdrv);                /* get # of logical drives */
+    ndisks = dos_sdrv(gl_stdrv);		/* get # of logical drives */
+    // dbg("deskapp1.c:276 Error %d in dos_sdrv(%d)\n", DOS_ERR, gl_stdrv);
 /*
 #ifdef LIMITDRV
     ndisks = LIMITDRV;
@@ -356,7 +357,8 @@ VOID app_detect()
           } /* if exists */
         } /* if !dup */
     } /* for ndisks */
-    ndisks = dos_sdrv(gl_stdrv);                /* reset to start drive */
+    ndisks = dos_sdrv(gl_stdrv);		/* reset to start drive */
+    // dbg("deskapp1.c:360 Error %d in dos_sdrv(%d)\n", DOS_ERR, gl_stdrv);
 
 }       /* app_detect */
 
@@ -441,7 +443,10 @@ WORD app_getfh(WORD openit, BYTE *pname, WORD attr)
 	lp = ADDR(&G.g_srcpth[0]);
 	tmpdrv = dos_gdrv();
 	if (tmpdrv != gl_stdrv)
+	{
 	  dos_sdrv(gl_stdrv);
+	  // dbg("deskapp1.c:447 Error %d in dos_sdrv(%d)\n", DOS_ERR, gl_stdrv);
+	}
 	if ( shel_find(lp) )
 	{
 	  if (openit)
@@ -454,7 +459,10 @@ WORD app_getfh(WORD openit, BYTE *pname, WORD attr)
 	  }
 	}
 	if (tmpdrv != gl_stdrv)
+	{
 	  dos_sdrv(tmpdrv);
+	  // dbg("deskapp1.c:463 Error %d in dos_sdrv(%d)\n", DOS_ERR, gl_stdrv);
+	}
 	return(handle);
 }
 
