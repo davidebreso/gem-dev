@@ -6,12 +6,11 @@
 #T070903FF   Wastebasket@ @
 #FFF28 @ *.*@
 #DFF02 @ *.*@
-#G1636 *.APP@ @
-#P2242 *.EXE@ @
+#G08FF *.APP@ @
+#P08FF *.EXE@ @
 #P08FF *.COM@ @
 #P08FF *.BAT@ @
 #G082A DESKTOP.APP@ *.TXT,*.INF,*.NFO,*.BAT,*.CFG@
 #M070001FF A Floppy Disk@ @
 #M070100FF C Hard Disk@ @
-#M070200FF Z Hard Disk@ @
 

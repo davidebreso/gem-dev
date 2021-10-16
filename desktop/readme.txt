@@ -1,5 +1,5 @@
-GEM/3 Desktop: Pacific C version (Release 3.2.4-pacc11)
-=======================================================
+GEM/3 Desktop: Pacific C version (Release 3.2.5)
+===============================================================================
 
   This is a GEM desktop, based on Digital Research's GEM Desktop 3.0. Features 
 that have been added include:
@@ -15,8 +15,20 @@ DESKTOPL.APP - large model, for single-tasking GEM.
 DESKSM.APP   - small model, for GEM/XM.
 DESKLM.APP   - large model, for GEM/XM.
 
-Recent Changes (most recent at the top)
-=======================================
+Release 3.2.5 Changes (most recent at the top)
+===============================================================================
+
+* Icon view auto-arrange icons to match the window size. 
+
+* Bugfix: some portions of code cause Pacific C's global optimisation to fail.
+They have been moved to a separate file, so that the rest of the code can be 
+compiled with global optimisation enabled and the small-model desktop remains 
+below the 64K code segment limit without removing functionalities.
+
+* Multi-tasking GEM builds are disabled by default. 
+
+Release 3.2.4 Changes (most recent at the top)
+===============================================================================
 
 * Checks the GEM version before calling menu_click(); this allows the desktop
 to be run on GEM/2 and GEM/XM systems without "Invalid Function #" errors. 
@@ -64,16 +76,17 @@ behaviour can be disabled from the Preferences screen.
 of icons.
 
 Notes on look and feel
-======================
+===============================================================================
   If you want it to look pretty, this version of DESKTOP should be run on
 a FreeGEM AES. It will also work on a stock GEM/3 AES, though it won't look
 as nice.
 
 To compile DESKTOP.APP from the source in this archive, you will need the
 Pacific C compiler
-<http://www.hitech.com.au/>
-and my GEM bindings for it:
-<http://www.seasip.demon.co.uk/Gem/>
+<https://clasqm.github.io/freedos-repo/Development.html>
+and John Elliott's GEM bindings for it:
+<http://www.seasip.info/Gem/index.html>
 
 John Elliott, 26 March 2006
+Davide Bresolin, 16 October 2021
 
