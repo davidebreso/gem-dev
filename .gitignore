@@ -56,13 +56,18 @@ dkms.conf
 # Sample programs resource files
 toolkit/samples/*.rsc
 
-# Generated icon files
+# Generated icon and zip files
 desktop/deskhi.icn
 desktop/desklo.icn
+desktop/*.zip
 
 # Directories
 pacific/
 gemapps/
+utils/
 
 # Files
 gem.bat
+
+# Mac OS X system files
+.DS_Store
