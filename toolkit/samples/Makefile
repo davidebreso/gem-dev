@@ -16,8 +16,8 @@ TARGETS=demo-s.app   demo-l.app   \
 	mgraf-s.acc  mgraf-l.acc  \
 	rscr-s.exe
 
-CC = pacc
-CFLAGS = -Zg $(STDINC) -I../include
+CC = wcc
+CFLAGS = -bt=dos -ohskl -0 -i../include
 
 MAIN = main-l.obj main-s.obj
 
@@ -26,157 +26,81 @@ all:	$(TARGETS)
 main:	$(MAIN)
 
 main-l.obj:	main.c
-	$(CC) -Bl $(CFLAGS) -C $<
-	copy main.obj $@
-	erase main.obj
+	$(CC) -fo=$@ -ml $(CFLAGS) $<
 
 main-s.obj:	main.c
-	$(CC) -Bs $(CFLAGS) -C $<
-	copy main.obj $@
-	erase main.obj
+	$(CC) -fo=$@ -ms $(CFLAGS) $<
 
 demo-s.app demo-l.app:	$(MAIN)
-	cd demo
-	make
-	cd ..
+	$(MAKE) -C demo
 
 clock-s.app clock-l.app: $(MAIN)
-	cd clock
-	make
-	cd ..
+	$(MAKE) -C clock
 
 events-s.app events-l.app: $(MAIN)
-	cd events
-	make
-	cd ..
+	$(MAKE) -C events
 
 fdtest-s.app fdtest-l.app: $(MAIN)
-	cd fdtest
-	make
-	cd ..
+	$(MAKE) -C fdtest
 
 spool-s.app spool-l.app: $(MAIN)
-	cd spooler
-	make
-	cd ..
+	$(MAKE) -C spooler
 
 udef-s.app udef-l.app: $(MAIN)
-	cd userdef
-	make
-	cd ..
+	$(MAKE) -C userdef
 
 
 hello-s.app hello-l.app hello-s.acc hello-l.acc: $(MAIN)
-	cd hello
-	make
-	cd ..
+	$(MAKE) -C hello
 
 mgraf-s.app mgraf-l.app mgraf-s.acc mgraf-l.acc: 
-	cd memgraf
-	make
-	cd ..
+	$(MAKE) -C memgraf
 
 growbx-s.acc growbx-l.acc: $(MAIN)
-	cd growbox
-	make
-	cd ..
+	$(MAKE) -C growbox
 
 fmem-s.acc fmem-l.acc: $(MAIN)
-	cd freemem
-	make
-	cd ..
+	$(MAKE) -C freemem
 
 rscr-s.exe: $(MAIN)
-	cd rscreate
-	make
-	cd ..
+	$(MAKE) -C rscreate
 
 xform-s.app xform-l.app: $(MAIN)
-	cd xform
-	make
-	cd ..
+	$(MAKE) -C xform
 
 tidy:
-	erase main-?.obj
-	erase *.bak
-	cd hello
-	make tidy
-	cd ..
-	cd demo
-	make tidy
-	cd ..
-	cd xform
-	make tidy
-	cd ..
-	cd growbox
-	make tidy
-	cd ..
-	cd clock
-	make tidy
-	cd ..
-	cd events
-	make tidy
-	cd ..
-	cd freemem
-	make tidy
-	cd ..
-	cd memgraf
-	make tidy
-	cd ..
-	cd fdtest
-	make tidy
-	cd ..
-	cd spooler
-	make tidy
-	cd ..
-	cd userdef
-	make tidy
-	cd ..
-	cd rscreate
-	make tidy
-	cd ..
+	rm -f main-?.obj
+	rm -f *.bak
+	$(MAKE) -C hello tidy
+	$(MAKE) -C demo tidy
+	$(MAKE) -C xform tidy
+	$(MAKE) -C growbox tidy
+	$(MAKE) -C clock tidy
+	$(MAKE) -C events tidy
+	$(MAKE) -C freemem tidy
+	$(MAKE) -C memgraf tidy
+	$(MAKE) -C fdtest tidy
+	$(MAKE) -C spooler tidy
+	$(MAKE) -C userdef tidy
+	$(MAKE) -C rscreate tidy
 
 clean:
-	erase main-?.obj
-	erase *.rsc
-	erase *.app
-	erase *.acc
-	erase *.exe
-	erase *.bak
-	cd hello
-	make clean
-	cd ..
-	cd demo
-	make clean
-	cd ..
-	cd xform
-	make clean
-	cd ..
-	cd growbox
-	make clean
-	cd ..
-	cd clock
-	make clean
-	cd ..
-	cd events
-	make clean
-	cd ..
-	cd freemem
-	make clean
-	cd ..
-	cd memgraf
-	make clean
-	cd ..
-	cd fdtest
-	make clean
-	cd ..
-	cd spooler
-	make clean
-	cd ..
-	cd userdef
-	make clean
-	cd ..
-	cd rscreate
-	make clean
-	cd ..
+	rm -f main-?.obj
+	rm -f *.rsc
+	rm -f *.app
+	rm -f *.acc
+	rm -f *.exe
+	rm -f *.bak
+	$(MAKE) -C hello clean
+	$(MAKE) -C demo clean
+	$(MAKE) -C xform clean
+	$(MAKE) -C growbox clean
+	$(MAKE) -C clock clean
+	$(MAKE) -C events clean
+	$(MAKE) -C freemem clean
+	$(MAKE) -C memgraf clean
+	$(MAKE) -C fdtest clean
+	$(MAKE) -C spooler clean
+	$(MAKE) -C userdef clean
+	$(MAKE) -C rscreate clean
 

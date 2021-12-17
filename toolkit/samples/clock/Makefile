@@ -1,37 +1,42 @@
 include ../../makedefs.i
 
-CFLAGS = -Zg $(STDINC)
-CC = pacc
+CFLAGS = -bt=dos -ohskl -0 -i../../include
+CC = wcc
+LD = wlink
 
-all:	../clock-l.app ../clock-s.app ../clock-l.acc ../clock-s.acc 
+all:	../clock-l.app ../clock-s.app # ../clock-l.acc ../clock-s.acc 
 
 ../%.app:	%.app
-	copy $< ..
+	cp $< ..
 
 ../%.acc:	%.exe
 	../../bin/exe2acc $< $@
 
+clock-l.app:	clock-l.obj
+	$(LD) name $@ system dos file \{ $< ../../lib/wccgem-l.lib \}
 
-clock-l.app:	clock.c
-	$(CC) -Bl $(CFLAGS) -O$@ $<  ../../lib/ppdgem-l.lib
+clock-l.obj:	clock.c
+	$(CC) -ml $(CFLAGS) -fo=$@ $<
 
-clock-s.app:	clock.c
-	$(CC) -Bs $(CFLAGS) -O$@ $< ../../lib/ppdgem-s.lib
+clock-s.app:	clock-s.obj
+	$(LD) name $@ system dos file \{ $< ../../lib/wccgem-s.lib \}
 
+clock-s.obj:	clock.c
+	$(CC) -ms $(CFLAGS) -fo=$@ $< 
 
 clock-l.exe:	clock.c 
-	$(CC) -Bl -DDESKACC $(CFLAGS) -Hclock-l.sym -O$@ $<  ../../lib/ppdgem-l.lib
+	$(CC) -ml -DDESKACC $(CFLAGS) -Hclock-l.sym -fe=$@ $<  ../../lib/wccgem-l.lib
 
 clock-s.exe:	clock.c
-	$(CC) -Bs -DESKACC $(CFLAGS) -Hclock-s.sym -O$@ $< ../../lib/ppdgem-s.lib
+	$(CC) -ms -DESKACC $(CFLAGS) -Hclock-s.sym -fe=$@ $< ../../lib/wccgem-s.lib
 
 tidy:
-	erase clock-?.exe
-	erase clock-?.app
-	erase *.bak
-	erase *.sdb
-	erase *.sym
-	erase *.map
-	erase *.obj
+	rm -f clock-?.exe
+	rm -f clock-?.app
+	rm -f *.bak
+	rm -f *.sdb
+	rm -f *.sym
+	rm -f *.map
+	rm -f *.obj
 
 clean:	tidy

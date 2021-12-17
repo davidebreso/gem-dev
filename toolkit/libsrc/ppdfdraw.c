@@ -10,29 +10,28 @@
  */
 
 #include "ppdgem.h"
+#include <i86.h>
 
-extern LPVOID _drawaddr;
-extern LPPARM _drawpar;
-extern WORD   _drawret;
+MLOCAL LPPARM drawpar;
+MLOCAL WORD drawret;
 
-
-void interrupt _dr_code(void)			
+void interrupt _dr_code(union INTPACK r)			
 {	
+	LPPBLK pBLK;
+	
+	_asm{ int 3 };
 	/* This code does the following: */
-
-	/* The parameter passed back to us in _drawpar is the address of 
-	 * a PPDUBLK. */
-				
-	LPPBLK pBLK = _drawpar->pb_parm;
-
+	
+	/* ax:bx points at the drawpar */
+	drawpar = MK_FP(r.w.ax, r.w.bx);
+	/* The parameter passed back to us in drawpar is the address of 
+	 * a PPDUBLK. */			
+	pBLK = drawpar->pb_parm;
 	/* The caller expects the parameter to be the ub_parm field in the
 	 * PPDUBLK, so make it so. */
-	
-	_drawpar->pb_parm = (LPVOID)(pBLK->ub_parm);
-
+	drawpar->pb_parm = (LPVOID)(pBLK->ub_parm);
 	/* And the caller's code is at pBLK->ub_code */
-	
-	_drawret = (pBLK->ub_code)(_drawpar);
+	drawret = (pBLK->ub_code)(drawpar);
 }
 
 
@@ -40,7 +39,7 @@ VOID ppd_userdef(LPTREE tree, WORD nobj, LPPBLK ub)
 {
 	tree[nobj].ob_type = ((tree[nobj].ob_type & 0xFF00) | G_USERDEF);
 
-	ub->ub_reserved[0] = _drawaddr;	/* Draw handler function */
+	ub->ub_reserved[0] = _dr_code;	/* Draw handler function */
 	ub->ub_reserved[1] = ub;		/* Parameter = address of userblk */
 
 	tree[nobj].ob_spec = ub;

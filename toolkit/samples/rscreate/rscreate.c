@@ -249,8 +249,7 @@ VOID fix_img(LPLONG where)
       *where = sub_pointer(rs_imdope[(WORD)*where].image, &starthdr);
 }
 
-MLOCAL LONG sub_pointer( p1, p2 )
-VOID FAR *p1, *p2;
+MLOCAL LONG sub_pointer(VOID FAR *p1, VOID FAR *p2)
 {
    LONG l1,l2;
 
@@ -262,8 +261,7 @@ VOID FAR *p1, *p2;
    return (l1 - l2);
 }
 
-MLOCAL LPVOID vsub_pointer( p1, p2 )
-VOID FAR *p1, *p2;
+MLOCAL LPVOID vsub_pointer(VOID FAR *p1, VOID FAR *p2)
 {
    return (LPVOID)(sub_pointer(p1, p2));
 }

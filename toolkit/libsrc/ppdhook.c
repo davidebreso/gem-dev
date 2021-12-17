@@ -5,20 +5,21 @@
  */
 
 #include "ppdgem.h"
-#include <intrpt.h>
 #include <dos.h>
 
-#define GEM_VECTOR ((isr *)MK_FP(0, 4 * 0xEF))
+#define GEM_VECTOR 0xEF
 
 
-extern LPGEMBLK _aespar;
-extern LPGSXPAR _vdipar;
-extern WORD     _funcpar;
-extern WORD     _gemret;
-extern isr      _hookaddr;
-extern isr		_old_ef;
-extern BYTE 	_reentry;
-extern WORD		_chain;
+static WORD	_axpar = 0;
+static LPGEMBLK _aespar = NULL;
+static LPGSXPAR _vdipar = NULL;
+static WORD     _funcpar = 0;
+static WORD     _gemret = 0;
+// void (__interrupt __far *_hookaddr)() = NULL;
+void __interrupt __far _gem_call();
+void (__interrupt __far *_old_ef)() = NULL;
+static BYTE 	_reentry = 0;
+static WORD		_chain = 0;
 	
 static AESFUNC AES_C8  = NULL;
 static AESFUNC AES_C9  = NULL;
@@ -26,34 +27,32 @@ static VDIFUNC VDI_473 = NULL;
 static AESFUNC oldaes  = NULL;
 static VDIFUNC oldvdi  = NULL;	
 
-
 static WORD _gem_old(void)
 {
-#asm
+_asm 
+{
 	push	ds
 	push	es
 
 ;	int		#3
-	mov		ax,__axpar
+	mov		ax,_axpar
 	push	ax
-	mov		bx,__aespar
-	mov		cx,__funcpar
-	mov		dx,__vdipar
+	mov		bx,offset _aespar
+	mov		cx,_funcpar
+	mov		dx,offset _vdipar
 	
-	mov		ax,__aespar + 2
+	mov		ax,offset _aespar + 2
 	mov		es,ax
-	mov		ax,__vdipar + 2
+	mov		ax,offset _vdipar + 2
 	mov		ds,ax
 	pop		ax		;AX parameter
 	pushf
-	callf	goto_ef
+	callf	_old_ef;
 
 	pop		es
 	pop		ds
-#endasm
+};
 }
-
-
 
 static WORD newvdi(LPGSXPAR gb)
 {
@@ -108,7 +107,8 @@ VOID ppd_hookon(AESFUNC pAes, AESFUNC pAes2, VDIFUNC pVdi)
 
 	if (!_old_ef)
 	{
-		_old_ef = set_vector(GEM_VECTOR, _hookaddr);
+		_old_ef = _dos_getvect(GEM_VECTOR);
+		_dos_setvect(GEM_VECTOR, _gem_call);
 	}
 	oldaes = divert_aes(newaes);
 	oldvdi = divert_vdi(newvdi);
@@ -117,7 +117,7 @@ VOID ppd_hookon(AESFUNC pAes, AESFUNC pAes2, VDIFUNC pVdi)
 
 VOID ppd_hookoff(VOID)
 {
-	if (_old_ef) set_vector(GEM_VECTOR, _old_ef);
+	if (_old_ef) _dos_setvect(GEM_VECTOR, _old_ef);
 	_old_ef  = NULL;
 	AES_C8  = NULL;
 	AES_C9  = NULL;
@@ -128,9 +128,9 @@ VOID ppd_hookoff(VOID)
 	oldvdi = NULL;
 }
 
+/********
 
-
-#asm
+asm {
 
 #ifdef LARGE_MODEL
 	.globl	large_data
@@ -145,95 +145,68 @@ VOID ppd_hookoff(VOID)
 	.globl	__gem_call
 	.globl  __gem_hook
 	.globl	__gem_old
+*****/
 	
-;
-;This is our handler for INT 0xEF.
-;	
-__gem_call:
+/*
+ *This is our handler for INT 0xEF.
+ */
+void __interrupt __far _gem_call()
+{
+_asm
+{
 	jmp		gcall1
-	.byte	'G','E','M','A','E','S','2','0',0
+	byte	'G','E','M','A','E','S','2','0',0
 
 gcall1:
 	push	ds				;Set DS to our data, so that we can write to
 	push	ax				;local variables like _aespar. 
-	mov	ax,#seg __funcpar
+	mov	ax,#seg _funcpar
 	mov		ds,ax
 ;	int		#3
-	mov		al,__reentry
+	mov		al,_reentry
 	or		al,al			;Re-entrant call?
 	jnz		gopast
 	
 	pop		ax				;AX = caller AX
-	mov		__axpar,ax
+	mov		_axpar,ax
 	pop		ax				;AX = caller DS
 	push	ax
 
-	mov	__funcpar,    cx	;0x473 for VDI, 0xC8 or 0xC9 for AES
-	mov	__vdipar,     dx
-	mov	__vdipar + 2, ax	;VDI parameter, far pointer in ds:dx
-	mov	__aespar,     bx
+	mov	_funcpar,    cx	;0x473 for VDI, 0xC8 or 0xC9 for AES
+	mov	word ptr _vdipar,     dx
+	mov	word ptr _vdipar + 2, ax	;VDI parameter, far pointer in ds:dx
+	mov	word ptr _aespar,     bx
 	mov	ax,es	
-	mov	__aespar + 2, ax	;AES parameter, far pointer in es:bx
+	mov	word ptr _aespar + 2, ax	;AES parameter, far pointer in es:bx
 
 	push	bp
 	pushf			 		;gem_hook will return with an iret, so simulate 
-	callf	__gem_hook 		;an interrupt call.
+	callf	_gem_hook 		;an interrupt call.
 	pop		bp
 	
-	mov		ax,__chain
+	mov		ax,_chain
 	or		ax,ax
 	jnz		dochain
 	
-	mov		ax,__gemret
+	mov		ax,_gemret
 	pop	ds
 	iret
 ;
 dochain:
-	mov		ax,__axpar
+	mov		ax,_axpar
 	push	ax
-	mov		bx,__aespar
-	mov		cx,__funcpar
-	mov		dx,__vdipar
+	mov		bx,offset _aespar
+	mov		cx,_funcpar
+	mov		dx,offset _vdipar
 	
-	mov		ax,__aespar + 2
+	mov		ax,offset _aespar + 2
 	mov		es,ax
-	mov		ax,__vdipar + 2
+	mov		ax,offset _vdipar + 2
 	mov		ds,ax
 
 gopast:
 	pop		ax
 	pop		ds
-	jmpf	goto_ef
-	
-	.psect	data,class=DATA
-	.globl	__hookaddr
-	.globl	__aespar
-	.globl	__vdipar
-	.globl	__funcpar
-	.globl	__gemret
-	.align	2
-
-__hookaddr:
-	.word	__gem_call,seg (__gem_call)
-__aespar:
-	.word	0,0
-__vdipar:
-	.word	0,0
-__funcpar:
-	.word	0
-__gemret:
-	.word	0
-__axpar:	
-	.word	0
-__reentry:
-	.byte	0		;Re-entrant call?
-
-goto_ef:
-	.byte	0xEA	;JMP FAR
-__old_ef:
-	.word	0,0
-__chain:
-	.word	0
-	
-#endasm
-
+	jmpf	_old_ef
+};
+}

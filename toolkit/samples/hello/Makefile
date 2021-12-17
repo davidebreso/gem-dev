@@ -1,37 +1,48 @@
 include ../../makedefs.i
 
-CFLAGS = -Zg $(STDINC)
-CC = pacc
+CFLAGS = -bt=dos -ohskl -s -0 -i../../include
+CC = wcc
+LD = wlink
 
 all:	../hello-l.app ../hello-s.app ../hello-l.acc ../hello-s.acc 
 
 ../%.app:	%.app
-	copy $< ..
+	cp $< ..
 
-../%.acc:	%.exe
-	../../bin/exe2acc $< $@
+../%.acc:	%.acc
+	cp $< ..
 
+hello-l.app:	hello-l.obj
+	$(LD) name $@ system dos file \{ $< ../main-l.obj ../../lib/wccgem-l.lib \}
+	
+hello-l.obj:	hello.c
+	$(CC) -ml $(CFLAGS) -fo=$@ $<	
 
-hello-l.app:	hello.c
-	$(CC) -Bl $(CFLAGS) -O$@ $< ../main-l.obj ../../lib/ppdgem-l.lib
+hello-s.app:	hello-s.obj
+	$(LD) name $@ system dos file \{ $< ../main-s.obj ../../lib/wccgem-s.lib \}
 
-hello-s.app:	hello.c
-	$(CC) -Bs $(CFLAGS) -O$@ $< ../main-s.obj ../../lib/ppdgem-s.lib
+hello-s.obj:	hello.c
+	$(CC) -ms $(CFLAGS) -fo=$@ $<	
 
+hello-l.acc:	hellolac.obj
+	$(LD) name $@ system dos file \{ $< ../main-l.obj ../../lib/wccgem-l.lib \}
 
-hello-l.exe:	hello.c 
-	$(CC) -Bl -DDESKACC $(CFLAGS) -Hhello-l.sym -O$@ $< ../main-l.obj ../../lib/ppdgem-l.lib
+hellolac.obj:	hello.c 
+	$(CC) -ml -DDESKACC=1 $(CFLAGS) -fo=$@ $< 
+	
+hello-s.acc:	hellosac.obj
+	$(LD) name $@ system dos file \{ $< ../main-s.obj ../../lib/wccgem-s.lib \}
 
-hello-s.exe:	hello.c
-	$(CC) -Bs -DESKACC $(CFLAGS) -Hhello-s.sym -O$@ $< ../main-s.obj ../../lib/ppdgem-s.lib
+hellosac.obj:	hello.c 
+	$(CC) -ms -DDESKACC=1 $(CFLAGS) -fo=$@ $< 
 
 tidy:
-	erase hello-?.exe
-	erase hello-?.app
-	erase *.bak
-	erase *.sdb
-	erase *.sym
-	erase *.map
-	erase *.obj
+	rm -f hello-?.exe
+	rm -f hello-?.app
+	rm -f *.bak
+	rm -f *.sdb
+	rm -f *.sym
+	rm -f *.map
+	rm -f *.obj
 
 clean:	tidy

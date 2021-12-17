@@ -1,28 +1,28 @@
 include ../../makedefs.i
 
-CFLAGS = -Zg $(STDINC)
-CC = pacc
+CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CC = wcl
 
 all:	../fdtest-l.app ../fdtest-s.app ../fdtest.rsc
 
 ../%.app:	%.app
-	copy $< ..
+	cp $< ..
 
 ../fdtest.rsc:	fdtest.rsc
-	copy fdtest.rsc ..
+	cp fdtest.rsc ..
 
 fdtest-l.app:	fdtest.c fdtest.h 
-	$(CC) -Bl $(CFLAGS) -O$@ $< ../../lib/ppdgem-l.lib
+	$(CC) -ml $(CFLAGS) -fe=$@ $< ../../lib/wccgem-l.lib
 
 fdtest-s.app:	fdtest.c fdtest.h
-	$(CC) -Bs $(CFLAGS) -O$@ $< ../../lib/ppdgem-s.lib
+	$(CC) -ms $(CFLAGS) -fe=$@ $< ../../lib/wccgem-s.lib
 
 tidy:
-	erase *.bak
-	erase *.sdb
-	erase *.sym
-	erase *.map
-	erase *.obj
-	erase fdtest-?.app
+	rm -f *.bak
+	rm -f *.sdb
+	rm -f *.sym
+	rm -f *.map
+	rm -f *.o
+	rm -f fdtest-?.app
 
 clean:	tidy

@@ -38,4 +38,3 @@
 #define B3 54  	/* OBJECT in TREE #0 */
 #define NGEDRUE 57  	/* OBJECT in TREE #0 */
 #define CLICK0 58  	/* OBJECT in TREE #0 */
-

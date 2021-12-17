@@ -13,9 +13,10 @@
 #include <aes.h>
 #include <vdi.h>
 #include <oblib.h>
+#include <i86.h>
 #include "userdef.h"
 
-MLOCAL WORD objc_cross(LPPARM pb);
+WORD FAR objc_cross(WORD seg, WORD offs);
 
 MLOCAL WORD       work_in[11];
 MLOCAL WORD       work_out[57];
@@ -23,7 +24,11 @@ MLOCAL WORD       work_out[57];
 MLOCAL WORD       ap_id;
 MLOCAL WORD       vdi_handle;
 MLOCAL OBJECT FAR *baum;
-MLOCAL PPDUBLK    cross;
+MLOCAL APPLBLK    cross;
+// MLOCAL PPDUBLK    cross;
+
+LPPARM fardr_start();
+VOID fardr_end(WORD retcode);
 
 VOID gem_init()
 {
@@ -70,17 +75,23 @@ VOID main()
 #endif
 #endif
 */
-   cross.ub_code = objc_cross;
-   cross.ub_parm = 0l;
+   _asm{ int 3 };
+   cross.ab_code = objc_cross;
+   cross.ab_parm = 0l;
 
    for (a = RB1; a <= RB4; a++)
    {
-	  ppd_userdef(baum, a, &cross);
+      // _asm { int 3 };
+      // ppd_userdef(baum, a, &cross);
+      baum[a].ob_type = G_USERDEF;
+      baum[a].ob_spec = &cross;
    }
 
    for (a = SB1; a <= SB4; a++)
    {
-	  ppd_userdef(baum, a, &cross);
+      // ppd_userdef(baum, a, &cross);
+      baum[a].ob_type = G_USERDEF;
+      baum[a].ob_spec = &cross;
    }
 
    ob_draw_dialog(baum, 0, 0, 0, 0);
@@ -90,14 +101,15 @@ VOID main()
    gem_exit();
 }
 
-/*
+/******
 #if MSDOS
 MLOCAL WORD objc_cross()
 {
-   PARMBLK FAR *pb;
-   PARMBLK FAR *fardr_start();
+   LPPARM pb;
+   // PARMBLK FAR *fardr_start();
    WORD xy[10];
 
+   _asm{ int 3 };  
    pb = fardr_start();
 #endif
 
@@ -107,11 +119,16 @@ PARMBLK *pb;
 {
    WORD xy[10];
 #endif
-*/
-MLOCAL WORD objc_cross(LPPARM pb)
+*****/
+
+WORD FAR objc_cross(WORD seg, WORD ofs)
 {
    WORD xy[10];
+   LPPARM pb;
    
+   _asm{ int 3 };
+   pb = MK_FP(seg, ofs);
+
    vsf_color(vdi_handle, WHITE);
 
    if (pb->pb_prevstate & SELECTED)
@@ -138,8 +155,12 @@ MLOCAL WORD objc_cross(LPPARM pb)
       v_pline(vdi_handle, 2, xy);
    }
 
+   return pb->pb_currstate & (~SELECTED);
+/*****
 #if MSDOS
    fardr_end(pb->pb_currstate & (~SELECTED));
 #endif
+******/
 }
+#pragma aux objc_cross loadds parm [ax] [bx] value [ax];
 

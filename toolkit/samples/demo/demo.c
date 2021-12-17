@@ -372,9 +372,9 @@ vdi_fix(pfd, theaddr, wb, h)  	/* set up MFDB for transform		*/
 /*------------------------------*/
 WORD
 vdi_trans(saddr, swb, daddr, dwb, h) 	/* 'on the fly' transform 	*/
-	LONG		saddr;
+	LPVOID		saddr;
 	WORD		swb;
-	LONG		daddr;
+	LPVOID		daddr;
 	WORD		dwb;
 	WORD		h;
 {

@@ -4,23 +4,23 @@ include ../../makedefs.i
 # nb: Low warning level, so that the RCS-generated file EXAMPLE.RSH 
 # doesn't cause warnings
 #
-CFLAGS = -Zg -W5 $(STDINC)
-CC = pacc
+CFLAGS = -0 -ox -os -bcl=dos -w=0 -i=../../include
+CC = wcl
 
 all:	../rscr-s.exe
 
 ../%.exe:	%.exe
-	copy $< ..
+	cp $< ..
 
 rscr-s.exe:	rscreate.c
-	$(CC) -Bs $(CFLAGS) -O$@ $< ../../lib/ppdgem-s.lib
+	$(CC) -ms $(CFLAGS) -fe=$@ $< ../../lib/wccgem-s.lib
 
 tidy:
-	erase rscr-?.exe
-	erase *.bak
-	erase *.sdb
-	erase *.sym
-	erase *.map
-	erase *.obj
+	rm -f rscr-?.exe
+	rm -f *.bak
+	rm -f *.sdb
+	rm -f *.sym
+	rm -f *.map
+	rm -f *.o
 
 clean:	tidy

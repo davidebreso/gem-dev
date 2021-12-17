@@ -24,40 +24,49 @@
 ;   result out, we use the global variable drawret in the same
 ;   way. 
 
-	.globl	small_data
-	.globl	small_code
-	.psect	_TEXT,class=CODE
-	.globl	__far_draw
-	.globl  __dr_code
+	_DATA SEGMENT WORD PUBLIC 'DATA'
+	_DATA ENDS
 
+	_TEXT SEGMENT BYTE PUBLIC 'CODE'
+	ASSUME   cs:_TEXT, ds:_DATA
 
-__far_draw:
+	PUBLIC	__far_draw
+	EXTRN   _dr_code_:	far
+
+__far_draw	PROC FAR
 	push	ds
 	push	ax				;Set DS to our data, so that we can write to 
-	mov	ax,#seg __drawpar	;variables like drawpar.
+	mov	ax,seg __drawpar	;variables like drawpar.
 	mov		ds,ax
 	pop		ax
-	mov		__drawpar, bx		;low word
-	mov		__drawpar + 2, ax	;high word
+	mov		word ptr __drawpar, bx		;low word
+	mov		word ptr __drawpar + 2, ax	;high word
 
-	pushf			 ;dr_code will return with an iret, so simulate an 
-	callf	__dr_code ;interrupt call.
+	;pushf			 ;dr_code will return with an iret, so simulate an 
+	callf	_dr_code_ ;interrupt call.
 	
 	mov		ax,__drawret
 	pop		ds
 	retf
+__far_draw	ENDP	
 
+_TEXT		ENDS
 
-	.psect	data,class=DATA
-	.globl	__drawaddr
-	.globl	__drawpar
-	.globl	__drawret
-	.align	2
+_DATA SEGMENT WORD PUBLIC 'DATA'
+
+	PUBLIC	__drawaddr
+	PUBLIC	__drawpar
+	PUBLIC	__drawret
+
 __drawaddr:
-	.word	__far_draw,seg (__far_draw)
+	dw	__far_draw,seg (__far_draw)
 __drawpar:
-	.word	0,0
+	dw	0,0
 __drawret:
-	.word	0
+	dw	0
+
+_DATA		ENDS
+
+END
 
 

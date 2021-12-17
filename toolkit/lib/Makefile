@@ -2,11 +2,11 @@
 include ../makedefs.i
 
 install:
-	copy ppdgem-l.lib $(CCDIR)\LIB
-	copy ppdgem-s.lib $(CCDIR)\LIB
+	cp wccgem-l.lib $(INSTDIR)/lib286
+	cp wccgem-s.lib $(INSTDIR)/lib286
 
 tidy:
 
 clean:
-	erase ppdgem-l.lib
-	erase ppdgem-s.lib
+	rm -f wccgem-l.lib
+	rm -f wccgem-s.lib

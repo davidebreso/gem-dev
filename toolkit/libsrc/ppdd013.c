@@ -27,7 +27,7 @@ ULONG dos_read(WORD handle, ULONG cnt, LPBYTE pbuffer)
 		{
 			WORD seg = FP_SEG(pbuffer);
 			WORD off = FP_OFF(pbuffer);
-			pbuffer =  FP_CONSTRUCT(seg + 0x800, off);
+			pbuffer =  MK_FP(seg + 0x800, off);
 		}
 	}
 	return( rd_cnt );

@@ -1,29 +1,29 @@
 include ../../makedefs.i
 
-CFLAGS = -Zg $(STDINC)
-CC = pacc
+CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CC = wcl
 
 all:	../xform-l.app ../xform-s.app ../xform.rsc
 
 ../%.app:	%.app
-	copy $< ..
+	cp $< ..
 
 ../xform.rsc:	xform.rsc
-	copy xform.rsc ..
+	cp xform.rsc ..
 
 xform-l.app:	xform.c xform.h
-	$(CC) -Bl $(CFLAGS) -O$@ xform.c ../main-l.obj ../../lib/ppdgem-l.lib
+	$(CC) -ml $(CFLAGS) -fe=$@ xform.c ../main-l.obj ../../lib/wccgem-l.lib
 
 xform-s.app:	xform.c xform.h
-	$(CC) -Bs $(CFLAGS) -O$@ xform.c ../main-s.obj ../../lib/ppdgem-s.lib
+	$(CC) -ms $(CFLAGS) -fe=$@ xform.c ../main-s.obj ../../lib/wccgem-s.lib
 
 tidy:
-	erase *.obj
-	erase *.bak
-	erase *.sdb
-	erase *.sym
-	erase *.map
-	erase *.obj
-	erase xform-?.app
+	rm -f *.obj
+	rm -f *.bak
+	rm -f *.sdb
+	rm -f *.sym
+	rm -f *.map
+	rm -f *.o
+	rm -f xform-?.app
 
 clean:	tidy

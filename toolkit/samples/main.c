@@ -42,6 +42,7 @@ int main(int argc, char **argv)
 */	return GEMAIN(argc, argv);
 }
 
+/***** remove freemem() that it is not needed
 #asm
 
 	.globl __Hstack
@@ -85,6 +86,8 @@ frend:
 	ret
 	
 #endasm
+******/
+
 /*
 	PUBLIC	MAIN
 BEGIN   PROC    FAR

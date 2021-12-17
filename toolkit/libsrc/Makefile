@@ -1,9 +1,7 @@
 #
-# Location of Pacific libraries
+# Location of Open Watcom libraries
 #
 include ../makedefs.i
-
-LIBDIR=$(CCDIR)\LIB
 
 SOURCE = ems_all.c ems_fp.c ems_free.c ems_fs.c ems_map.c ems_np.c \
 	 ems_rmap.c ems_smap.c ems_vers.c emslib.c ev_event.c formdo.c \
@@ -58,41 +56,26 @@ SOURCE = ems_all.c ems_fp.c ems_free.c ems_fs.c ems_map.c ems_np.c \
 	 x_duy_xf.c x_mul_di.c x_saspec.c x_sxform.c x_udx_sc.c x_udx_xf.c \
 	 x_udx_yf.c x_udy_sc.c x_ytox.c xfmlib.c
 
+all:	../lib/wccgem-l.lib ../lib/wccgem-s.lib
 
-all:	../lib/ppdgem-l.lib ../lib/ppdgem-s.lib
+../lib/wccgem-l.lib: large/wccgem-l.lib 
+	cp large/wccgem-l.lib ../lib/wccgem-l.lib
 
-../lib/ppdgem-l.lib: large/ppdgem-l.lib 
-	copy large\ppdgem-l.lib ..\lib\ppdgem-l.lib
+../lib/wccgem-s.lib: small/wccgem-s.lib
+	cp small/wccgem-s.lib ../lib/wccgem-s.lib
 
-../lib/ppdgem-s.lib: small/ppdgem-s.lib
-	copy small\ppdgem-s.lib ..\lib\ppdgem-s.lib
+large/wccgem-l.lib: $(SOURCE)
+	$(MAKE) -C large
 
-large/ppdgem-l.lib: $(SOURCE)
-	cd large
-	make
-	copy ppdgem-l.lib ..\..\lib
-	cd ..
-
-small/ppdgem-s.lib: $(SOURCE)
-	cd small
-	make
-	copy ppdgem-s.lib ..\..\lib
-	cd ..
+small/wccgem-s.lib: $(SOURCE)
+	$(MAKE) -C small
 
 tidy:
-	erase *.bak
-	cd large
-	make tidy
-	cd ..
-	cd small
-	make tidy
-	cd ..
+	rm -f *.bak
+	$(MAKE) -C small tidy
+	$(MAKE) -C large tidy
 
 clean:	
-	erase *.bak
-	cd large
-	make clean
-	cd ..
-	cd small
-	make clean
-	cd ..
+	rm -f *.bak
+	$(MAKE) -C small clean
+	$(MAKE) -C large clean

@@ -33,7 +33,7 @@ WORD vdi(VOID)
 {
 	union REGS ir, or;
 	struct SREGS sr;
-	register far void *ppblock = &pblock;
+	register void far *ppblock = &pblock;
 
 	if (pVdi) return (*pVdi)(ppblock);
 	

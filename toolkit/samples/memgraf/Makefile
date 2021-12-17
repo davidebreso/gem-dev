@@ -1,37 +1,37 @@
 include ../../makedefs.i
 
-CFLAGS = -Zg $(STDINC)
-CC = pacc
+CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CC = wcl
 
-all:	../mgrf-l.app ../mgrf-s.app ../mgrf-l.acc ../mgrf-s.acc 
+all:	../mgrf-l.app ../mgrf-s.app # ../mgrf-l.acc ../mgrf-s.acc 
 
 ../%.app:	%.app
-	copy $< ..
+	cp $< ..
 
 ../%.acc:	%.exe
 	../../bin/exe2acc $< $@
 
 
 mgrf-l.app:	memgraf.c
-	$(CC) -Bl $(CFLAGS) -O$@ $<  ../../lib/ppdgem-l.lib
+	$(CC) -ml $(CFLAGS) -fe=$@ $<  ../../lib/wccgem-l.lib
 
 mgrf-s.app:	memgraf.c
-	$(CC) -Bs $(CFLAGS) -O$@ $< ../../lib/ppdgem-s.lib
+	$(CC) -ms $(CFLAGS) -fe=$@ $< ../../lib/wccgem-s.lib
 
 
 mgrf-l.exe:	memgraf.c 
-	$(CC) -Bl -DDESKACC $(CFLAGS) -Hmgrf-l.sym -O$@ $<  ../../lib/ppdgem-l.lib
+	$(CC) -ml -DDESKACC $(CFLAGS) -Hmgrf-l.sym -fe=$@ $<  ../../lib/wccgem-l.lib
 
 mgrf-s.exe:	memgraf.c
-	$(CC) -Bs -DESKACC $(CFLAGS) -Hmgrf-s.sym -O$@ $< ../../lib/ppdgem-s.lib
+	$(CC) -ms -DESKACC $(CFLAGS) -Hmgrf-s.sym -fe=$@ $< ../../lib/wccgem-s.lib
 
 tidy:
-	erase mgrf-?.exe
-	erase mgrf-?.app
-	erase *.bak
-	erase *.sdb
-	erase *.sym
-	erase *.map
-	erase *.obj
+	rm -f mgrf-?.exe
+	rm -f mgrf-?.app
+	rm -f *.bak
+	rm -f *.sdb
+	rm -f *.sym
+	rm -f *.map
+	rm -f *.o
 
 clean:	tidy

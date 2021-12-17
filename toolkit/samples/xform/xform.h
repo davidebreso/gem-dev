@@ -12,4 +12,3 @@
 #define FITOK 1  	/* OBJECT in TREE #2 */
 #define ZOM2ITEM 9  	/* OBJECT in TREE #2 */
 #define ZOM3ITEM 10  	/* OBJECT in TREE #2 */
-

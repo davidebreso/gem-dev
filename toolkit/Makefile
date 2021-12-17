@@ -1,69 +1,37 @@
 include makedefs.i
 
-TARGETS=lib/ppdgem-l.lib lib/ppdgem-s.lib bin/exe2acc.exe samples
+TARGETS=lib/wccgem-l.lib lib/wccgem-s.lib bin/exe2acc.exe samples
 
 all:	$(TARGETS)
 
 samples: bin/exe2acc.exe
-	cd samples
-	make
-	cd ..
+	$(MAKE) -C samples
 
-lib/ppdgem-l.lib lib/ppdgem-s.lib:
-	cd libsrc
-	make
-	cd ..
+lib/wccgem-l.lib lib/wccgem-s.lib:
+	$(MAKE) -C libsrc
 
 bin/exe2acc.exe:
-	cd exe2acc
-	make
-	cd ..
+	$(MAKE) -C exe2acc
 
 install:
-	cd include
-	make install
-	cd ..
-	cd lib
-	make install
-	cd ..
-	cd bin
-	make install
-	cd ..
+	$(MAKE) -C include install
+	$(MAKE) -C lib install
+	$(MAKE) -C bin install
 
 clean:
-	cd libsrc
-	make $@
-	cd ..
-	cd samples
-	make $@
-	cd ..
-	cd exe2acc
-	make $@
-	cd ..
-	cd bin
-	make $@
-	cd ..
-	cd lib
-	make $@ 
-	cd ..
+	$(MAKE) -C libsrc $@
+	$(MAKE) -C samples $@
+	$(MAKE) -C exe2acc $@
+	$(MAKE) -C bin $@
+	$(MAKE) -C lib $@
 
 tidy:
-	cd libsrc
-	make $@
-	cd ..
-	cd samples
-	make $@
-	cd ..
-	cd exe2acc
-	make $@
-	cd ..
-	cd bin
-	make $@
-	cd ..
-	cd lib
-	make $@ 
-	cd ..
+	$(MAKE) -C libsrc $@
+	$(MAKE) -C samples $@
+	$(MAKE) -C exe2acc $@
+	$(MAKE) -C bin $@
+	$(MAKE) -C lib $@
 
 zip:
-	erase ppdgem.zip
-	pkzip -rP ppdgem.zip *.*
+	rm -f wccgem.zip
+	zip -9 -r wccgem.zip *

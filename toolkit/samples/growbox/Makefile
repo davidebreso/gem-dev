@@ -1,26 +1,26 @@
 include ../../makedefs.i
 
-CFLAGS = -Zg $(STDINC)
-CC = pacc
+CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CC = wcl
 
-all:	../growbx-l.acc ../growbx-s.acc
+all:	# ../growbx-l.acc ../growbx-s.acc
 
 ../%.acc:	%.exe
 	../../bin/exe2acc $< $@
 
 
 growbx-l.exe:	growbox.c 
-	$(CC) -Bl -DDESKACC $(CFLAGS) -Hgrowbx-l.sym -O$@ $< ../main-l.obj ../../lib/ppdgem-l.lib
+	$(CC) -ml -DDESKACC $(CFLAGS) -Hgrowbx-l.sym -fe=$@ $< ../main-l.obj ../../lib/wccgem-l.lib
 
 growbx-s.exe:	growbox.c
-	$(CC) -Bs -DESKACC $(CFLAGS) -Hgrowbx-s.sym -O$@ $< ../main-s.obj ../../lib/ppdgem-s.lib
+	$(CC) -ms -DESKACC $(CFLAGS) -Hgrowbx-s.sym -fe=$@ $< ../main-s.obj ../../lib/wccgem-s.lib
 
 tidy:
-	erase growbx-?.exe
-	erase *.bak
-	erase *.sdb
-	erase *.sym
-	erase *.map
-	erase *.obj
+	rm -f growbx-?.exe
+	rm -f *.bak
+	rm -f *.sdb
+	rm -f *.sym
+	rm -f *.map
+	rm -f *.o
 
 clean:	tidy
