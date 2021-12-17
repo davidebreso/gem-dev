@@ -16,7 +16,8 @@
 #include <i86.h>
 #include "userdef.h"
 
-WORD FAR objc_cross(WORD seg, WORD offs);
+WORD objc_cross(WORD seg, WORD offs);
+WORD __declspec( naked ) far_draw(WORD seg, WORD ofs);
 
 MLOCAL WORD       work_in[11];
 MLOCAL WORD       work_out[57];
@@ -32,8 +33,8 @@ VOID fardr_end(WORD retcode);
 
 VOID gem_init()
 {
-   WORD i;
-   WORD dummy;
+   static WORD i;
+   static WORD dummy;
 
    ap_id = appl_init(NULL);
 
@@ -76,7 +77,7 @@ VOID main()
 #endif
 */
    _asm{ int 3 };
-   cross.ab_code = objc_cross;
+   cross.ab_code = far_draw;
    cross.ab_parm = 0l;
 
    for (a = RB1; a <= RB4; a++)
@@ -120,14 +121,46 @@ PARMBLK *pb;
    WORD xy[10];
 #endif
 *****/
+LPPARM pb;
+BYTE newstack[1024];
+WORD save_ss, save_sp;
 
-WORD FAR objc_cross(WORD seg, WORD ofs)
+WORD __declspec( naked ) far_draw(WORD seg, WORD ofs)
+{
+    _asm{
+        int 3
+        push ds
+        push cx
+        mov cx, seg pb
+        mov ds, cx
+        mov save_ss, ss
+        mov save_sp, sp
+        mov ss, cx
+        mov sp, offset newstack + 1022
+        mov word ptr pb, bx
+        mov word ptr pb+2, ax
+#ifdef __LARGE__        
+        callf objc_cross
+        mov cx, seg pb
+        mov ds, cx
+#else
+        call objc_cross
+#endif
+        mov ss, save_ss
+        mov sp, save_sp
+        pop cx
+        pop ds
+        retf
+    };
+}
+#pragma aux far_draw parm [ax] [bx] value [ax];
+
+
+WORD objc_cross()
 {
    WORD xy[10];
-   LPPARM pb;
-   
-   _asm{ int 3 };
-   pb = MK_FP(seg, ofs);
+     
+   // pb = MK_FP(seg, ofs);
 
    vsf_color(vdi_handle, WHITE);
 
@@ -162,5 +195,5 @@ WORD FAR objc_cross(WORD seg, WORD ofs)
 #endif
 ******/
 }
-#pragma aux objc_cross loadds parm [ax] [bx] value [ax];
+#pragma aux objc_cross value [ax];
 
