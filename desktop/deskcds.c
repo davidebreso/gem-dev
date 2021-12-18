@@ -19,17 +19,26 @@
  * External function definitions                        * 
  ********************************************************/
 
-/* [JCE Port Ben's cdexinst() to C rather than asm. */
-WORD     cdexinst()
+/* [JCE Port Ben's cdexinst() to C rather than asm.] */
+/* [DB 2021, rewrite in asm to reduce code size ] */
+__declspec( naked ) WORD  cdexinst()
 {
-	union REGS rg;
+/*	union REGS rg;
 
 	rg.x.ax = 0x1500;
 	rg.x.bx = 0x0000;
 	int86(0x2f, &rg, &rg);
 	rg.h.ch = rg.h.bl;
-	return rg.x.cx;		/* Returns (BL << 8) | CL */
+	return rg.x.cx;		 Returns (BL << 8) | CL */
+	_asm{
+		mov ax, 0x1500
+		mov bx, 0x0000
+		int 0x2f
+		mov ch, bl	/* Returns (BL << 8) | CL */
+		ret
+	}
 }
+#pragma aux cdexinst value [cx] modify exact [ax bx cx] nomemory;
 
 /********************************************************
  * cd_isdrvcd ( drvno );                                *

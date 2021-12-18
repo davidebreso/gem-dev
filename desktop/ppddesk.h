@@ -33,4 +33,3 @@ typedef RSHDR  FAR *LPRSHDR;
 #include "deskvars.h"
 #include "desktop.h"
 
-

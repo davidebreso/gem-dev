@@ -40,6 +40,7 @@ void dump_anodes(char *s)
 */
 
 /* strcpy() with length bound */
+/* 
 VOID strlcpy(char *dest, char *src, int len)
 {
 	if (len < 1) return;
@@ -56,6 +57,7 @@ VOID strlcat(char *dest, char *src, int len)
 {
 	strlcpy(dest + strlen(dest), src, len - strlen(dest));
 }
+ */
 
 /*
 *	Allocate an application object.

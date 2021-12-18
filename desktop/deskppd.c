@@ -138,50 +138,50 @@ VOID rc_union(LPGRECT p1, LPGRECT p2)
 
 
 /* Get drive type. Based on BALJ's Desktop. */
-WORD dos_dtype(WORD drive)
+/* DB: rewrite in asm to reduce code size. */
+__declspec( naked ) WORD dos_dtype(WORD drive)
 {
-	union REGS rg;
-
-	rg.x.ax = 0x0E00;	/* Select drive */
-	rg.x.dx = drive;
-	intdos(&rg, &rg);
-
-	rg.x.ax = 0x1900;	
-	intdos(&rg, &rg);
-	if (rg.h.al != drive) 
-	{
-		return 0x0F;	/* Couldn't select it */
-	}	
-	if (drive + 'A' == 'B') 
-	{
-		rg.x.ax = 0x440E;
-		rg.x.bx = 0;
-		intdos(&rg, &rg);
-		if (rg.h.al) 
-		{
-			return 0x0F;	/* Logical device on floppy 0 */
-		}
-	}
-	rg.x.ax = 0x4408;
-	rg.x.bx = drive + 1;
-	intdos(&rg, &rg);
-	if (rg.h.al == 0) 
-	{
-		return 0;	/* Floppy */
-	}
-	rg.x.ax = 0x4409;
-	rg.x.bx = drive + 1;
-	intdos(&rg, &rg);
-	if (rg.x.cflag) 
-	{
-		return 0x0F;
-	}
-	if (rg.x.dx & 0x1000)  
-	{
-		return 2;			/* Network */
-	}
-	return 1;				/* HD */
+	_asm{
+		mov dx, ax	/* param drive is now in DX */
+		mov ax, 0x0E00	/* Select drive */
+		int 0x21
+		mov ax, 0x1900 	/* Get current disk */
+		int 0x21 	/* current disk is now in AL */
+		cmp al, dl	/* If different from drive, return error */
+		jne ret_error
+		cmp dx, 1	/* check if drive is 'B' */
+		jne check_floppy
+		mov ax, 0x440E	/* Get Logical Drive Map */
+		mov bx,	0x0	/* BX = 0 is default drive */
+		int 0x21	/* Logical dive map is now in AX */
+		test ax, ax	
+		jnz ret_error	/* if AX != 0, Logical device on floppy 0 */
+	check_floppy:
+		mov ax, 0x4408	/* Block Device Changeable */
+		mov bx, dx	/* BX is drive */
+		inc bx		/* BX is drive + 1 */
+		int 0x21	/* Fixed Code is now in AX */
+		test ax, ax	/* Fixed Code 00h = Removable */
+		jne check_network
+		mov ax, 0	/* Floppy, return 0 */
+		ret
+	check_network:
+		mov ax, 0x4409	/* Block Device Local */
+				/* BX is already drive + 1 */
+		int 0x21	/* Attribute Word is now in DX */
+		jc ret_error	/* if CF set, return error */
+		and dx, 0x1000	/* check if bit 12 of the attribute word is set */
+		jz is_hd	/* bit is not set, drive is HD */
+		mov ax, 2	/* Network, return 2 */
+		ret
+	is_hd:	mov ax, 1	/* HD, return 1 */
+		ret
+	ret_error:
+		mov ax, 0x0F
+		ret
+	};
 }
+#pragma aux dos_dtype parm [ax] value [ax] modify exact [ax bx cx dx] nomemory;
 
 
 #if DEBUG

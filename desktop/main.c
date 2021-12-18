@@ -9,7 +9,7 @@ static char *fail = "GEMAES not present in memory.\n";
 /*static char *meme = "Unable to free memory.\n";*/
 static char *exte = "Execution terminated.\n";
 
-int freemem(void);
+// int freemem(void);
 
 
 int main(int argc, char **argv)
@@ -42,6 +42,7 @@ int main(int argc, char **argv)
 */	return GEMAIN(argc, argv);
 }
 
+/* 
 #asm
 
 	.globl __Hstack
@@ -85,6 +86,7 @@ frend:
 	ret
 	
 #endasm
+ */
 /*
 	PUBLIC	MAIN
 BEGIN   PROC    FAR

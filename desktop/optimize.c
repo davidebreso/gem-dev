@@ -382,5 +382,3 @@ ins_char(str, pos, chr, tot_len)
 
 
 
-
-

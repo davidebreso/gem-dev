@@ -87,11 +87,11 @@ extern BYTE ILL_TYPE[];
 
 typedef signed long SLONG;
 
-#if (defined(SMALL_DATA) && defined(MULTIAPP))
+#ifdef __SMALL__
 WORD do_type(WORD curr)
 {
 	form_alert(0, "[3][This function is not available in the |"
-			"small-model MULTIAPP desktop][ Cancel ]");
+			"small-model desktop][ Cancel ]");
 }
 
 #else

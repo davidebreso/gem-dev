@@ -98,5 +98,5 @@ typedef struct over_blk
 #define E_PASSWFAIL 0x56
 
 #define LSEGOFF(x) ((((x)+15)&0xFFFFFFF0)<<12)
-
+
 

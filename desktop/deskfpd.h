@@ -68,4 +68,3 @@ typedef struct pathnode
 	LONG		p_size;				// 0x4E
 } PNODE;
 
-

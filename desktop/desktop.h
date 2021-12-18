@@ -232,4 +232,3 @@
 #define ACC1NAME 24  	/* OBJECT in TREE #14 */
 #define ACC2NAME 25  	/* OBJECT in TREE #14 */
 #define ACC3NAME 26  	/* OBJECT in TREE #14 */
-

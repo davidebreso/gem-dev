@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define BASE 0x908
 
 char linebuf[81];
 FILE *fpin, *fpout;
-long iconlen = 0;
+int32_t iconlen = 0;
 
 #ifndef SEEK_SET
 #define SEEK_SET 0
@@ -15,22 +16,25 @@ long iconlen = 0;
 #define SEEK_END 2
 #endif
 
+/* pack structures to 2-bytes to prevent adding extra bytes to ICONBLK */
+#pragma pack(2)
+
 typedef struct 
 {
-	long	ib_pmask;
-	long	ib_pdata;
-	long	ib_ptext;
-	short	ib_char;
-	short	ib_xchar;
-	short	ib_ychar;
-	short	ib_xicon;
-	short	ib_yicon;
-	short	ib_wicon;
-	short	ib_hicon;
-	short	ib_xtext;
-	short	ib_ytext;
-	short	ib_wtext;
-	short	ib_htext;
+	int32_t	ib_pmask;
+	int32_t	ib_pdata;
+	int32_t	ib_ptext;
+	int16_t	ib_char;
+	int16_t	ib_xchar;
+	int16_t	ib_ychar;
+	int16_t	ib_xicon;
+	int16_t	ib_yicon;
+	int16_t	ib_wicon;
+	int16_t	ib_hicon;
+	int16_t	ib_xtext;
+	int16_t	ib_ytext;
+	int16_t	ib_wtext;
+	int16_t	ib_htext;
 } ICONBLK;
 
 char caption[32][81];
@@ -39,11 +43,11 @@ unsigned char *bitdata[144];
 
 void get_image(int ni)
 {
-	unsigned fww  = (ib[ni].ib_wicon + 15) / 16;
-	unsigned fh   = ib[ni].ib_hicon;	
+	uint16_t fww  = (ib[ni].ib_wicon + 15) / 16;
+	uint16_t fh   = ib[ni].ib_hicon;	
 	unsigned char *pdata, *pmask;
-	unsigned x,y;
-	unsigned *row, *maskrow, mask;
+	uint16_t x,y;
+	uint16_t *row, *maskrow, mask;
 	int c;
 
 	iconlen = fww * 2 * fh;
@@ -53,8 +57,8 @@ void get_image(int ni)
 
 	for (y = 0; y < fh; y++)
 	{
-		maskrow = (unsigned *)(pmask + 2 * y * fww);
-		row     = (unsigned *)(pdata + 2 * y * fww);
+		maskrow = (uint16_t *)(pmask + 2 * y * fww);
+		row     = (uint16_t *)(pdata + 2 * y * fww);
 		mask = 0x8000;
 		for (x = 0; x < ib[ni].ib_wicon; x++)
 		{
@@ -133,7 +137,7 @@ void get_caption(int nc)
 	caption[nc][80] = 0;
 }
 
-void get_long(long *l)
+void get_long(int32_t *l)
 {
 	char *s = strchr(linebuf, '>');
 	if (!s) 
@@ -144,9 +148,9 @@ void get_long(long *l)
 	*l = atol(s + 1);
 }
 
-void get_int(short *s)
+void get_int(int16_t *s)
 {
-	long l;
+	int32_t l;
 	get_long(&l);
 	*s = l;
 }
@@ -193,8 +197,8 @@ void parse_icons(void)
 
 int main(int argc, char **argv)
 {
-	unsigned totlen;
-	unsigned base;
+	uint16_t totlen;
+	uint16_t base;
 	int n, m;
 
 	if (argc < 3)

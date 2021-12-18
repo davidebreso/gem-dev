@@ -12,8 +12,8 @@ BYTE *scan_2(BYTE *pcurr, WORD *pwd);
 BYTE *save_2(BYTE *pcurr, UWORD wd);
 BYTE *save_memsz(BYTE *pcurr, UWORD wd);
 BYTE *scan_memsz(BYTE *pcurr, UWORD *pwd);
-VOID strlcpy(char *dest, char *src, int maxlen);
-VOID strlcat(char *dest, char *src, int maxlen);
+// VOID strlcpy(char *dest, char *src, int maxlen);
+// VOID strlcat(char *dest, char *src, int maxlen);
 VOID lstlcpy(LPBYTE dest, LPBYTE src, int maxlen);
 
 /* desktop.c */

@@ -1,68 +1,64 @@
 INSTDIR=C:\GEMAPPS\GEMSYS
 
 all:	desktop.app desktopl.app \
-	icn2xml.exe xml2icn.exe desklo.icn deskhi.icn
+	icn2xml xml2icn desklo.icn deskhi.icn
 
-desklo.icn:	desklo.xml xml2icn.exe
-	xml2icn $< $@
+desklo.icn:	desklo.xml xml2icn
+	./xml2icn $< $@
 
-deskhi.icn:	deskhi.xml xml2icn.exe
-	xml2icn $< $@
+deskhi.icn:	deskhi.xml xml2icn
+	./xml2icn $< $@
 
+icn2xml:	icn2xml.c
+	gcc $< -o $@
+	
 icn2xml.exe:	icn2xml.c
-	pacc -Bl $<
+	wcl -bt=dos -0 -ml $<
+
+xml2icn:	xml2icn.c
+	gcc $< -o $@
 
 xml2icn.exe:	xml2icn.c
-	pacc -Bl $<
+	wcl -bt=dos -0 -ml $<
 
-desktop.app:	small/desktop.exe
-	copy small\desktop.exe $@
+desktop.app:	small/desktop.app
+	cp small/desktop.app $@
 
-desktopl.app:	large/desktop.exe
-	copy large\desktop.exe $@
+desktopl.app:	large/desktop.app
+	cp large/desktop.app $@
 
+desksm.app:	smallm/desktop.app
+	cp smallm/desktop.app $@
 
-desksm.app:	smallm/desktop.exe
-	copy smallm\desktop.exe $@
+desklm.app:	largem/desktop.app
+	cp largem/desktop.app $@
 
-desklm.app:	largem/desktop.exe
-	copy largem\desktop.exe $@
+large/desktop.app:	*.c *.h
+	$(MAKE) -C large
 
-large/desktop.exe:	*.c *.h
-	cd large
-	make
-	cd ..
+small/desktop.app:	*.c *.h
+	$(MAKE) -C small
 
-small/desktop.exe:	*.c *.h
-	cd small
-	make
-	cd ..
+largem/desktop.app:	*.c *.h
+	$(MAKE) -C largem
 
-largem/desktop.exe:	*.c *.h
-	cd largem
-	make
-	cd ..
-
-smallm/desktop.exe:	*.c *.h
-	cd smallm
-	make
-	cd ..
+smallm/desktop.app:	*.c *.h
+	$(MAKE) -C smallm
 
 install:	desktop.app deskhi.icn desklo.icn
-	copy deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
-	copy desktop.app $(INSTDIR)\desktop.app
+	cp deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
+	cp desktop.app $(INSTDIR)\desktop.app
 	
 clean:
-	cd small
-	make $@
-	cd ..
-	cd large
-	make $@
-	cd ..
-	erase desktop.app 
-	erase desktopl.app 
-	erase icn2xml.exe 
-	erase xml2icn.exe 
-	erase desklo.icn 
-	erase deskhi.icn
+	$(MAKE) -C small clean
+	$(MAKE) -C large clean
+	rm -f desktop.app 
+	rm -f desktopl.app 
+	rm -f icn2xml 
+	rm -f icn2xml.exe 
+	rm -f xml2icn 
+	rm -f xml2icn.exe
+	rm -f desklo.icn 
+	rm -f deskhi.icn
+	rm -f *.err
 	

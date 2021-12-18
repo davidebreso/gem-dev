@@ -1,7 +1,9 @@
 
-CC=PACC
-CFLAGS=-Bs -Zg -O -I..
-LIBDIR=c:/pacific/lib
+CC=wcc
+LD=wlink
+AS=wasm
+CFLAGS=-bt=dos -os -s -0 -I../../toolkit/include
+LIBDIR=../../toolkit/lib
 
 OBJECTS0=desktop.obj  
 OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj nooptim.obj
@@ -14,30 +16,22 @@ OBJECTS=$(OBJECTS0) $(OBJECTS1) $(OBJECTS2) $(OBJECTS3) $(OBJECTS4) $(OBJECTS5)
 
 all:	desktop.app
 
-desktop.app:	desktop.exe
-	copy $< $@
-
-desktop.exe:	$(OBJECTS) 
-	libr r tmp.lib $(OBJECTS1)
-	libr r tmp.lib $(OBJECTS2)
-	libr r tmp.lib $(OBJECTS3)
-	libr r tmp.lib $(OBJECTS4)
-	libr r tmp.lib $(OBJECTS5)
-	$(CC) -Mtest.map $(OBJECTS0) tmp.lib $(LIBDIR)/ppdgem-s.lib
-	del tmp.lib
+desktop.app:	$(OBJECTS) 
+	$(LD) name $@ system dos file \{ $(OBJECTS) $(LIBDIR)/wccgem-s.lib \} option map=test.map
 
 nooptim.obj:	../nooptim.c ../deskprot.h ../desktop.h ../ppddesk.h
-	$(CC) -O$@ -Bs -O -I.. -c $<
+	$(CC) -ms $(CFLAGS) -fo=$@ $< 
 
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
-	$(CC) -O$@ $(CFLAGS) -c $<
+	$(CC) -ms $(CFLAGS) -fo=$@ $< 
 
-%.obj:	../%.as
-	$(CC) -O$@ $(CFLAGS) -c $<	
+%.obj:	../%.asm
+	$(AS) -0 $< -fo=$@ -ms
 
 clean:
-	erase *.obj 
-	erase *.exe 
-	erase *.app 
-	erase *.lib
-	erase *.map
+	rm -f *.obj 
+	rm -f *.exe 
+	rm -f *.app 
+	rm -f *.lib
+	rm -f *.map
+	rm -f *.err

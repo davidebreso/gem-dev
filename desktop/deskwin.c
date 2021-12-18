@@ -25,9 +25,10 @@
 
 #define HOTCLOSE 0x1000
 
-// Cut-down DESKTOP 2.x+ style
-// #define WINDOW_STYLE HOTCLOSE | VSLIDE | UPARROW | DNARROW | \
-//					    NAME | CLOSER | FULLER
+/* Cut-down DESKTOP 2.x+ style
+ * #define WINDOW_STYLE HOTCLOSE | VSLIDE | UPARROW | DNARROW | \
+ *					    NAME | CLOSER | FULLER
+ */
 #define WINDOW_STYLE (NAME | CLOSER | MOVER | FULLER | INFO | SIZER | \
                       UPARROW | DNARROW | VSLIDE | LFARROW | RTARROW | \
                       HSLIDE)

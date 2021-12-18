@@ -1,4 +1,4 @@
-GEM/3 Desktop: Pacific C version (Release 3.2.5)
+GEM/3 Desktop: Open Watcom version (Release 3.2.5)
 ===============================================================================
 
   This is a GEM desktop, based on Digital Research's GEM Desktop 3.0. Features 
@@ -17,6 +17,10 @@ DESKLM.APP   - large model, for GEM/XM.
 
 Release 3.2.5 Changes (most recent at the top)
 ===============================================================================
+
+* Code is now compiled with Open Watcom v2 on MacOS Big Sur. "Show Content" is
+  disabled on the small-model desktop. Function that calls DOS interrrupts 
+  have been rewritten in ASM to keep the code segment below the 64K limit.
 
 * Icon view auto-arrange icons to match the window size. 
 
@@ -88,5 +92,5 @@ and John Elliott's GEM bindings for it:
 <http://www.seasip.info/Gem/index.html>
 
 John Elliott, 26 March 2006
-Davide Bresolin, 16 October 2021
+Davide Bresolin, 18 December 2021
 
