@@ -17,7 +17,7 @@ TARGETS=demo-s.app   demo-l.app   \
 	rscr-s.exe
 
 CC = wcc
-CFLAGS = -bt=dos -ohskl -0 -i../include
+CFLAGS = -bt=dos -os -s -0 -i../include
 
 MAIN = main-l.obj main-s.obj
 
@@ -91,6 +91,7 @@ clean:
 	rm -f *.acc
 	rm -f *.exe
 	rm -f *.bak
+	rm -f *.err
 	$(MAKE) -C hello clean
 	$(MAKE) -C demo clean
 	$(MAKE) -C xform clean

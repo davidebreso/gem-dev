@@ -1,6 +1,6 @@
 include ../../makedefs.i
 
-CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CFLAGS = -0 -ox -os -s -bcl=dos -i=../../include
 CC = wcl
 
 all:	# ../fmem-l.acc ../fmem-s.acc ../freemem.rsc
@@ -25,5 +25,6 @@ tidy:
 	rm -f *.sym
 	rm -f *.map
 	rm -f *.o
+	rm -f *.err
 
 clean:	tidy

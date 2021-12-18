@@ -2,7 +2,7 @@ include ../../makedefs.i
 #
 CC = wcc
 #CFLAGS = -Bl -Zg -I../../INCLUDE -I.. $(STDINC)
-CFLAGS = -bt=dos -ml -s -0 -i../../include -i..
+CFLAGS = -bt=dos -ml -s -os -0 -i../../include -i..
 
 OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj ems_rmap.obj \
 	  ems_smap.obj ems_vers.obj emslib.obj ob_dofl.obj ob_dost.obj ob_dr_di.obj \
@@ -58,8 +58,6 @@ OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj 
 	  ppdv125.obj ppdv126.obj ppdv127.obj ppdv128.obj ppdv129.obj ppdv130.obj \
 	  ppdv131.obj ppdv132.obj ppdv133.obj ppdv134.obj ppdv135.obj ppdv136.obj \
           ppdv137.obj ppdv138.obj ppdvdi.obj ppdlptr.obj
-
-REMOVED = ppdldraw.obj 
 
 all:	wccgem-l.lib
 #

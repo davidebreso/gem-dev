@@ -1,6 +1,6 @@
 include ../../makedefs.i
 
-CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CFLAGS = -0 -ox -os -s -bcl=dos -i=../../include
 CC = wcl
 
 all:	../fdtest-l.app ../fdtest-s.app ../fdtest.rsc
@@ -24,5 +24,6 @@ tidy:
 	rm -f *.map
 	rm -f *.o
 	rm -f fdtest-?.app
+	rm -f *.err
 
 clean:	tidy

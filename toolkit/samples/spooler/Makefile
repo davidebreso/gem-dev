@@ -1,6 +1,6 @@
 include ../../makedefs.i
 
-CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CFLAGS = -0 -ox -os -s -bcl=dos -i=../../include
 CC = wcl
 
 all:	../spool-l.app ../spool-s.app ../spooler.rsc
@@ -24,5 +24,6 @@ tidy:
 	rm -f *.map
 	rm -f *.o
 	rm -f spool-?.app
+	rm -f *.err
 
 clean:	tidy

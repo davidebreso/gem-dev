@@ -331,7 +331,7 @@ typedef struct ppd_userblk
 {
 	LPVOID		ub_reserved[2];
 	USERFUNC	ub_code;
-	LONG		ub_parm;
+	LPVOID		ub_parm;
 } PPDUBLK;
 
 

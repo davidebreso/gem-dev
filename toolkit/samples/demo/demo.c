@@ -275,6 +275,8 @@ WORD	erase_fine[37] =		/* mouse form for fine eraser	*/
 	0x0000, 0x0000, 0x0000, 0x0000
 };
 
+FILE *logfile;
+char logfilename[]="DEMO.LOG";
 
 /*
 
@@ -706,11 +708,19 @@ WORD dr_code(LPPARM ppb)				// called by ppd_userdraw() when
     WORD		pxy[10], hl, wb;
 	LPBIT		taddr;
 
+    // fprintf(logfile, "dr_code(%lx)\n",ppb);
+    // fflush(logfile);
+    if(ppb == NULL) return 0;
+    
 	LBCOPY((LPBYTE)&pb, (LPBYTE)ppb, sizeof(PARMBLK)); // copy PARMBLK 	
 
     set_clip(TRUE, (GRECT *) &pb.pb_xc);
 
 	taddr = pb.pb_parm;	// original obspec 			
+    // fprintf(logfile, "taddr = %lx\n",taddr);
+    // fflush(logfile);
+    if(taddr == NULL) return 0;
+    
 	userbrush_mfdb.mp = taddr->bi_pdata; //(LPVOID)LLGET(BI_PDATA(taddr)); 
 						// point to data	
 	hl = taddr->bi_hl;	//LWGET(BI_HL(taddr));	
@@ -2171,10 +2181,14 @@ pict_init()				/* transform IMAGES and ICONS	*/
 		/* pointer for each 					*/
 
 		trans_gimage(vdi_handle, tree, tr_obj);
-		tree[tr_obj].ob_type = G_PROGDEF;//LWSET(OB_TYPE(tr_obj), G_PROGDEF); 	
+		tree[tr_obj].ob_type = G_PROGDEF;	//LWSET(OB_TYPE(tr_obj), G_PROGDEF);
 		nobj = tr_obj - DEMOPFIN;
-		brushab[nobj].ub_code = dr_code;	
-		brushab[nobj].ub_parm = (LONG)tree[tr_obj].ob_spec;	//LLGET(OB_SPEC(tr_obj));
+		// fprintf(logfile, "dr_code at %4X\n", (LONG)dr_code);
+		brushab[nobj].ub_code = dr_code;
+		brushab[nobj].ub_parm = tree[tr_obj].ob_spec;	//LLGET(OB_SPEC(tr_obj));
+		// fprintf(logfile, "Setting up user defined object with code at %4X and data at %lx\n", brushab[nobj].ub_code, brushab[nobj].ub_parm);
+		// fprintf(logfile, "ppd_userdef(%lx, %d, %lx)\n", tree, tr_obj, &brushab[nobj]);
+		// fflush(logfile);		
 		ppd_userdef(tree, tr_obj, &brushab[nobj]);
 	}
 }
@@ -2349,11 +2363,18 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 {
 	WORD	term_type;
 	
+	_asm{ int 3 };
+	logfile = fopen(logfilename, "w");
+	fprintf(logfile, "Starting DEMO.APP. dr_code at %04X:%04X, data segment %04X\n", FP_SEG(dr_code), FP_OFF(dr_code), FP_SEG(brushab));
+	fflush(logfile);
+	fclose(logfile);
+	
 	if (!(term_type = demo_init()))
 		{
 		demo();
 		}
 	demo_term(term_type);
+	
 
 }
 

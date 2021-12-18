@@ -1,6 +1,6 @@
 include ../../makedefs.i
 
-CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CFLAGS = -0 -s -ox -os -bcl=dos -i=../../include
 CC = wcl
 
 SOURCE = events.c meta_f.c meta_out.c meta_r.c meta_t.c wnd.c xmain.c
@@ -30,5 +30,6 @@ tidy:
 	rm -f *.map
 	rm -f *.o
 	rm -f events-?.app
+	rm -f *.err
 
 clean:	tidy

@@ -1,6 +1,6 @@
 include ../../makedefs.i
 
-CFLAGS = -0 -ox -os -bcl=dos -i=../../include
+CFLAGS = -0 -ox -os -s -bcl=dos -i=../../include
 CC = wcl
 
 all:	../mgrf-l.app ../mgrf-s.app # ../mgrf-l.acc ../mgrf-s.acc 
@@ -33,5 +33,6 @@ tidy:
 	rm -f *.sym
 	rm -f *.map
 	rm -f *.o
+	rm -f *.err
 
 clean:	tidy

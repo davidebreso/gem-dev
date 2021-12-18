@@ -1,6 +1,6 @@
 include ../../makedefs.i
 
-CFLAGS = -0 -s -bcl=dos -i=../../include
+CFLAGS = -0 -os -ox -s -bcl=dos -i=../../include
 CC = wcl
 
 all:	../udef-l.app ../udef-s.app ../userdef.rsc
@@ -30,5 +30,6 @@ tidy:
 	rm -f *.map
 	rm -f *.o
 	rm -f udef-?.app
+	rm -f *.err
 
 clean:	tidy

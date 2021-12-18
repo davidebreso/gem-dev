@@ -3,35 +3,79 @@
  * The callback code is essentially the same for all drawing operations, so
  * it is stored in the library.
  *
- * The assembly language entry code is in PPDLDRAW.AS or PPDSDRAW.AS 
- * depending on memory model. When it is called it sends execution to 
- * _dr_code().
+ * The assembly language entry code is in _far_draw. When it is called it 
+ * sends execution to _dr_code().
  *
  */
 
 #include "ppdgem.h"
-#include <i86.h>
 
-MLOCAL LPPARM drawpar;
-MLOCAL WORD drawret;
+#define NEWSTACK_SIZ 1024
+MLOCAL BYTE newstack[NEWSTACK_SIZ];
+MLOCAL WORD save_ss, save_sp;
 
-void interrupt _dr_code(union INTPACK r)			
+MLOCAL WORD _dr_code(LPPARM drawpar);
+
+/* 
+ * This is a callback function to which GEM passes parameters in AX and BX.
+ * Even though OpenWatcom support this directly, some assembly language 'glue'
+ * is needed to to set up the segments and switch to a local stack.
+ *
+ *  far_draw()
+ *      ax = segment of long pointer to PARMBLK
+ *      bx = offset of long pointer to PARMBLK
+ */
+
+MLOCAL WORD __declspec( naked ) _far_draw(WORD seg, WORD ofs)
+{
+    _asm{
+        int 3
+        /* save registers in the stack */
+        push ds
+        push dx
+        /* set DS to the local data segment */
+        mov dx, seg newstack
+        mov ds, dx
+        /* save current SS:SP */
+        mov save_ss, ss
+        mov save_sp, sp
+        /* set stack to newstack */
+        mov ss, dx
+        mov sp, offset newstack + NEWSTACK_SIZ - 2
+        /* The caller expects the parameter to be in DX:AX so make it so. */
+        mov dx, ax
+        mov ax, bx
+        /* _dr_code calls the user function and returns value in AX */
+#ifdef __LARGE__        
+        callf _dr_code
+        mov dx, seg newstack
+        mov ds, dx
+#else
+        call _dr_code
+#endif
+        /* Restore SS:SP */
+        mov ss, save_ss
+        mov sp, save_sp
+        /* Resture registers and return */
+        pop dx
+        pop ds
+        retf
+    };
+}
+#pragma aux far_draw parm [ax] [bx] value [ax];
+
+MLOCAL WORD _dr_code(LPPARM drawpar)			
 {	
 	LPPBLK pBLK;
 	
-	_asm{ int 3 };
-	/* This code does the following: */
-	
-	/* ax:bx points at the drawpar */
-	drawpar = MK_FP(r.w.ax, r.w.bx);
 	/* The parameter passed back to us in drawpar is the address of 
 	 * a PPDUBLK. */			
 	pBLK = drawpar->pb_parm;
 	/* The caller expects the parameter to be the ub_parm field in the
 	 * PPDUBLK, so make it so. */
-	drawpar->pb_parm = (LPVOID)(pBLK->ub_parm);
+	drawpar->pb_parm = pBLK->ub_parm;
 	/* And the caller's code is at pBLK->ub_code */
-	drawret = (pBLK->ub_code)(drawpar);
+	return (pBLK->ub_code)(drawpar);
 }
 
 
@@ -39,7 +83,7 @@ VOID ppd_userdef(LPTREE tree, WORD nobj, LPPBLK ub)
 {
 	tree[nobj].ob_type = ((tree[nobj].ob_type & 0xFF00) | G_USERDEF);
 
-	ub->ub_reserved[0] = _dr_code;	/* Draw handler function */
+	ub->ub_reserved[0] = _far_draw; /* Draw handler function */
 	ub->ub_reserved[1] = ub;		/* Parameter = address of userblk */
 
 	tree[nobj].ob_spec = ub;

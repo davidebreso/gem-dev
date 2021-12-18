@@ -1,6 +1,6 @@
 include ../../makedefs.i
 
-CFLAGS = -bt=dos -ohskl -s -0 -i../../include
+CFLAGS = -bt=dos -os -s -0 -i../../include
 CC = wcc
 LD = wlink
 
@@ -44,5 +44,6 @@ tidy:
 	rm -f *.sym
 	rm -f *.map
 	rm -f *.obj
+	rm -f *.err
 
 clean:	tidy

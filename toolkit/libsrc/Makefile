@@ -27,7 +27,7 @@ SOURCE = ems_all.c ems_fp.c ems_free.c ems_fs.c ems_map.c ems_np.c \
 	 ppdg073.c ppdg074.c ppdg075.c ppdg076.c ppdg077.c ppdg078.c \
 	 ppdg079.c ppdg080.c ppdg081.c ppdg082.c ppdg083.c ppdg084.c \
 	 ppdg085.c ppdg086.c ppdg087.c ppdg088.c ppdg089.c ppdg090.c \
-	 ppdgcrt.c ppdgem.c ppdhook.c ppdldraw.as ppdlptr.c ppdsdraw.as \
+	 ppdgcrt.c ppdgem.c ppdhook.c ppdlptr.c \
 	 ppdv000.c ppdv001.c ppdv002.c ppdv003.c ppdv004.c ppdv005.c \
 	 ppdv006.c ppdv007.c ppdv008.c ppdv009.c ppdv010.c ppdv011.c \
 	 ppdv012.c ppdv013.c ppdv014.c ppdv015.c ppdv016.c ppdv017.c \
@@ -77,5 +77,6 @@ tidy:
 
 clean:	
 	rm -f *.bak
+	rm -f *.err
 	$(MAKE) -C small clean
 	$(MAKE) -C large clean

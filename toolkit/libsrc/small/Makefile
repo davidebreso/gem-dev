@@ -2,7 +2,7 @@ include ../../makedefs.i
 
 CC = wcc
 #CFLAGS = -Bs -O -Zg -I../../INCLUDE -I.. $(STDINC)
-CFLAGS = -bt=dos -ms -s -0 -i../../include -i..
+CFLAGS = -bt=dos -ms -s -os -0 -i../../include -i..
 
 OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj ems_rmap.obj \
 	  ems_smap.obj ems_vers.obj emslib.obj ob_dofl.obj ob_dost.obj ob_dr_di.obj \
@@ -33,7 +33,7 @@ OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj 
 	  ppdg084.obj ppdg085.obj ppdg086.obj ppdg087.obj ppdg088.obj ppdg089.obj \
 	  ppdg090.obj ppdg091.obj ppdg092.obj ppdg093.obj ppdg094.obj ppdg095.obj \
 	  ppdg096.obj ppdg097.obj \
-	  ppdsdraw.obj ppdgcrt.obj ppdgem.obj ppdhook.obj \
+	  ppdgcrt.obj ppdgem.obj ppdhook.obj \
 	  ppdv000.obj ppdv001.obj ppdv002.obj ppdv003.obj ppdv004.obj \
 	  ppdv005.obj ppdv006.obj ppdv007.obj ppdv008.obj ppdv009.obj ppdv010.obj \
 	  ppdv011.obj ppdv012.obj ppdv013.obj ppdv014.obj ppdv015.obj ppdv016.obj \
@@ -58,8 +58,6 @@ OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj 
 	  ppdv125.obj ppdv126.obj ppdv127.obj ppdv128.obj ppdv129.obj ppdv130.obj \
 	  ppdv131.obj ppdv132.obj ppdv133.obj ppdv134.obj ppdv135.obj ppdv136.obj \
           ppdv137.obj ppdv138.obj ppdvdi.obj ppdlptr.obj
-
-REMOVED = ppdsdraw.obj 
 
 all:	wccgem-s.lib
 #

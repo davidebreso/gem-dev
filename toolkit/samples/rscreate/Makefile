@@ -4,7 +4,7 @@ include ../../makedefs.i
 # nb: Low warning level, so that the RCS-generated file EXAMPLE.RSH 
 # doesn't cause warnings
 #
-CFLAGS = -0 -ox -os -bcl=dos -w=0 -i=../../include
+CFLAGS = -0 -ox -os -s -bcl=dos -w=0 -i=../../include
 CC = wcl
 
 all:	../rscr-s.exe
@@ -22,5 +22,6 @@ tidy:
 	rm -f *.sym
 	rm -f *.map
 	rm -f *.o
+	rm -f *.err
 
 clean:	tidy
