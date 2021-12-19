@@ -43,6 +43,8 @@
 *.idb
 *.pdb
 *.sym
+*.err
+*.lst
 
 # Kernel Module Compile Results
 *.mod*
