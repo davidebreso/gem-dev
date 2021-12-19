@@ -46,12 +46,12 @@ MLOCAL WORD __declspec( naked ) _far_draw(WORD seg, WORD ofs)
         mov dx, ax
         mov ax, bx
         /* _dr_code calls the user function and returns value in AX */
-#ifdef __LARGE__        
+#ifdef __SMALL__        
+        call _dr_code
+#else
         callf _dr_code
         mov dx, seg newstack
         mov ds, dx
-#else
-        call _dr_code
 #endif
         /* Restore SS:SP */
         mov ss, save_ss

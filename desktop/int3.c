@@ -1,13 +1,13 @@
 #include "ppddesk.h"
 
-void debugbreak(void)
+void __near debugbreak(void)
 {
     _asm {
         int 3
     };
 }
 
-__declspec( naked ) WORD getcs(void) {
+__declspec( naked ) WORD __near getcs(void) {
     _asm{
         mov ax, cs
         ret
@@ -15,7 +15,7 @@ __declspec( naked ) WORD getcs(void) {
 }
 #pragma aux getcs value [ax] modify exact [ax] nomemory;
 
-__declspec( naked ) WORD getip(void) {
+__declspec( naked ) WORD __near getip(void) {
     _asm{
         pop ax
         push ax

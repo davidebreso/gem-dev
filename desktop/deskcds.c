@@ -21,7 +21,7 @@
 
 /* [JCE Port Ben's cdexinst() to C rather than asm.] */
 /* [DB 2021, rewrite in asm to reduce code size ] */
-__declspec( naked ) WORD  cdexinst()
+__declspec( naked ) WORD  __near cdexinst()
 {
 /*	union REGS rg;
 
@@ -45,7 +45,7 @@ __declspec( naked ) WORD  cdexinst()
  * -- Returns TRUE if drive drvno (0=A) is a CD/DVD.    *
  *    BALJ, 1999831                                     *
  ********************************************************/
-BOOLEAN cd_isdrvcd( BYTE drvno )
+BOOLEAN __near cd_isdrvcd( BYTE drvno )
 {
         WORD    cdinfo;
         BYTE    numcds, firstcd;

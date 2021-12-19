@@ -21,7 +21,7 @@ EXTERN UWORD	intout[];
 EXTERN UWORD	contrl[];
 
 
-	WORD
+	WORD __near
 bit_num(flag)
 	UWORD		flag;
 {
@@ -34,7 +34,7 @@ bit_num(flag)
 	return(i);
 }
 
-VOID rc_constrain(LPGRECT pc, LPGRECT pt)
+VOID __near rc_constrain(LPGRECT pc, LPGRECT pt)
 {
 	  if (pt->g_x < pc->g_x)
 	    pt->g_x = pc->g_x;
@@ -80,7 +80,7 @@ rc_intersect(p1, p2)
 }
 */
 
-	WORD
+	WORD __near
 mid(lo, val, hi)
 	WORD		lo, val, hi;
 {
@@ -92,7 +92,7 @@ mid(lo, val, hi)
 }
 
 	BYTE
-*strscn(ps, pd, stop)
+*  __near strscn(ps, pd, stop)
 	BYTE		*ps, *pd, stop;
 {
 	while ( (*ps) &&
@@ -107,7 +107,7 @@ mid(lo, val, hi)
 /*
 *	Strip out period and turn into raw data.
 */
-	VOID
+	VOID __near
 fmt_str(instr, outstr)
 	BYTE		*instr, *outstr;
 {
@@ -133,7 +133,7 @@ fmt_str(instr, outstr)
 /*
 *	Insert in period and make into true data.
 */
-	VOID
+	VOID __near
 unfmt_str(instr, outstr)
 	BYTE		*instr, *outstr;
 {
@@ -160,7 +160,7 @@ unfmt_str(instr, outstr)
 }
 
 
-VOID fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *ptxtlen)
+VOID __near fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *ptxtlen)
 {
 	LPTEDI spec;
 /*	char buf[82]; */
@@ -182,7 +182,7 @@ VOID fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *ptxtlen)
 }
 
 
-VOID inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
+VOID __near inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
 {
 	LPBYTE		text;
 	WORD		txtlen;
@@ -191,7 +191,7 @@ VOID inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
 }
 
 
-VOID fs_sget(LPTREE tree, WORD obj, LPBYTE pstr, WORD maxlen)
+VOID __near fs_sget(LPTREE tree, WORD obj, LPBYTE pstr, WORD maxlen)
 {
 	LPBYTE		ptext;
 
@@ -200,14 +200,14 @@ VOID fs_sget(LPTREE tree, WORD obj, LPBYTE pstr, WORD maxlen)
 }
 
 
-VOID inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
+VOID __near inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
 {
 	fs_sget(tree, obj, ADDR(pstr), maxlen);
 }
 
 
 /* v3.2: Allow proper field states, not the rather blunt methods of DR GEM */
-VOID inf_fldset(LPTREE tree, WORD obj, 
+VOID __near inf_fldset(LPTREE tree, WORD obj, 
 				UWORD testfld, UWORD testbit, 
 				UWORD truestate, UWORD falsestate)
 {
@@ -224,7 +224,7 @@ VOID inf_fldset(LPTREE tree, WORD obj,
 }
 
 
-WORD inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
+WORD __near inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
 {
 	WORD		retobj;
 
@@ -242,7 +242,7 @@ WORD inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
 *	nothing was selected.
 */
 
-WORD inf_what(LPTREE tree, WORD ok, WORD cncl)
+WORD __near inf_what(LPTREE tree, WORD ok, WORD cncl)
 {
 /* [JCE] Rewritten to avoid "dangerous" assumptions of object order */
 
@@ -262,7 +262,7 @@ WORD inf_what(LPTREE tree, WORD ok, WORD cncl)
 }
 
 
-VOID merge_str(BYTE *pdst, BYTE *ptmp, ...)
+VOID __near merge_str(BYTE *pdst, BYTE *ptmp, ...)
 {
 	va_list		ap;
 
@@ -279,7 +279,7 @@ VOID merge_str(BYTE *pdst, BYTE *ptmp, ...)
 *		e.g.,	pwld = "*.COM,*.EXE,*.BAT"
 *		 	ptst = "MYFILE.BAT"
 */
-WORD wildcmp(BYTE *pwld, BYTE *ptst)
+WORD __near wildcmp(BYTE *pwld, BYTE *ptst)
 {
 	BYTE		*pwild;
 	BYTE		*ptest;
@@ -360,7 +360,7 @@ WORD wildcmp(BYTE *pwld, BYTE *ptst)
 /*
 *	Routine to insert a character in a string by
 */
-	VOID
+	VOID __near
 ins_char(str, pos, chr, tot_len)
 	REG BYTE	*str;
 	WORD		pos;

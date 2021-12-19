@@ -16,7 +16,7 @@
 
 #include "ppddesk.h"
 
-VOID zoom_closed(WORD close, WORD w_id, WORD xicon, WORD yicon)
+VOID __near zoom_closed(WORD close, WORD w_id, WORD xicon, WORD yicon)
 {
 	GRECT rc;
 	wind_get(w_id, WF_WXYWH, &rc.g_x, &rc.g_y, &rc.g_w, &rc.g_h);
@@ -28,7 +28,7 @@ VOID zoom_closed(WORD close, WORD w_id, WORD xicon, WORD yicon)
 
 
 
-WORD w_setpath(WNODE *pw, WORD drv, BYTE *path, BYTE *name, BYTE *ext)
+WORD __near w_setpath(WNODE *pw, WORD drv, BYTE *path, BYTE *name, BYTE *ext)
 {
 	WORD icx, icy;	// bp10 bp12
 	GRECT rc;	// bp08 ich xoff yoff
@@ -46,7 +46,7 @@ WORD w_setpath(WNODE *pw, WORD drv, BYTE *path, BYTE *name, BYTE *ext)
 	return res;
 }
 
-WORD true_closewnd(WNODE *pw)
+WORD __near true_closewnd(WNODE *pw)
 {
 	GRECT rc;	// ich xoff yoff bp10
 	WORD  res = 0;
@@ -62,7 +62,7 @@ WORD true_closewnd(WNODE *pw)
 }
 
 
-WORD fun_close(WNODE *pw, WORD trueclose)
+WORD __near fun_close(WNODE *pw, WORD trueclose)
 {
 	BYTE *ppath, *pend;
 	BYTE ext[4];	// bp+50h
@@ -99,7 +99,7 @@ WORD fun_close(WNODE *pw, WORD trueclose)
 }	
 
 
-WNODE *win_ontop()
+WNODE * __near win_ontop()
 {
 	WORD tail    = G.g_screen->ob_tail;
 
@@ -109,7 +109,7 @@ WNODE *win_ontop()
 
 
 /* Align drive icon on a grid */
-VOID snap_disk(WORD x, WORD y, LPWORD px, LPWORD py)
+VOID __near snap_disk(WORD x, WORD y, LPWORD px, LPWORD py)
 {
 	WORD xgrid, ygrid, icw, ich, xoff, yoff;
 
@@ -134,7 +134,7 @@ VOID snap_disk(WORD x, WORD y, LPWORD px, LPWORD py)
 
 
 
-WORD fun_file2desk(PNODE *pn_src,	// 0E
+WORD __near fun_file2desk(PNODE *pn_src,	// 0E
 			  ANODE *an_dest,	// 10
 			  WORD dobj)		// 12
 {
@@ -163,7 +163,7 @@ WORD fun_file2desk(PNODE *pn_src,	// 0E
 
 
 
-WORD fun_file2win(PNODE *pn_src, 	// 0a
+WORD __near fun_file2win(PNODE *pn_src, 	// 0a
 			  BYTE  *spec,	 	// 0c
 			  ANODE *an_dest,	// 0e
 			  FNODE *fn_dest)	// 10
@@ -193,7 +193,7 @@ WORD fun_file2win(PNODE *pn_src, 	// 0a
 			0, 0, 0, 0);	// GEM/1 doesn't *have* the last 5 arguments!
 }
 
-VOID fun_win2desk(WORD wh, WORD obj)
+VOID __near fun_win2desk(WORD wh, WORD obj)
 {
 	WNODE *wn_src;
 	ANODE *an_dest;
@@ -207,7 +207,7 @@ VOID fun_win2desk(WORD wh, WORD obj)
 }
 
 
-WORD fun_file2any(WORD sobj,	  // 12
+WORD __near fun_file2any(WORD sobj,	  // 12
 			  WNODE *wn_dest, // 14
 			  ANODE *an_dest, // 16
 			  FNODE *fn_dest, // 18
@@ -247,7 +247,7 @@ WORD fun_file2any(WORD sobj,	  // 12
 	return okay;
 }
 
-VOID fun_desk2win(WORD wh, WORD dobj) 
+VOID __near fun_desk2win(WORD wh, WORD dobj) 
 {
 	WNODE *wn_dest;
 	FNODE *fn_dest;
@@ -272,7 +272,7 @@ VOID fun_desk2win(WORD wh, WORD dobj)
 }
 
 
-VOID fun_desk2desk(WORD dobj)
+VOID __near fun_desk2desk(WORD dobj)
 {
 	WORD sobj,  isapp;
 	FNODE *fn;
@@ -309,7 +309,7 @@ VOID fun_desk2desk(WORD dobj)
 
 
 
-WORD desk1_drag(WORD wh, WORD dest_wh, WORD sobj, WORD dobj, WORD mx, WORD my)
+WORD __near desk1_drag(WORD wh, WORD dest_wh, WORD sobj, WORD dobj, WORD mx, WORD my)
 {
 	WORD done = 0;
 

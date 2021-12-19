@@ -32,7 +32,7 @@ typedef SFCB far *LPSFCB;
 /************************************************************************/
 /* m y _ i t o a							*/
 /************************************************************************/
-VOID my_itoa(UWORD number, BYTE *pnumstr)
+VOID __near my_itoa(UWORD number, BYTE *pnumstr)
 {
 	WORD		ii;
 
@@ -54,7 +54,7 @@ VOID my_itoa(UWORD number, BYTE *pnumstr)
 *	put into this form 12:45 pm
 *                   or 12:45 in 24-hr mode
 */
-VOID fmt_time(UWORD time, BYTE *ptime)
+VOID __near fmt_time(UWORD time, BYTE *ptime)
 {
 	WORD		pm, val;
 
@@ -94,7 +94,7 @@ VOID fmt_time(UWORD time, BYTE *ptime)
 *	mm = 1 - 12
 *	dd = 1 - 31
 */
-VOID fmt_date(UWORD date, BYTE *pdate)
+VOID __near fmt_date(UWORD date, BYTE *pdate)
 {
 	WORD year;
 
@@ -122,7 +122,7 @@ VOID fmt_date(UWORD date, BYTE *pdate)
 	//my_itoa(year % 100, &pdate[4]);
 } /* fmt_date */
 
-WORD ob_sfcb(LPSFCB psfcb, BYTE *pfmt)
+WORD __near ob_sfcb(LPSFCB psfcb, BYTE *pfmt)
 {
 	SFCB		sf;
 	BYTE		*pdst, *psrc;
@@ -205,7 +205,7 @@ WORD ob_sfcb(LPSFCB psfcb, BYTE *pfmt)
 	return(pdst - pfmt);
 }	
 
-WORD dr_fnode(UWORD last_state, UWORD curr_state, 
+WORD __near dr_fnode(UWORD last_state, UWORD curr_state, 
 			WORD x, WORD y, WORD w, WORD h, LPSFCB psfcb)
 {
 	WORD		len;
@@ -243,7 +243,7 @@ WORD dr_code(LPPARM pparms)
 /*
 *	Put up dialog box & call form_do.
 */
-WORD inf_show(LPTREE tree, WORD start)
+WORD __near inf_show(LPTREE tree, WORD start)
 {
 	WORD		xd, yd, wd, hd;
 
@@ -260,7 +260,7 @@ WORD inf_show(LPTREE tree, WORD start)
 /*
 *	Routine for finishing off a simple ok-only dialog box
 */
-VOID inf_finish(LPTREE tree, WORD dl_ok)
+VOID __near inf_finish(LPTREE tree, WORD dl_ok)
 {
 	inf_show(tree, 0);
 	tree[dl_ok].ob_state &= ~SELECTED;
@@ -270,7 +270,7 @@ VOID inf_finish(LPTREE tree, WORD dl_ok)
 *	Routine to get number of files and folders and stuff them in
 *	a dialog box.
 */
-WORD inf_fifo(LPTREE tree, WORD dl_fi, WORD dl_fo, BYTE *ppath, WORD pathlen)
+WORD __near inf_fifo(LPTREE tree, WORD dl_fi, WORD dl_fo, BYTE *ppath, WORD pathlen)
 {
 	WORD		junk, more;
 	BYTE		nf_str[20], nd_str[20];
@@ -293,7 +293,7 @@ WORD inf_fifo(LPTREE tree, WORD dl_fi, WORD dl_fo, BYTE *ppath, WORD pathlen)
 	return(TRUE);
 }
 
-VOID inf_dttmsz(LPTREE tree, FNODE *pf, WORD dl_dt, WORD dl_tm, WORD dl_sz, 
+VOID __near inf_dttmsz(LPTREE tree, FNODE *pf, WORD dl_dt, WORD dl_tm, WORD dl_sz, 
 			    LONG *psize)
 {
 	/* [JCE 26-11-2001] Appease the dread spirits of buffer 
@@ -328,7 +328,7 @@ VOID inf_dttmsz(LPTREE tree, FNODE *pf, WORD dl_dt, WORD dl_tm, WORD dl_sz,
 /************************************************************************/
 /* i n f _ f i l e							*/
 /************************************************************************/
-WORD inf_file(BYTE *ppath, FNODE *pfnode)
+WORD __near inf_file(BYTE *ppath, FNODE *pfnode)
 {
 	LPTREE		tree;
 	WORD		attr, more, nmidx;
@@ -401,7 +401,7 @@ WORD inf_file(BYTE *ppath, FNODE *pfnode)
 /************************************************************************/
 /* i n f _ f o l d e r							*/
 /************************************************************************/
-WORD inf_folder(BYTE *ppath, FNODE *pf)
+WORD __near inf_folder(BYTE *ppath, FNODE *pf)
 {
 	LPTREE		tree;
 	WORD		more;
@@ -433,7 +433,7 @@ WORD inf_folder(BYTE *ppath, FNODE *pf)
 /************************************************************************/
 /* i n f _ d i s k							*/
 /************************************************************************/
-WORD inf_disk(BYTE dr_id)
+WORD __near inf_disk(BYTE dr_id)
 {
 	LPTREE		tree;
 	LONG		total, avail;
@@ -474,7 +474,7 @@ WORD inf_disk(BYTE dr_id)
 /*
 *	Set preferences dialog.
 */
-	WORD
+	WORD __near
 inf_pref()
 {
 	LPTREE		tree;
@@ -596,7 +596,7 @@ inf_pref()
 /*
 *	Open application icon
 */
-WORD opn_appl(BYTE *papname, BYTE *papparms, BYTE *pcmd, BYTE *ptail, 
+WORD __near opn_appl(BYTE *papname, BYTE *papparms, BYTE *pcmd, BYTE *ptail, 
 		WORD taillen)
 {
 	LPTREE		tree;

@@ -24,7 +24,7 @@
 
 	/* in pro_chcalc long addresses are flattened out with no segment */
 
-VOID pro_chcalc(LONG appsize, LPBYTE *begaddr, LONG *chsize)
+VOID __near pro_chcalc(LONG appsize, LPBYTE *begaddr, LONG *chsize)
 {
 	static LONG	begfree = 0l;
 	LONG		maxmem;
@@ -50,7 +50,7 @@ VOID pro_chcalc(LONG appsize, LPBYTE *begaddr, LONG *chsize)
 #endif
 
 
-WORD pro_chdir(WORD drv, BYTE *ppath)
+WORD __near pro_chdir(WORD drv, BYTE *ppath)
 {
 	WORD		tmpdrv;
 						/* change to directory	*/
@@ -92,7 +92,7 @@ WORD pro_chdir(WORD drv, BYTE *ppath)
 	return(TRUE);
 } /* pro_chdir */
 
-WORD pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag)
+WORD __near pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag)
 {
 	LPBYTE		lp;
 	WORD		i, ii, drv;
@@ -143,7 +143,7 @@ WORD pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag)
 } /* pro_cmd */
 
 
-WORD pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr)
+WORD __near pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr)
 {
 	WORD		ret, len, i;
 
@@ -179,7 +179,7 @@ WORD pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr)
 
 
 
-WORD pro_exec(WORD isgraf, WORD isover, LPBYTE pcmd, LPBYTE ptail)
+WORD __near pro_exec(WORD isgraf, WORD isover, LPBYTE pcmd, LPBYTE ptail)
 {
 	WORD		ret;
 #if MULTIAPP
@@ -231,7 +231,7 @@ dbg("PTAIL  = %s\r\n", ptail);
 
 
 
-WORD pro_exit(LPBYTE pcmd, LPBYTE ptail)
+WORD __near pro_exit(LPBYTE pcmd, LPBYTE ptail)
 {
 	WORD		ret;
 

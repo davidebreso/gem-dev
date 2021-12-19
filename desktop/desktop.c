@@ -89,7 +89,7 @@ VOID copy_icon(LPTREE dst_tree, LPTREE tree, WORD dst_icon, WORD icon)
 }
 
 #if 0 // No such thing in DESKTOP v1.2
-VOID fix_wins()
+VOID __near fix_wins()
 {
 /* this routine is supposed to keep track of the windows between	*/
 /* runs of the Desktop. it assumes pws has already been set up;		*/
@@ -155,7 +155,7 @@ VOID fix_wins()
 *	Turn on the hour glass to signify a wait and turn it off when were
 *	done.
 */
-VOID desk_wait(WORD turnon)
+VOID __near desk_wait(WORD turnon)
 {
 	graf_mouse( (turnon) ? HGLASS : ARROW, 0x0L);
 }
@@ -164,7 +164,7 @@ VOID desk_wait(WORD turnon)
 /*
 *	Routine to update all of the desktop windows
 */
-VOID desk_all(WORD sort)
+VOID __near desk_all(WORD sort)
 {
 	desk_wait(TRUE);
 	if (sort) win_srtall();
@@ -176,7 +176,7 @@ VOID desk_all(WORD sort)
 /*
 *	Given an icon index, go find the ANODE which it represents
 */
-ANODE *i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
+ANODE * __near i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 {
 	ANODE 	*pa;
 	BYTE 	*pname;
@@ -225,7 +225,7 @@ ANODE *i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 * 	Based on current selected icons, figure out which
 *	menu items should be selected (deselected)
 */
-VOID men_update(LPTREE tree)
+VOID __near men_update(LPTREE tree)
 {
 	WORD		item, nsel, isapp;
 	BYTE		*pvalue;
@@ -302,7 +302,7 @@ VOID men_update(LPTREE tree)
 
 } /* men_update */
 
-WORD do_deskmenu(WORD item)
+WORD __near do_deskmenu(WORD item)
 {
 	WORD		done, touchob;
 	WORD		i;	/* DESKTOP v1.2 */
@@ -337,7 +337,7 @@ WORD do_deskmenu(WORD item)
 }
 
 
-WORD do_filemenu(WORD item)
+WORD __near do_filemenu(WORD item)
 {
 	WORD		done;
 	WORD		curr, savwin, junk, first;
@@ -477,7 +477,7 @@ WORD do_filemenu(WORD item)
 } /* do_filemenu */
 
 
-WORD do_viewmenu(WORD item)
+WORD __near do_viewmenu(WORD item)
 {
 	WORD		newview, newsort;
 // not in DESKTOP v1.2	LPBYTE		ptext;
@@ -533,7 +533,7 @@ WORD do_viewmenu(WORD item)
 
 
 
-WORD do_optnmenu(WORD item)
+WORD __near do_optnmenu(WORD item)
 {
 	ANODE		*pa;
 	WORD		done, rebld, curr, ret;
@@ -640,7 +640,7 @@ WORD do_optnmenu(WORD item)
 }
 
 
-WORD hndl_button(WORD clicks, 	// bp+1e
+WORD __near hndl_button(WORD clicks, 	// bp+1e
 				 WORD mx, 	  	// bp+20
 				 WORD my, 	  	// bp+22
 				 WORD button, 	// bp+24
@@ -717,7 +717,7 @@ WORD hndl_button(WORD clicks, 	// bp+1e
 	return(done);
 }
 
-	WORD
+	WORD __near
 hndl_kbd(thechar)
 	WORD		thechar;
 {
@@ -812,7 +812,7 @@ hndl_kbd(thechar)
 
 
 
-WORD hndl_menu(WORD title, WORD item)
+WORD __near hndl_menu(WORD title, WORD item)
 {
 	WORD		done;
 
@@ -841,7 +841,7 @@ WORD hndl_menu(WORD title, WORD item)
 	return(done);
 }
 
-VOID wind_setl(WORD hw, WORD var, LPVOID data)
+VOID __near wind_setl(WORD hw, WORD var, LPVOID data)
 {
 	wind_set(hw, var, FP_OFF(data), FP_SEG(data), 0, 0);
 }
@@ -928,7 +928,7 @@ hot_close(wh)
 
 #endif
 
-WORD hndl_msg()
+WORD __near hndl_msg()
 {
 	WORD		x,y,w,h;
 	WORD		done;
@@ -1066,7 +1066,7 @@ WORD hndl_msg()
 	return(done);
 } /* hndl_msg */
 
-VOID cnx_put()
+VOID __near cnx_put()
 {
 	WORD		iwin;
 	WORD		iwsave;
@@ -1132,7 +1132,7 @@ VOID cnx_put()
 /************************************************************************/
 /* c n x _ o p e n							*/
 /************************************************************************/
-	VOID
+	VOID __near
 cnx_open(idx)
 	WORD		idx;
 {
@@ -1171,7 +1171,7 @@ cnx_open(idx)
 
 
 
-VOID cnx_get(VOID)
+VOID __near cnx_get(VOID)
 {
 	// DESKTOP v1.2: This function is a lot more involved
 	// because CNX_OPEN is no longer a separate function.

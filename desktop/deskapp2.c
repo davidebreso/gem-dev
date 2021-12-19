@@ -26,7 +26,7 @@
 /************************************************************************/
 /* a p p _ r d i c o n							*/
 /************************************************************************/
-	WORD
+	WORD __near
 app_rdicon()
 {
 	LONG		temp;
@@ -220,7 +220,7 @@ app_rdicon()
 } /* app_rdicon */
 
 
-MLOCAL WORD app_start1()
+MLOCAL WORD __near app_start1()
 {
 	WORD fh, i;
 						/* remember start drive	*/
@@ -249,7 +249,7 @@ MLOCAL WORD app_start1()
 	return TRUE;
 }
 
-MLOCAL WORD app_start2()
+MLOCAL WORD __near app_start2()
 {
 	WORD xcnt, ycnt, xcent, x, y;
 	ANODE *pa;
@@ -299,7 +299,7 @@ MLOCAL WORD app_start2()
 *	file, either from memory or from the disk if the shel_get
 *	indicates no message is there.
 */
-WORD app_start()
+WORD __near app_start()
 {
 	WORD		i;
 	ANODE		*pa;

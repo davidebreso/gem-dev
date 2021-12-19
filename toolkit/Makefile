@@ -1,13 +1,13 @@
 include makedefs.i
 
-TARGETS=lib/wccgem-l.lib lib/wccgem-s.lib bin/exe2acc.exe samples
+TARGETS=lib/wccgem-l.lib lib/wccgem-m.lib lib/wccgem-s.lib bin/exe2acc.exe samples
 
 all:	$(TARGETS)
 
 samples: bin/exe2acc.exe
 	$(MAKE) -C samples
 
-lib/wccgem-l.lib lib/wccgem-s.lib:
+lib/wccgem-l.lib lib/wccgem-m.lib lib/wccgem-s.lib:
 	$(MAKE) -C libsrc
 
 bin/exe2acc.exe:

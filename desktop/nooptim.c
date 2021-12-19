@@ -18,7 +18,7 @@
 /*
 *	Enable/Disable the menu items in dlist
 */
-VOID men_list(LPTREE mlist, BYTE *dlist, WORD enable)
+VOID __near men_list(LPTREE mlist, BYTE *dlist, WORD enable)
 {
 	while (*dlist)
 	  menu_ienable(mlist, *dlist++, enable);
@@ -29,7 +29,7 @@ VOID men_list(LPTREE mlist, BYTE *dlist, WORD enable)
 *	pcurr pointing one space past the end of the four hex digits
 */
 
-BYTE *scan_2(BYTE *pcurr, WORD *pwd)
+BYTE * __near scan_2(BYTE *pcurr, WORD *pwd)
 {
 	UWORD		temp;
 	
@@ -41,7 +41,7 @@ BYTE *scan_2(BYTE *pcurr, WORD *pwd)
 	return(	pcurr );
 }
 
-VOID merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
+VOID  __near merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
 {
 	WORD		do_value;
 	BYTE		lholder[12];

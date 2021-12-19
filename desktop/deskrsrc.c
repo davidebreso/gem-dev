@@ -21,13 +21,13 @@
 
 /* The adaptive resource beautifier (which makes checkboxes look right on
  * all GEM versions) is largely nicked from the FreeGEM RCS */
-typedef WORD (*MAPROUTINE)(LPTREE tr, WORD obj);
+typedef WORD (__near *MAPROUTINE)(LPTREE tr, WORD obj);
 
 MLOCAL WORD ini_tree(WORD which);
 MLOCAL VOID map_tree(LPTREE tree, WORD first, WORD last, MAPROUTINE routine);
 MLOCAL WORD menu_cleanup(LPTREE tr, WORD obj);
 
-VOID rsrc_init(VOID)
+VOID __near rsrc_init(VOID)
 {
 	WORD n;
 	LPTREE tree;
@@ -44,7 +44,7 @@ VOID rsrc_init(VOID)
 }
 
 
-BYTE *ini_str(WORD stnum)
+BYTE * __near ini_str(WORD stnum)
 {
 	LPBYTE	lstr;
 
@@ -71,7 +71,7 @@ BYTE *ini_str(WORD stnum)
 	
 MLOCAL WORD gem5 = -1;
 	
-WORD make_cbox(LPTREE tr, WORD obj)
+WORD __near make_cbox(LPTREE tr, WORD obj)
 {	
 	if ((tr[obj].ob_state & EXT3D) == EXT3D)
 	{
@@ -202,7 +202,7 @@ MLOCAL WORD menu_cleanup(LPTREE tr, WORD obj)
 	
 
 	
-static WORD ini_tree(WORD which)		/* find tree address */
+MLOCAL WORD ini_tree(WORD which)		/* find tree address */
 {
 	WORD w;
 	LPTREE tree;
@@ -242,7 +242,7 @@ static WORD ini_tree(WORD which)		/* find tree address */
 	
 
 	
-static VOID map_tree(LPTREE tree, WORD first, WORD last, MAPROUTINE routine)
+MLOCAL VOID map_tree(LPTREE tree, WORD first, WORD last, MAPROUTINE routine)
 {
 	REG WORD tmp1;
 	REG WORD this = first;

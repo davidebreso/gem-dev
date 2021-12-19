@@ -1,6 +1,6 @@
 INSTDIR=C:\GEMAPPS\GEMSYS
 
-all:	desktop.app desktopl.app \
+all:	desktop.app desktops.app desktopl.app \
 	icn2xml xml2icn desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn
@@ -21,8 +21,11 @@ xml2icn:	xml2icn.c
 xml2icn.exe:	xml2icn.c
 	wcl -bt=dos -0 -ml $<
 
-desktop.app:	small/desktop.app
+desktops.app:	small/desktop.app
 	cp small/desktop.app $@
+
+desktop.app:	medium/desktop.app
+	cp medium/desktop.app $@
 
 desktopl.app:	large/desktop.app
 	cp large/desktop.app $@
@@ -35,6 +38,9 @@ desklm.app:	largem/desktop.app
 
 large/desktop.app:	*.c *.h
 	$(MAKE) -C large
+
+medium/desktop.app:	*.c *.h
+	$(MAKE) -C medium
 
 small/desktop.app:	*.c *.h
 	$(MAKE) -C small
@@ -51,7 +57,9 @@ install:	desktop.app deskhi.icn desklo.icn
 	
 clean:
 	$(MAKE) -C small clean
+	$(MAKE) -C medium clean
 	$(MAKE) -C large clean
+	rm -f desktops.app 
 	rm -f desktop.app 
 	rm -f desktopl.app 
 	rm -f icn2xml 

@@ -54,7 +54,7 @@ printstr(lst)
 }
 #endif
 
-WORD iac_isnam(LPBYTE lst)
+WORD __near iac_isnam(LPBYTE lst)
 {
 	BYTE		ch;
 	
@@ -62,7 +62,7 @@ WORD iac_isnam(LPBYTE lst)
 	return((ch>='A') && (ch<='Z'));
 }
 
-VOID iac_init()
+VOID __near iac_init()
 {
 	WORD		i, j;
 	BYTE		*npt;
@@ -86,7 +86,7 @@ VOID iac_init()
 }
 
 
-VOID iac_strcop(LPTREE tree, WORD obj, LPBYTE src)
+VOID __near iac_strcop(LPTREE tree, WORD obj, LPBYTE src)
 {
 	LPBYTE	dst;
 	LPTEDI tedi;
@@ -107,7 +107,7 @@ VOID iac_strcop(LPTREE tree, WORD obj, LPBYTE src)
 
 
 
-VOID iac_schar(LPTREE tree, WORD obj, BYTE ch)
+VOID __near iac_schar(LPTREE tree, WORD obj, BYTE ch)
 {
 	LONG		longch;
 	LONG		spec;
@@ -124,7 +124,7 @@ VOID iac_schar(LPTREE tree, WORD obj, BYTE ch)
 }
 		    
 
-VOID iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth)
+VOID __near iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth)
 {
 	WORD		x, y, w, h;
 
@@ -135,7 +135,7 @@ VOID iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth)
 	objc_draw(tree, obj, depth, x, y, w, h);
 }
 
-VOID iac_elev(LPTREE tree, WORD currtop, WORD count)
+VOID __near iac_elev(LPTREE tree, WORD currtop, WORD count)
 {
 	WORD		h,y,th;
 
@@ -152,7 +152,7 @@ VOID iac_elev(LPTREE tree, WORD currtop, WORD count)
 }
 
 
-WORD iac_comp(VOID)
+WORD __near iac_comp(VOID)
 {
 	WORD		chk;
 
@@ -167,7 +167,7 @@ WORD iac_comp(VOID)
 	return ( strcmp(&gl_tmp1[0], &gl_tmp2[0]) );
 }
 
-VOID iac_mvnames(LPTREE tree, WORD start, WORD num)
+VOID __near iac_mvnames(LPTREE tree, WORD start, WORD num)
 {
 	WORD		i, j, k;
 	WORD		len;
@@ -189,7 +189,7 @@ VOID iac_mvnames(LPTREE tree, WORD start, WORD num)
 	}
 }
 
-WORD iac_names(LPTREE tree)
+WORD __near iac_names(LPTREE tree)
 {
 	WORD		ret;
 	WORD		len;
@@ -246,7 +246,7 @@ WORD iac_names(LPTREE tree)
 #define ACCMIN	0x2000
 
 
-VOID iac_save(LPTREE tree)
+VOID __near iac_save(LPTREE tree)
 {
 	WORD		i;
 	WORD		chnum;
@@ -322,7 +322,7 @@ VOID iac_save(LPTREE tree)
 }
 
 
-WORD iac_scroll(LPTREE tree, WORD currtop, WORD count, WORD move)
+WORD __near iac_scroll(LPTREE tree, WORD currtop, WORD count, WORD move)
 {
 	WORD		newtop;
 
@@ -341,7 +341,7 @@ WORD iac_scroll(LPTREE tree, WORD currtop, WORD count, WORD move)
 }
 
 
-WORD iac_dial(LPTREE tree)
+WORD __near iac_dial(LPTREE tree)
 {
 	WORD		touchob;
 	WORD		cont;
@@ -484,7 +484,7 @@ dofelev:	wind_update(3);
 /* i n s _ a c c	  						*/
 /************************************************************************/
 
-VOID ins_acc()
+VOID __near ins_acc()
 {			       
 	LPTREE		tree;
 

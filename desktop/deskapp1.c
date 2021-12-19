@@ -62,7 +62,7 @@ VOID strlcat(char *dest, char *src, int len)
 /*
 *	Allocate an application object.
 */
-ANODE *app_alloc(WORD tohead)
+ANODE * __near app_alloc(WORD tohead)
 {
 	ANODE		*pa, *ptmpa;
 
@@ -93,7 +93,7 @@ ANODE *app_alloc(WORD tohead)
 *	Free an application object.
 */
 
-VOID app_free(ANODE *pa)
+VOID __near app_free(ANODE *pa)
 {
 	ANODE		*ptmpa;
 
@@ -117,7 +117,7 @@ VOID app_free(ANODE *pa)
 *	Convert a single hex ASCII digit to a number
 */
 
-WORD hex_dig(BYTE achar)
+WORD __near hex_dig(BYTE achar)
 {
 	if ( (achar >= '0') && (achar <= '9') ) return(achar - '0');	
 	if ( (achar >= 'A') && (achar <= 'F') ) return(achar - 'A' + 10);
@@ -129,7 +129,7 @@ WORD hex_dig(BYTE achar)
 *	Reverse of hex_dig().
 */
 
-BYTE uhex_dig(WORD wd)
+BYTE __near uhex_dig(WORD wd)
 {
 	if ( (wd >= 0   ) && (wd <= 9   ) ) return(wd + '0');	
 	if ( (wd >= 0x0a) && (wd <= 0x0f) ) return(wd + 'A' - 0x0a);
@@ -141,7 +141,7 @@ BYTE uhex_dig(WORD wd)
 *	Reverse of scan_2().
 */
 
-BYTE *save_2(BYTE *pcurr, UWORD wd)
+BYTE * __near save_2(BYTE *pcurr, UWORD wd)
 {
 	*pcurr++ = uhex_dig((wd >> 4) & 0x000f);
 	*pcurr++ = uhex_dig(wd & 0x000f);
@@ -158,7 +158,7 @@ BYTE *save_2(BYTE *pcurr, UWORD wd)
 *	default memory size -- DEFMEMREQ.
 */
 
-BYTE *scan_memsz(BYTE *pcurr, UWORD *pwd)
+BYTE * __near scan_memsz(BYTE *pcurr, UWORD *pwd)
 {
 	UWORD		temp1, temp2;
 	
@@ -182,7 +182,7 @@ BYTE *scan_memsz(BYTE *pcurr, UWORD *pwd)
 *	Reverse of scan_memsz().
 */
 
-BYTE *save_memsz(BYTE *pcurr, UWORD wd)
+BYTE * __near save_memsz(BYTE *pcurr, UWORD wd)
 {
 	*pcurr++ = 'R';
 	pcurr = save_2(pcurr, LHIBT(wd));
@@ -204,7 +204,7 @@ BYTE *save_memsz(BYTE *pcurr, UWORD wd)
 *
 */
 
-BYTE *scan_str(BYTE *pcurr, BYTE **ppstr)
+BYTE * __near scan_str(BYTE *pcurr, BYTE **ppstr)
 {
 	/* Skip over spaces */
 	while(*pcurr == ' ') pcurr++;
@@ -231,7 +231,7 @@ BYTE *scan_str(BYTE *pcurr, BYTE **ppstr)
 *	Reverse of scan_str.
 */
 
-BYTE *save_str(BYTE *pcurr, BYTE *pstr)
+BYTE * __near save_str(BYTE *pcurr, BYTE *pstr)
 {
 	while(*pstr)
 	  *pcurr++ = *pstr++;
@@ -243,7 +243,7 @@ BYTE *save_str(BYTE *pcurr, BYTE *pstr)
 /*
 *       Autodetect disc drives - Ben A. L. Jemmett, 19990828
 */
-VOID app_detect()
+VOID __near app_detect()
 {
         WORD            i, ii, ndisks, dtype, dup;
         ANODE           *pa;
@@ -369,7 +369,7 @@ VOID app_detect()
 *	Parse a single line from the DESKTOP.INF file.
 */
 
-BYTE *app_parse(BYTE *pcurr, ANODE *pa)
+BYTE * __near app_parse(BYTE *pcurr, ANODE *pa)
 {
 	switch(*pcurr)
 	{
@@ -423,7 +423,7 @@ BYTE *app_parse(BYTE *pcurr, ANODE *pa)
 	return(pcurr);
 }
 
-VOID app_tran(WORD bi_num)
+VOID __near app_tran(WORD bi_num)
 {
 	LPBIT		lpbi;
 	BITBLK		lb;
@@ -435,7 +435,7 @@ VOID app_tran(WORD bi_num)
 }
 
 
-WORD app_getfh(WORD openit, BYTE *pname, WORD attr)
+WORD __near app_getfh(WORD openit, BYTE *pname, WORD attr)
 {
 	WORD		handle, tmpdrv;
 	LPBYTE		lp;

@@ -20,7 +20,7 @@
 /*
 *	Clear out the selections for this particular window
 */
-VOID desk_clear(WORD wh)
+VOID __near desk_clear(WORD wh)
 {
 	WNODE		*pw;
 	GRECT		c;
@@ -42,7 +42,7 @@ VOID desk_clear(WORD wh)
 /*
 *	Verify window display by building a new view.
 */
-VOID desk_verify(WORD wh, WORD changed)
+VOID __near desk_verify(WORD wh, WORD changed)
 {
 	WNODE		*pw;
 	WORD		xc, yc, wc, hc;
@@ -68,7 +68,7 @@ VOID desk_verify(WORD wh, WORD changed)
 }
 
 
-WORD do_wredraw(WORD w_handle, WORD xc, WORD yc, WORD wc, WORD hc)
+WORD __near do_wredraw(WORD w_handle, WORD xc, WORD yc, WORD wc, WORD hc)
 {
 	GRECT		clip_r, t;
 	WNODE		*pw;
@@ -108,7 +108,7 @@ WORD do_wredraw(WORD w_handle, WORD xc, WORD yc, WORD wc, WORD hc)
 *	Picks ob_x, ob_y, ob_width, ob_height fields out of object list.
 */
 
-VOID get_xywh(OBJECT *olist, WORD obj, WORD *px, WORD *py, WORD *pw, WORD *ph)
+VOID __near get_xywh(OBJECT *olist, WORD obj, WORD *px, WORD *py, WORD *pw, WORD *ph)
 {
 	*px = olist[obj].ob_x;
 	*py = olist[obj].ob_y;
@@ -120,12 +120,12 @@ VOID get_xywh(OBJECT *olist, WORD obj, WORD *px, WORD *py, WORD *pw, WORD *ph)
 *	Picks ob_spec field out of object list.
 */
 
-LPICON get_spec(OBJECT *olist, WORD obj)
+LPICON __near get_spec(OBJECT *olist, WORD obj)
 {
 	return (LPICON)(olist[obj].ob_spec);
 }
 
-VOID do_xyfix(WORD *px, WORD *py)
+VOID __near do_xyfix(WORD *px, WORD *py)
 {
 	WORD		tx, ty, tw, th;
 
@@ -137,7 +137,7 @@ VOID do_xyfix(WORD *px, WORD *py)
 	*py = max(*py, ty);
 }
 
-VOID do_wopen(WORD new_win, WORD wh, WORD curr, WORD x, WORD y, WORD w, WORD h)
+VOID __near do_wopen(WORD new_win, WORD wh, WORD curr, WORD x, WORD y, WORD w, WORD h)
 {
 	GRECT		d,c;
 
@@ -163,7 +163,7 @@ VOID do_wopen(WORD new_win, WORD wh, WORD curr, WORD x, WORD y, WORD w, WORD h)
 
 
 /* DESKTOP v1.2 version... */
-VOID do_wfull(WORD wh)
+VOID __near do_wfull(WORD wh)
 {
 	GRECT		curr, prev, full;
 
@@ -236,7 +236,7 @@ VOID do_wfull(WORD wh)
 *	Open a directory, it may be the root or a subdirectory.
 */
 
-WORD do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv, 
+WORD __near do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv, 
 				BYTE *ppath, BYTE *pname, BYTE *pext, GRECT *pt,
 				WORD redraw)
 {
@@ -298,7 +298,7 @@ WORD do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 *	Open an application
 */
 
-WORD do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv, 
+WORD __near do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv, 
 			  BYTE *ppath, BYTE *pname)
 {
 	WORD		ret, done;
@@ -416,7 +416,7 @@ WORD do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 *	Open a disk
 */
 
-WORD do_dopen(WORD curr)
+WORD __near do_dopen(WORD curr)
 {
 	WORD		drv;
 	WNODE		*pw;
@@ -449,7 +449,7 @@ WORD do_dopen(WORD curr)
 *	Open a folder
 */
 /* Extra parameters not in DESKTOP v1.2 */
-VOID do_fopen(WNODE *pw, WORD curr, WORD drv, 
+VOID __near do_fopen(WNODE *pw, WORD curr, WORD drv, 
 	      BYTE *ppath, BYTE *pname, BYTE *pext, WORD chkall, WORD redraw)
 {
 	GRECT		t;
@@ -545,7 +545,7 @@ VOID do_fopen(WNODE *pw, WORD curr, WORD drv,
 *	Open an icon
 */
 
-WORD do_open(WORD curr)
+WORD __near do_open(WORD curr)
 {
 	WORD		done;
 	ANODE		*pa;
@@ -625,7 +625,7 @@ WORD do_open(WORD curr)
 *	Get information on an icon.
 */
 
-WORD do_info(WORD curr)
+WORD __near do_info(WORD curr)
 {
 	WORD		ret, junk;
 	ANODE		*pa;
@@ -693,7 +693,7 @@ WORD do_info(WORD curr)
 /*	boundaries have to be jimmied to force the channel allocator	*/
 /*	to put FORMAT in the right place.				*/
 
-	VOID
+	VOID __near
 romerr(curr)
 	WORD		curr;
 {
@@ -744,7 +744,7 @@ romerr(curr)
 /*
 *	Format the currently selected disk.
 */
-	VOID
+	VOID __near
 do_format(curr)
 	WORD		curr;
 {
@@ -800,7 +800,7 @@ do_format(curr)
 *	Routine to check the all windows directory by doing a change
 *	disk/directory to it and redrawing the window;
 */
-	VOID
+	VOID __near
 do_chkall(redraw)
 	WORD		redraw;
 {
@@ -826,7 +826,7 @@ do_chkall(redraw)
 } /* do_chkall */
 
 
-WORD alert_s(WORD defbut, WORD alert_num, BYTE *s)
+WORD __near alert_s(WORD defbut, WORD alert_num, BYTE *s)
 {
 	char tmp[256];
 	WORD ret;
@@ -840,7 +840,7 @@ WORD alert_s(WORD defbut, WORD alert_num, BYTE *s)
 }
 
 
-WORD menu_item_to_alert_s( WORD def_but, WORD alert_num, WORD item )
+WORD __near menu_item_to_alert_s( WORD def_but, WORD alert_num, WORD item )
 {
 OBJECT far	*ptrItem;
 char *		ptr ;

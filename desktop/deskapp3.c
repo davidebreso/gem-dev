@@ -23,7 +23,7 @@
 /*
 *	Reverse list when we write so that we can read it in naturally
 */
-VOID app_revit()
+VOID __near app_revit()
 {
 	ANODE		*pa;
 	ANODE		*pnxtpa;
@@ -44,7 +44,7 @@ VOID app_revit()
 *	Save the current state of all the icons to a file called 
 *	DESKTOP.INF
 */
-WORD app_save(WORD todisk)
+WORD __near app_save(WORD todisk)
 {
 	WORD		i, fh, ret;
 	UWORD		envr;
@@ -220,7 +220,7 @@ WORD app_save(WORD todisk)
 *	application list.
 */
 
-BYTE app_blddesk()
+BYTE __near app_blddesk()
 {
 	WORD		obid;
 	ULONG		bvdisk, bvhard, bvect;
@@ -290,7 +290,7 @@ BYTE app_blddesk()
 /*
 *	Find the ANODE that is appropriate for this object.
 */
-ANODE *app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *pisapp)
+ANODE * __near app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *pisapp)
 {
 	ANODE		*pa;
 
@@ -324,7 +324,7 @@ ANODE *app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *pisapp)
 /************************************************************************/
 /* g e t _ d e f d r v							*/
 /************************************************************************/
-BYTE get_defdrv(ULONG dr_exist, ULONG dr_hard)
+BYTE __near get_defdrv(ULONG dr_exist, ULONG dr_hard)
 {
 /* this routine returns the drive letter of the lowest drive: lowest	*/
 /* lettered hard disk if possible, otherwise lowest lettered floppy	*/

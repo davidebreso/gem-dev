@@ -47,7 +47,7 @@ keytab	dw	01c0dh			; carriage return
 	dw	0			;end of list is null
 
 ;
-chrout	proc
+chrout	proc near
 	push	bp
 	mov		bp,sp
 	mov		dx,4[bp]
@@ -57,7 +57,7 @@ chrout	proc
 	ret
 chrout	endp
 ;
-chrin	proc
+chrin	proc near
 	push	bp
 	mov		bp,sp
 chr2:		mov	ax,0600h
@@ -71,7 +71,7 @@ chrin	endp
 ;
 ;
 ;
-cxc33	proc
+cxc33	proc near
 	push	bx
 	push	dx
 	cmp		ax,cx
@@ -92,7 +92,7 @@ cxc2:
 cxc33	endp
 ;
 ;
-cxd33	proc
+cxd33	proc near
 	xchg	ax,bx
 	mov		cx,dx
 	jcxz	div0
@@ -124,7 +124,7 @@ div0:
 cxd33	endp
 ;
 ;
-cxm33	proc
+cxm33	proc near
 	push	dx
 	mul		dx
 	pop		dx
@@ -146,7 +146,7 @@ cxm33	endp
 ;
 ;
 ;
-inttake	proc
+inttake	proc near
 	push	es
 	mov		ah,035h		; set fn # (int# passed in al)
 	int 	021h		; get current vector
@@ -165,7 +165,7 @@ inttake	endp
 ;
 ;
 ;
-intgive proc
+intgive proc near
 	push	ds
 	mov		dx,cs:0[bp]	; set up old offset
 	mov		ds,cs:2[bp]	; and segbase
@@ -290,7 +290,7 @@ doscod endp
 ;
 ;
 ;
-takekey proc
+takekey proc near
     public  "C",takekey
 	mov		word ptr keycnt, 0
 	mov		word ptr f10cnt, 0
@@ -307,7 +307,7 @@ takekey endp
 ;
 ;
 ;
-givekey proc
+givekey proc near
     public  "C",givekey
 	cli
 	push	bp
@@ -321,7 +321,7 @@ givekey proc
 givekey endp
 ;
 ;
-takevid proc
+takevid proc near
     public  "C",takevid
 	cli
 	push	bp
@@ -336,7 +336,7 @@ takevid endp
 ;
 ;
 ;
-givevid proc
+givevid proc near
     public  "C",givevid
 	cli
 	push	bp
@@ -350,7 +350,7 @@ givevid endp
 ;
 ;
 ;
-takedos proc
+takedos proc near
     public  "C",takedos
 	cli
 	push	bp
@@ -365,7 +365,7 @@ takedos endp
 ;
 ;
 ;
-givedos proc
+givedos proc near
     public  "C",givedos
 	cli
 	push	bp

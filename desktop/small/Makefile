@@ -19,9 +19,6 @@ all:	desktop.app
 desktop.app:	$(OBJECTS) 
 	$(LD) name $@ system dos file \{ $(OBJECTS) $(LIBDIR)/wccgem-s.lib \} option map=test.map
 
-nooptim.obj:	../nooptim.c ../deskprot.h ../desktop.h ../ppddesk.h
-	$(CC) -ms $(CFLAGS) -fo=$@ $< 
-
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
 	$(CC) -ms $(CFLAGS) -fo=$@ $< 
 
