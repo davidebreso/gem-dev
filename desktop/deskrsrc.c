@@ -21,13 +21,13 @@
 
 /* The adaptive resource beautifier (which makes checkboxes look right on
  * all GEM versions) is largely nicked from the FreeGEM RCS */
-typedef WORD (__near *MAPROUTINE)(LPTREE tr, WORD obj);
+typedef VOID ( *MAPROUTINE)(LPTREE tr, WORD obj);
 
 MLOCAL WORD ini_tree(WORD which);
 MLOCAL VOID map_tree(LPTREE tree, WORD first, WORD last, MAPROUTINE routine);
-MLOCAL WORD menu_cleanup(LPTREE tr, WORD obj);
+MLOCAL VOID menu_cleanup(LPTREE tr, WORD obj);
 
-VOID __near rsrc_init(VOID)
+VOID  rsrc_init(VOID)
 {
 	WORD n;
 	LPTREE tree;
@@ -44,7 +44,7 @@ VOID __near rsrc_init(VOID)
 }
 
 
-BYTE * __near ini_str(WORD stnum)
+BYTE *  ini_str(WORD stnum)
 {
 	LPBYTE	lstr;
 
@@ -71,7 +71,7 @@ BYTE * __near ini_str(WORD stnum)
 	
 MLOCAL WORD gem5 = -1;
 	
-WORD __near make_cbox(LPTREE tr, WORD obj)
+VOID  make_cbox(LPTREE tr, WORD obj)
 {	
 	if ((tr[obj].ob_state & EXT3D) == EXT3D)
 	{
@@ -172,7 +172,7 @@ MLOCAL VOID chop_underline(LPBYTE txt)
 
 
 
-MLOCAL WORD gem3_cleanup(LPTREE tr, WORD obj)
+MLOCAL VOID gem3_cleanup(LPTREE tr, WORD obj)
 {	
 	if (tr[obj].ob_type == G_BUTTON)
 	{
@@ -190,7 +190,7 @@ MLOCAL WORD gem3_cleanup(LPTREE tr, WORD obj)
 }
 
 
-MLOCAL WORD menu_cleanup(LPTREE tr, WORD obj)
+MLOCAL VOID menu_cleanup(LPTREE tr, WORD obj)
 {	
 	if (tr[obj].ob_type == G_STRING || tr[obj].ob_type == G_TITLE)
 	{

@@ -12,7 +12,7 @@
  * This does not work; DESKTOP's sound() binding corresponds to both v_sound()
  * and vs_mute() */
 
-WORD __near desk_sound( WORD isfreq, WORD frequency, WORD duration )
+WORD  desk_sound( WORD isfreq, WORD frequency, WORD duration )
 {
     if (isfreq) return v_sound(gl_handle, frequency, duration);
     else        return vs_mute(gl_handle, frequency);
@@ -29,12 +29,12 @@ char *scasb(char *s, char b)
 
 
 
-WORD __near wmax(WORD a, WORD b)
+WORD  wmax(WORD a, WORD b)
 {
 	return (a > b) ? a : b;
 }
 
-WORD __near wmin(WORD a, WORD b)
+MLOCAL WORD  wmin(WORD a, WORD b)
 {
 	return (a < b) ? a : b;
 }
@@ -42,7 +42,7 @@ WORD __near wmin(WORD a, WORD b)
 extern VOID dos_lpvoid(UWORD, LPVOID);
 
 
-VOID __near dos_label(BYTE drive, BYTE *plabel)
+VOID  dos_label(BYTE drive, BYTE *plabel)
 {
 	BYTE		label_buf[128];
 	BYTE		ex_fcb[40];
@@ -78,7 +78,7 @@ WORD LSTCPY(LPBYTE d, LPBYTE s)
 }
 
 
-VOID __near lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
+VOID lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
 {
 	while (*s) 
 	{
@@ -91,7 +91,7 @@ VOID __near lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
 
 
 
-VOID __near r_get(GRECT *pxywh, WORD *px, WORD *py, WORD *pw, WORD *ph)
+VOID  r_get(GRECT *pxywh, WORD *px, WORD *py, WORD *pw, WORD *ph)
 {
 	*px = pxywh->g_x;
 	*py = pxywh->g_y;
@@ -101,7 +101,7 @@ VOID __near r_get(GRECT *pxywh, WORD *px, WORD *py, WORD *pw, WORD *ph)
 
 
 
-VOID __near r_set(GRECT *pxywh, WORD x, WORD y, WORD w, WORD h)
+VOID  r_set(GRECT *pxywh, WORD x, WORD y, WORD w, WORD h)
 {
 	pxywh->g_x = x;
 	pxywh->g_y = y;
@@ -109,7 +109,7 @@ VOID __near r_set(GRECT *pxywh, WORD x, WORD y, WORD w, WORD h)
 	pxywh->g_h = h;
 }
 
-	UWORD  __near
+	UWORD  
 inside(x, y, pt)		/* determine if x,y is in rectangle	*/
 	WORD		x, y;
 	GRECT		*pt;
@@ -122,7 +122,7 @@ inside(x, y, pt)		/* determine if x,y is in rectangle	*/
 	} /* inside */
 
 
-VOID __near rc_union(LPGRECT p1, LPGRECT p2)
+VOID  rc_union(LPGRECT p1, LPGRECT p2)
 	{
 	WORD		tx, ty, tw, th;
 
@@ -139,7 +139,7 @@ VOID __near rc_union(LPGRECT p1, LPGRECT p2)
 
 /* Get drive type. Based on BALJ's Desktop. */
 /* DB: rewrite in asm to reduce code size. */
-__declspec( naked ) WORD __near dos_dtype(WORD drive)
+__declspec( naked ) WORD  dos_dtype(WORD drive)
 {
 	_asm{
 		mov dx, ax	/* param drive is now in DX */
@@ -187,7 +187,7 @@ __declspec( naked ) WORD __near dos_dtype(WORD drive)
 #if DEBUG
 static char buf[4096];
 
-WORD __near form_valert(WORD button, BYTE *str, ...)
+WORD  form_valert(WORD button, BYTE *str, ...)
 {
 	va_list ap;
 	va_start(ap, str);
@@ -196,7 +196,7 @@ WORD __near form_valert(WORD button, BYTE *str, ...)
 	return form_alert(button, ADDR(buf));
 }
 
-WORD __near dbg(BYTE *str, ...)
+WORD  dbg(BYTE *str, ...)
 {
 	FILE *fp = fopen("c:/gemapp.log", "a");
 	
@@ -208,14 +208,14 @@ WORD __near dbg(BYTE *str, ...)
 	fclose(fp);
 }
 
-extern WORD __near getcs(void);
-extern WORD __near getip(void);
+extern WORD  getcs(void);
+extern WORD  getip(void);
 
 /* Dump system memory to disc, one byte at a time! 
  * Writes 1Mb of data, followed by four bytes far 
  * pointer to this function giving CS and IP.
  */
-VOID __near crashdump(BYTE bt)
+VOID  crashdump(BYTE bt)
 {
 	char filename[20];
 	long n;

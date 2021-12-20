@@ -27,8 +27,8 @@
 
 
 /* forward declaration	*/
-VOID  __near blank_it();
-VOID  __near move_icon();
+MLOCAL VOID   blank_it();
+MLOCAL VOID   move_icon();
 
 MLOCAL BYTE	ml_files[4], ml_dirs[4];
 MLOCAL WORD	ml_dlfi, ml_dlfo, ml_dlok, ml_dlcn;
@@ -38,7 +38,7 @@ MLOCAL BYTE	ml_fsrc[13], ml_fdst[13], ml_fstr[13], ml_ftmp[13];
 /*
 *	Routine to DRAW a DIALog box centered on the screen
 */
-VOID __near draw_dial(LPTREE tree)
+MLOCAL VOID  draw_dial(LPTREE tree)
 {
 	WORD		xd, yd, wd, hd;
 
@@ -47,7 +47,7 @@ VOID __near draw_dial(LPTREE tree)
 } /* draw_dial */
 
 
-VOID __near show_hide(WORD fmd, LPTREE tree)
+VOID  show_hide(WORD fmd, LPTREE tree)
 {
 	WORD		xd, yd, wd, hd;
 
@@ -57,7 +57,7 @@ VOID __near show_hide(WORD fmd, LPTREE tree)
 	  objc_draw(tree, ROOT, MAX_DEPTH, xd, yd, wd, hd);
 }
 
-	VOID __near
+MLOCAL 	VOID 
 do_namecon()
 {
 /* BugFix	*/
@@ -79,7 +79,7 @@ do_namecon()
 *	Draw a single field of a dialog box
 */
 
-VOID __near draw_fld(LPTREE tree, WORD obj)
+VOID  draw_fld(LPTREE tree, WORD obj)
 {
 	GRECT		t;
 
@@ -89,7 +89,7 @@ VOID __near draw_fld(LPTREE tree, WORD obj)
 } /* draw_fld */
 
 
-BYTE * __near scan_slsh(BYTE *path)
+BYTE *  scan_slsh(BYTE *path)
 {
 						/* scan to first '*'	*/
 	while (*path != '*')
@@ -105,7 +105,7 @@ BYTE * __near scan_slsh(BYTE *path)
 *	Add a new directory name to the end of an existing path.  This
 *	includes appending a \*.*.
 */
-VOID __near add_path(BYTE *path, BYTE *new_name, WORD buflen)
+MLOCAL VOID  add_path(BYTE *path, BYTE *new_name, WORD buflen)
 {
 	while (*path != '*')
 	{
@@ -121,7 +121,7 @@ VOID __near add_path(BYTE *path, BYTE *new_name, WORD buflen)
 *	Remove the last directory in the path and replace it with
 *	*.*.
 */
-VOID __near sub_path(BYTE *path)
+MLOCAL VOID  sub_path(BYTE *path)
 {
 						/* scan to last slash	*/
 	path = scan_slsh(path);
@@ -138,7 +138,7 @@ VOID __near sub_path(BYTE *path)
 /*
 *	Add a file name to the end of an existing path.
 */
-VOID __near add_fname(BYTE *path, BYTE *new_name, WORD buflen)
+VOID  add_fname(BYTE *path, BYTE *new_name, WORD buflen)
 {
 	while (*path != '*')
 	{
@@ -155,7 +155,7 @@ VOID __near add_fname(BYTE *path, BYTE *new_name, WORD buflen)
 */
 
 
-WORD __near fold_wind(BYTE *path)
+MLOCAL WORD  fold_wind(BYTE *path)
 {
 	WORD		i;
 	WNODE		*pwin;
@@ -178,7 +178,7 @@ WORD __near fold_wind(BYTE *path)
 *	last folder name in the path.
 *	buflen = length of buffer containing path
 */
-VOID like_parent(BYTE *path, BYTE *new_name, WORD buflen)
+MLOCAL VOID like_parent(BYTE *path, BYTE *new_name, WORD buflen)
 {
 	BYTE		*pstart, *lastfold, *lastslsh;
 						/* remember start of path*/
@@ -213,7 +213,7 @@ VOID like_parent(BYTE *path, BYTE *new_name, WORD buflen)
 *	See if these two paths represent the same folder.  The first
 *	path ends in \*.*, the second path ends with just the folder.
 */
-WORD same_fold(BYTE *psrc, BYTE *pdst)
+MLOCAL WORD same_fold(BYTE *psrc, BYTE *pdst)
 {
 	WORD		ret;
 	BYTE		*lastslsh;
@@ -236,7 +236,7 @@ WORD same_fold(BYTE *psrc, BYTE *pdst)
 *	an \*.*
 */
 
-VOID __near del_fname(BYTE *pstr)
+VOID  del_fname(BYTE *pstr)
 {
 	while (*pstr)
 	  pstr++;
@@ -250,7 +250,7 @@ VOID __near del_fname(BYTE *pstr)
 *	Parse to find the filename part of a path and return a copy of it
 *	in a form ready to be placed in a dialog box.
 */
-VOID __near get_fname(BYTE *pstr, BYTE *newstr)
+MLOCAL VOID  get_fname(BYTE *pstr, BYTE *newstr)
 {
 	while (*pstr)
 	  pstr++;
@@ -262,7 +262,7 @@ VOID __near get_fname(BYTE *pstr, BYTE *newstr)
 } /* get_fname */
 
 
-	WORD __near
+	WORD 
 d_errmsg()
 {
 	if (DOS_ERR)
@@ -277,7 +277,7 @@ d_errmsg()
 /*
 *	Directory routine to DO File DELeting.
 */
-WORD __near d_dofdel(BYTE *ppath)
+MLOCAL WORD  d_dofdel(BYTE *ppath)
 { 
 	dos_delete(ADDR(ppath));
 	return( d_errmsg() );
@@ -287,7 +287,7 @@ WORD __near d_dofdel(BYTE *ppath)
 /*
 *	Directory routine to DO File COPYing.
 */
-WORD __near d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
+MLOCAL WORD  d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 		WORD time, WORD date, WORD attr)
 {
 	LPTREE		tree;
@@ -446,7 +446,7 @@ WORD __near d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 /*
 *	Directory routine to DO an operation on an entire sub-directory.
 */
-WORD __near d_doop(WORD op, LPTREE tree, WORD obj, BYTE *psrc_path, 
+WORD  d_doop(WORD op, LPTREE tree, WORD obj, BYTE *psrc_path, 
 	    BYTE *pdst_path, WORD srcpthlen, WORD dstpthlen,
 	    WORD *pfcnt, WORD *pdcnt, WORD flag)
 {			       
@@ -584,7 +584,7 @@ WORD __near d_doop(WORD op, LPTREE tree, WORD obj, BYTE *psrc_path,
 *	start at the current position of the ptr.
 *	assume path will eventually end with \*.*
 */
-	BYTE *  __near
+MLOCAL 	BYTE *  
 ret_path(pcurr)
 	REG BYTE	*pcurr;
 {
@@ -610,7 +610,7 @@ ret_path(pcurr)
 *	Return TRUE if all ok else FALSE.
 * 	Must assume that src and dst paths both end with "\*.*".
 */
-	WORD  __near
+	WORD  
 par_chk(psrc_path, pflist, pdst_path)
 	BYTE	*psrc_path;
 	FNODE	*pflist;
@@ -765,7 +765,7 @@ MLOCAL WORD sset_tree(LPTREE tree, WORD fcnt, WORD dcnt)
 *	folders in the source path.  The selected files and folders are 
 *	marked in the source file list.
 */
-	WORD  __near
+	WORD  
 dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
        dulx, duly, from_disk, src_ob)
 	WORD		op;
@@ -918,7 +918,7 @@ dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
 /************************************************************************/
 /* b l a n k _ i t							*/
 /************************************************************************/
-	VOID __near
+MLOCAL 	VOID 
 blank_it(obid)
 	WORD		obid;
 {
@@ -965,7 +965,7 @@ blank_it(obid)
 /************************************************************************/
 /* m o v e _ i c o n							*/
 /************************************************************************/
-	VOID __near
+MLOCAL 	VOID 
 move_icon(obj, dulx, duly)
 	WORD		obj, dulx, duly;
 {

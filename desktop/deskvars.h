@@ -8,7 +8,6 @@
 #endif
 
 
-EXT USERFUNC drawaddr;
 EXT ICONBLK gl_icons[NUM_WOBS];
 extern union	REGS DR;
 #define DOS_AX DR.x.ax

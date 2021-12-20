@@ -88,10 +88,11 @@ extern BYTE ILL_TYPE[];
 typedef signed long SLONG;
 
 #ifdef __SMALL__
-WORD __near do_type(WORD curr)
+WORD  do_type(WORD curr)
 {
 	form_alert(0, "[3][This function is not available in the |"
 			"small-model desktop][ Cancel ]");
+	return 0;
 }
 
 #else
@@ -133,7 +134,7 @@ MLOCAL SLONG window_row;                /* Number of first row displayed in
 MLOCAL BOOLEAN quit_flag;               /* Set true when quit selected */
 MLOCAL WORD return_value;       /* Set with error code or TRUE to terminate program */
 
-MLOCAL void __near handle_key(UWORD key, WORD wh);
+MLOCAL void  handle_key(UWORD key, WORD wh);
 
 #if DBCS
 extern void cvt_dbc2( UBYTE *, UBYTE * ) ;		/* deskinf.c */
@@ -146,7 +147,7 @@ Purpose : Set horizontal slider position and size
 Entry   : wh    Window handle
 Exit    : 
 */
-MLOCAL void __near set_hor_slider(WORD wh)
+MLOCAL void  set_hor_slider(WORD wh)
 {
     WORD hslide, hslsize;
 
@@ -168,7 +169,7 @@ Purpose : Set vertical slider position and size
 Entry   : wh    Window handle
 Exit    : 
 */
-MLOCAL void __near set_vert_slider(WORD wh)
+MLOCAL void  set_vert_slider(WORD wh)
 {
     WORD vslide, vslsize;
 
@@ -201,7 +202,7 @@ Purpose : Seek and read from file
 Entry   : 
 Exit    : Returns zero if successful
 */
-MLOCAL BOOLEAN __near seek_read(void)
+MLOCAL BOOLEAN  seek_read(void)
 {
     if (dos_lseek(file_handle, 0, window_offset) == window_offset)
         file_buffer_end = file_buffer + 
@@ -289,7 +290,7 @@ Purpose : Set information line
 Entry   : wh    Window handle
 Exit    : 
 */
-MLOCAL void __near set_info_line(WORD wh)
+MLOCAL void  set_info_line(WORD wh)
 {
     if (scanning_file) {
         strlcpy( info_line, ini_str(STFSCAN), sizeof(info_line) );
@@ -575,7 +576,7 @@ Purpose : Toggle window between full and previous size
 Entry   : wh    Window handle
 Exit    : 
 */
-MLOCAL void __near do_full(WORD wh)
+MLOCAL void  do_full(WORD wh)
 {
     GRECT	curr, full;
 
@@ -597,7 +598,7 @@ Entry   : message       Message buffer
 Exit    : 
 */
 /* (hca: not MLOCAL, used in deskinf.c) */
-void __near handle_message(WORD *message, WORD wh)
+void  handle_message(WORD *message, WORD wh)
 {
     BOOLEAN redraw_required;            /* True if work area needs to updated */
     SLONG required_row;
@@ -839,7 +840,7 @@ Entry   : key           VDI keyboard code
           wh            Window handle
 Exit    : 
 */
-MLOCAL void __near handle_key(UWORD key, WORD wh)
+MLOCAL void  handle_key(UWORD key, WORD wh)
 {
     SLONG old_offset, current_offset;
     UBYTE far *s;
@@ -907,7 +908,7 @@ Purpose : Scan part file to accumulate maximum text line length and number of
 Entry   : wh    Window handle
 Exit    : 
 */
-MLOCAL void __near scan_file(WORD wh)
+MLOCAL void  scan_file(WORD wh)
 {
     WORD ii;
     WORD old_max_line_length;
@@ -988,7 +989,7 @@ Purpose : Read and scan start of file to accumulate maximum text line length and
 Entry   : wh    Window handle
 Exit    : 
 */
-MLOCAL void __near start_scan_file(WORD wh)
+MLOCAL void  start_scan_file(WORD wh)
 {
     WORD i;
     WORD num_text_chars;
@@ -1073,7 +1074,7 @@ Purpose : Get and handle events
 Entry   : wh            Window handle
 Exit    : 
 */
-GLOBAL void __near get_handle_events(WORD wh)
+GLOBAL void  get_handle_events(WORD wh)
 {
     WORD ev_which;
     UWORD mousex, mousey, bstate, kbd_state, kbd_code, bclicks;
@@ -1129,7 +1130,7 @@ Exit    : Returns zero if successful
 	  -6 if DOS_ERR on open file
 Caller	: do_filemenu() in desktop.c
 */
-WORD __near do_type(WORD curr)
+WORD  do_type(WORD curr)
 {
     WORD	i;
     WORD	wh;			/* View window handle */

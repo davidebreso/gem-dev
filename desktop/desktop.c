@@ -71,25 +71,26 @@ GLOBAL WORD	dura[]=
 
 
 
+/* 
 GLOBAL WORD	gl_swtblks[3] =
 {
 	160,
 	160,
 	160
 };
+ */
 
 
+/* Forward declarations */
+MLOCAL VOID  cnx_put(VOID);
 
-
-
-
-VOID copy_icon(LPTREE dst_tree, LPTREE tree, WORD dst_icon, WORD icon)
+MLOCAL VOID copy_icon(LPTREE dst_tree, LPTREE tree, WORD dst_icon, WORD icon)
 {
 	dst_tree[dst_icon].ob_spec = tree[icon].ob_spec;
 }
 
 #if 0 // No such thing in DESKTOP v1.2
-VOID __near fix_wins()
+MLOCAL VOID  fix_wins()
 {
 /* this routine is supposed to keep track of the windows between	*/
 /* runs of the Desktop. it assumes pws has already been set up;		*/
@@ -155,7 +156,7 @@ VOID __near fix_wins()
 *	Turn on the hour glass to signify a wait and turn it off when were
 *	done.
 */
-VOID __near desk_wait(WORD turnon)
+MLOCAL VOID  desk_wait(WORD turnon)
 {
 	graf_mouse( (turnon) ? HGLASS : ARROW, 0x0L);
 }
@@ -164,7 +165,7 @@ VOID __near desk_wait(WORD turnon)
 /*
 *	Routine to update all of the desktop windows
 */
-VOID __near desk_all(WORD sort)
+MLOCAL VOID  desk_all(WORD sort)
 {
 	desk_wait(TRUE);
 	if (sort) win_srtall();
@@ -176,7 +177,7 @@ VOID __near desk_all(WORD sort)
 /*
 *	Given an icon index, go find the ANODE which it represents
 */
-ANODE * __near i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
+ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 {
 	ANODE 	*pa;
 	BYTE 	*pname;
@@ -222,10 +223,19 @@ ANODE * __near i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 }
 
 /*
+*	Enable/Disable the menu items in dlist
+*/
+VOID  men_list(LPTREE mlist, BYTE *dlist, WORD enable)
+{
+	while (*dlist)
+	  menu_ienable(mlist, *dlist++, enable);
+}
+
+/*
 * 	Based on current selected icons, figure out which
 *	menu items should be selected (deselected)
 */
-VOID __near men_update(LPTREE tree)
+MLOCAL VOID  men_update(LPTREE tree)
 {
 	WORD		item, nsel, isapp;
 	BYTE		*pvalue;
@@ -302,7 +312,7 @@ VOID __near men_update(LPTREE tree)
 
 } /* men_update */
 
-WORD __near do_deskmenu(WORD item)
+MLOCAL WORD  do_deskmenu(WORD item)
 {
 	WORD		done, touchob;
 	WORD		i;	/* DESKTOP v1.2 */
@@ -337,7 +347,7 @@ WORD __near do_deskmenu(WORD item)
 }
 
 
-WORD __near do_filemenu(WORD item)
+MLOCAL WORD  do_filemenu(WORD item)
 {
 	WORD		done;
 	WORD		curr, savwin, junk, first;
@@ -477,7 +487,7 @@ WORD __near do_filemenu(WORD item)
 } /* do_filemenu */
 
 
-WORD __near do_viewmenu(WORD item)
+MLOCAL WORD  do_viewmenu(WORD item)
 {
 	WORD		newview, newsort;
 // not in DESKTOP v1.2	LPBYTE		ptext;
@@ -533,7 +543,7 @@ WORD __near do_viewmenu(WORD item)
 
 
 
-WORD __near do_optnmenu(WORD item)
+MLOCAL WORD  do_optnmenu(WORD item)
 {
 	ANODE		*pa;
 	WORD		done, rebld, curr, ret;
@@ -640,7 +650,7 @@ WORD __near do_optnmenu(WORD item)
 }
 
 
-WORD __near hndl_button(WORD clicks, 	// bp+1e
+WORD  hndl_button(WORD clicks, 	// bp+1e
 				 WORD mx, 	  	// bp+20
 				 WORD my, 	  	// bp+22
 				 WORD button, 	// bp+24
@@ -717,7 +727,7 @@ WORD __near hndl_button(WORD clicks, 	// bp+1e
 	return(done);
 }
 
-	WORD __near
+	WORD 
 hndl_kbd(thechar)
 	WORD		thechar;
 {
@@ -812,7 +822,7 @@ hndl_kbd(thechar)
 
 
 
-WORD __near hndl_menu(WORD title, WORD item)
+WORD hndl_menu(WORD title, WORD item)
 {
 	WORD		done;
 
@@ -841,13 +851,13 @@ WORD __near hndl_menu(WORD title, WORD item)
 	return(done);
 }
 
-VOID __near wind_setl(WORD hw, WORD var, LPVOID data)
+VOID  wind_setl(WORD hw, WORD var, LPVOID data)
 {
 	wind_set(hw, var, FP_OFF(data), FP_SEG(data), 0, 0);
 }
 
 #if 0 /* Not present in DESKTOP v1.2 */
-	VOID
+MLOCAL 	VOID
 hot_close(wh)
 	WORD		wh;
 {
@@ -928,7 +938,7 @@ hot_close(wh)
 
 #endif
 
-WORD __near hndl_msg()
+WORD  hndl_msg()
 {
 	WORD		x,y,w,h;
 	WORD		done;
@@ -1066,7 +1076,7 @@ WORD __near hndl_msg()
 	return(done);
 } /* hndl_msg */
 
-VOID __near cnx_put()
+MLOCAL VOID  cnx_put()
 {
 	WORD		iwin;
 	WORD		iwsave;
@@ -1132,7 +1142,7 @@ VOID __near cnx_put()
 /************************************************************************/
 /* c n x _ o p e n							*/
 /************************************************************************/
-	VOID __near
+MLOCAL 	VOID 
 cnx_open(idx)
 	WORD		idx;
 {
@@ -1171,7 +1181,7 @@ cnx_open(idx)
 
 
 
-VOID __near cnx_get(VOID)
+MLOCAL VOID  cnx_get(VOID)
 {
 	// DESKTOP v1.2: This function is a lot more involved
 	// because CNX_OPEN is no longer a separate function.

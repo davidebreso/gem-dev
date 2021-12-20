@@ -36,7 +36,7 @@ GLOBAL OBJECT	gl_sampob[2] =
 *	Initialize all objects as children of the 0th root which is
 *	the parent of unused objects.
 */
-VOID __near obj_init(VOID)
+VOID  obj_init(VOID)
 {
 	WORD		ii;
 	LPTREE		tree;
@@ -61,7 +61,7 @@ VOID __near obj_init(VOID)
 *	Allocate a window object from the screen tree by looking for 
 *	the child of the parent with no size
 */
-	WORD __near
+	WORD 
 obj_walloc(x, y, w, h)
 	WORD		x, y, w, h;
 {
@@ -85,7 +85,7 @@ obj_walloc(x, y, w, h)
 *	Free a window object by changing its size to zero and
 *	NILing out all its children.
 */
-	VOID __near
+	VOID 
 obj_wfree(obj, x, y, w, h)
 	WORD		obj;
 {
@@ -105,7 +105,7 @@ obj_wfree(obj, x, y, w, h)
 *	next free object is found by looking for any object that
 *	is available (i.e., a next pointer of NIL).
 */
-	WORD __near
+	WORD 
 obj_ialloc(wparent, x, y, w, h)
 	WORD		wparent;
 	WORD		x, y, w, h;

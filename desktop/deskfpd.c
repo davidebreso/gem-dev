@@ -20,7 +20,7 @@
 /*
 *	Initialize the list of fnodes
 */
-VOID __near fn_init()
+MLOCAL VOID  fn_init()
 {
 	WORD		i;
 
@@ -34,7 +34,7 @@ VOID __near fn_init()
 /*
 *	Initialize the list of pnodes
 */
-VOID __near pn_init()
+MLOCAL VOID  pn_init()
 {
 	WORD		i;
 
@@ -50,7 +50,7 @@ VOID __near pn_init()
 /*
 *	Start up by initializing global variables
 */
-VOID __near fpd_start()
+VOID  fpd_start()
 {
 	G.a_wdta = ADDR(&G.g_wdta[0]);
 	G.a_wspec = ADDR(&G.g_wspec[0]);
@@ -62,7 +62,7 @@ VOID __near fpd_start()
 *	Build a filespec out of drive letter, a pointer to a path, a pointer
 *	to a filename, and a pointer to an extension.
 */
-WORD __near fpd_bldspec(WORD drive, BYTE *ppath, BYTE *pname, 
+WORD  fpd_bldspec(WORD drive, BYTE *ppath, BYTE *pname, 
 				 BYTE *pext, BYTE *pspec)
 {
 /* BUGFIX 2.1	*/
@@ -99,7 +99,7 @@ WORD __near fpd_bldspec(WORD drive, BYTE *ppath, BYTE *pname,
 *	Parse a filespec into its drive, path, name, and extension
 *	parts.
 */
-VOID __near fpd_parse(BYTE *pspec, WORD *pdrv, BYTE *ppath, BYTE *pname, 
+VOID  fpd_parse(BYTE *pspec, WORD *pdrv, BYTE *ppath, BYTE *pname, 
 			   BYTE *pext)
 {
 	BYTE		*pstart, *p1st, *plast, *pperiod;
@@ -163,7 +163,7 @@ VOID __near fpd_parse(BYTE *pspec, WORD *pdrv, BYTE *ppath, BYTE *pname,
 *	Find the file node that matches a particular object id.
 */
 
-FNODE * __near fpd_ofind(FNODE *pf, WORD obj)
+FNODE *  fpd_ofind(FNODE *pf, WORD obj)
 {
 	while(pf)
 	{
@@ -179,7 +179,7 @@ FNODE * __near fpd_ofind(FNODE *pf, WORD obj)
 *	Find the list item that is after start and points to stop item.
 */
 
-BYTE * __near fpd_elist(FNODE *pfpd, FNODE *pstop)
+MLOCAL BYTE *  fpd_elist(FNODE *pfpd, FNODE *pstop)
 {
 	while( pfpd->f_next != pstop )
 	  pfpd = pfpd->f_next;
@@ -191,7 +191,7 @@ BYTE * __near fpd_elist(FNODE *pfpd, FNODE *pstop)
 *	Free a single file node
 */
 
-VOID __near fn_free(FNODE *thefile)
+MLOCAL VOID  fn_free(FNODE *thefile)
 {
 	FNODE *fn;
 
@@ -215,7 +215,7 @@ VOID __near fn_free(FNODE *thefile)
 /*
 *	Free a list of file nodes.
 */
-VOID __near fl_free(FNODE *pflist)
+MLOCAL VOID  fl_free(FNODE *pflist)
 {
 	FNODE		*thelast;
 
@@ -243,7 +243,7 @@ VOID __near fl_free(FNODE *pflist)
 *	Allocate a file node.
 */
 
-FNODE * __near fn_alloc()
+MLOCAL FNODE *  fn_alloc()
 {
 	FNODE		*thefile;
 
@@ -261,7 +261,7 @@ FNODE * __near fn_alloc()
 *	Allocate a path node.
 */
 
-PNODE * __near pn_alloc()
+MLOCAL PNODE *  pn_alloc()
 {
 	PNODE		*thepath;
 
@@ -288,7 +288,7 @@ PNODE * __near pn_alloc()
 /*
 *	Free a path node.
 */
-VOID __near pn_free(PNODE *thepath)
+MLOCAL VOID  pn_free(PNODE *thepath)
 {
 	PNODE		*pp;
 
@@ -327,7 +327,7 @@ VOID __near pn_free(PNODE *thepath)
 /*
 *	Close a particular path.
 */
-VOID __near pn_close(PNODE *thepath)
+VOID  pn_close(PNODE *thepath)
 {
 	//dbg("pn_close(%x)\n", thepath);
 	pn_free(thepath);
@@ -336,7 +336,7 @@ VOID __near pn_close(PNODE *thepath)
 /*
 *	Open a particular path.  
 */
-PNODE * __near pn_open(WORD drive, BYTE *path, BYTE *name, BYTE *ext, WORD attr)
+PNODE *  pn_open(WORD drive, BYTE *path, BYTE *name, BYTE *ext, WORD attr)
 {
 	PNODE		*thepath;
 
@@ -368,7 +368,7 @@ PNODE * __near pn_open(WORD drive, BYTE *path, BYTE *name, BYTE *ext, WORD attr)
 *	determined by which
 */
 
-WORD __near pn_fcomp(FNODE *pf1, FNODE *pf2, WORD which)
+MLOCAL WORD  pn_fcomp(FNODE *pf1, FNODE *pf2, WORD which)
 {
 	WORD		chk;
 	BYTE		*ps1, *ps2;
@@ -419,7 +419,7 @@ WORD __near pn_fcomp(FNODE *pf1, FNODE *pf2, WORD which)
 *	the G.g_isort parameter.  Return (-1) if pf1 < pf2, (0) if
 *	pf1 == pf2, and (1) if pf1 > pf2.
 */
-WORD __near pn_comp(FNODE *pf1, FNODE *pf2)
+MLOCAL WORD  pn_comp(FNODE *pf1, FNODE *pf2)
 {
 	/* [JCE] If they're *both* fakes, then compare names */
 	if (pf1->f_attr & pf2->f_attr & F_FAKE)
@@ -451,7 +451,7 @@ MLOCAL int pn_qcomp(const void *pf1, const void *pf2)
 *
 *
 */
-FNODE * __near pn_sort(WORD lstcnt, FNODE *pflist)
+FNODE *  pn_sort(WORD lstcnt, FNODE *pflist)
 {
 	FNODE		*pf, *pftemp;
 	FNODE		*newlist;
@@ -657,7 +657,7 @@ WORD pn_active(PNODE *thepath)
 */
 
 
-WORD __near pn_active(PNODE *thepath)
+WORD  pn_active(PNODE *thepath)
 {
 	FNODE *thefile, *prevfile;
 	WORD ret;

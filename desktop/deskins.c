@@ -13,15 +13,15 @@
 #include "ppddesk.h"
 
 /* forward declarations	*/
-VOID  __near ob_actxywh();
-VOID  __near ob_relxywh();
+MLOCAL VOID   ob_actxywh();
+MLOCAL VOID   ob_relxywh();
 
 /*
 *	Routine to tell if an icon has an associated document type.
 */
 
 
-WORD __near is_installed(ANODE *pa)
+WORD  is_installed(ANODE *pa)
 {
 	return ( !((*pa->a_pappl == '*') || (*pa->a_pappl == '?') ||
 		   (*pa->a_pappl == 0)  ) );
@@ -32,7 +32,7 @@ WORD __near is_installed(ANODE *pa)
 *	Routine to find out if this icon is the last disk icon on the
 *	screen.
 */
-	WORD __near
+MLOCAL 	WORD 
 lastdisk()
 {
 	WORD 		i;
@@ -56,7 +56,7 @@ lastdisk()
 /* DESKTOP v1.2: uncommented */
 /* JCE 14-8-2005: Try to reduce the likelihood of one icon appearing 
  * atop another */
-VOID __near ins_posdisk(WORD dx, WORD dy, WORD *pdx, WORD *pdy)
+VOID  ins_posdisk(WORD dx, WORD dy, WORD *pdx, WORD *pdy)
 {
 	WORD		tx, ty, na, n, nx, ny;
 	WORD		xdiff, ydiff, xdir, ydir;
@@ -149,7 +149,7 @@ VOID __near ins_posdisk(WORD dx, WORD dy, WORD *pdx, WORD *pdy)
 *	Routine to find out if there is another icon with this letter already
 *	on the desktop.
 */
-ANODE * __near get_disk(WORD letter)
+MLOCAL ANODE *  get_disk(WORD letter)
 {
 	ANODE		*pa;
 
@@ -168,7 +168,7 @@ ANODE * __near get_disk(WORD letter)
 /* Modified 19990721 by BALJ for CD-ROM/Network icon support.           */
 /* Also added 'Unknown' button - displays 5.25" icon, for removables?   */
 /************************************************************************/
-WORD __near ins_disk(ANODE *pa)
+WORD  ins_disk(ANODE *pa)
 {			       
 	LPTREE		tree;
 	WORD		change, icon, flop, hard, cd, net, other;
@@ -284,7 +284,7 @@ WORD __near ins_disk(ANODE *pa)
 	return(change);
 } /* ins_disk */
 
-VOID __near insa_icon(LPTREE tree, WORD obj, WORD nicon, 
+MLOCAL VOID  insa_icon(LPTREE tree, WORD obj, WORD nicon, 
 			   ICONBLK *pic, BYTE *ptext)
 {
 	memcpy(pic, &G.g_iblist[nicon], sizeof(*pic));
@@ -294,7 +294,7 @@ VOID __near insa_icon(LPTREE tree, WORD obj, WORD nicon,
 }
 
 
-VOID __near insa_elev(LPTREE tree, WORD nicon, WORD numics)
+MLOCAL VOID  insa_elev(LPTREE tree, WORD nicon, WORD numics)
 {
 	WORD		y, h, th;
 	LPBYTE		lp;
@@ -326,7 +326,7 @@ VOID __near insa_elev(LPTREE tree, WORD nicon, WORD numics)
 } /* insa_elev */
 
 
-WORD __near insa_dial(LPTREE tree, WORD nicon, WORD numics)
+MLOCAL WORD  insa_dial(LPTREE tree, WORD nicon, WORD numics)
 {
 	WORD		firstslot, ystate, i;
 	WORD		touchob, oicon, value;
@@ -427,7 +427,7 @@ dofelev:	wind_update(3);
 	return(nicon);
 }
 
-VOID __near insa_gtypes(LPTREE tree, BYTE *ptypes)
+MLOCAL VOID  insa_gtypes(LPTREE tree, BYTE *ptypes)
 {
 	WORD		i, j;
 	BYTE		*pstr, doctype[4];
@@ -450,7 +450,7 @@ VOID __near insa_gtypes(LPTREE tree, BYTE *ptypes)
 
 
 
-VOID __near insa_stypes(LPTREE tree, BYTE *pdata)
+MLOCAL VOID  insa_stypes(LPTREE tree, BYTE *pdata)
 {
 	WORD		i;
 	BYTE		*pstr, doctype[4];
@@ -470,7 +470,7 @@ VOID __near insa_stypes(LPTREE tree, BYTE *pdata)
 
 #if MULTIAPP
 
-	WORD __near
+MLOCAL 	WORD 
 ins_latoi(st_ad)
 	LONG	st_ad;
 {
@@ -493,7 +493,7 @@ ins_latoi(st_ad)
 /************************************************************************/
 /* i n s _ a p p	  						*/
 /************************************************************************/
-WORD __near ins_app(BYTE *pfname, ANODE *pa)
+WORD  ins_app(BYTE *pfname, ANODE *pa)
 {			       
 	LPTREE		tree;
 	ANODE		*newpa;
@@ -655,7 +655,7 @@ WORD __near ins_app(BYTE *pfname, ANODE *pa)
 /*------------------------------*/
 /*	ob_actxywh		*/
 /*------------------------------*/
-VOID __near ob_actxywh(LPTREE tree, WORD obj, GRECT *p)
+MLOCAL VOID  ob_actxywh(LPTREE tree, WORD obj, GRECT *p)
 {
 				/* get x,y,w,h for specified object	*/
 	objc_offset(tree, obj, &p->g_x, &p->g_y);
@@ -666,7 +666,7 @@ VOID __near ob_actxywh(LPTREE tree, WORD obj, GRECT *p)
 /*------------------------------*/
 /*	ob_relxywh		*/
 /*------------------------------*/
-VOID __near ob_relxywh(LPTREE tree, WORD obj, GRECT *prect)
+MLOCAL VOID  ob_relxywh(LPTREE tree, WORD obj, GRECT *prect)
 {
 				/* get x,y,w,h for specified object	*/
 	LWCOPY(ADDR(prect), (LPVOID)&tree[obj].ob_x, sizeof(GRECT) / 2);

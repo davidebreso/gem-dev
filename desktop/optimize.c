@@ -16,12 +16,14 @@
 
 #include "ppddesk.h"
 
+/* forward declarations */
+
 EXTERN UWORD	intin[];
 EXTERN UWORD	intout[];
 EXTERN UWORD	contrl[];
 
 
-	WORD __near
+MLOCAL 	WORD 
 bit_num(flag)
 	UWORD		flag;
 {
@@ -34,7 +36,7 @@ bit_num(flag)
 	return(i);
 }
 
-VOID __near rc_constrain(LPGRECT pc, LPGRECT pt)
+VOID  rc_constrain(LPGRECT pc, LPGRECT pt)
 {
 	  if (pt->g_x < pc->g_x)
 	    pt->g_x = pc->g_x;
@@ -47,7 +49,7 @@ VOID __near rc_constrain(LPGRECT pc, LPGRECT pt)
 }
 /*
 
-VOID rc_union(LPGRECT p1, LPGRECT p2)
+MLOCAL VOID rc_union(LPGRECT p1, LPGRECT p2)
 {
 	WORD		tx, ty, tw, th;
 
@@ -80,7 +82,7 @@ rc_intersect(p1, p2)
 }
 */
 
-	WORD __near
+MLOCAL 	WORD 
 mid(lo, val, hi)
 	WORD		lo, val, hi;
 {
@@ -91,8 +93,8 @@ mid(lo, val, hi)
 	return(val);
 }
 
-	BYTE
-*  __near strscn(ps, pd, stop)
+MLOCAL 	BYTE
+*   strscn(ps, pd, stop)
 	BYTE		*ps, *pd, stop;
 {
 	while ( (*ps) &&
@@ -107,7 +109,7 @@ mid(lo, val, hi)
 /*
 *	Strip out period and turn into raw data.
 */
-	VOID __near
+	VOID 
 fmt_str(instr, outstr)
 	BYTE		*instr, *outstr;
 {
@@ -133,7 +135,7 @@ fmt_str(instr, outstr)
 /*
 *	Insert in period and make into true data.
 */
-	VOID __near
+	VOID 
 unfmt_str(instr, outstr)
 	BYTE		*instr, *outstr;
 {
@@ -160,7 +162,7 @@ unfmt_str(instr, outstr)
 }
 
 
-VOID __near fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *ptxtlen)
+MLOCAL VOID  fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *ptxtlen)
 {
 	LPTEDI spec;
 /*	char buf[82]; */
@@ -182,7 +184,7 @@ VOID __near fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *ptx
 }
 
 
-VOID __near inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
+VOID  inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
 {
 	LPBYTE		text;
 	WORD		txtlen;
@@ -191,7 +193,7 @@ VOID __near inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
 }
 
 
-VOID __near fs_sget(LPTREE tree, WORD obj, LPBYTE pstr, WORD maxlen)
+MLOCAL VOID  fs_sget(LPTREE tree, WORD obj, LPBYTE pstr, WORD maxlen)
 {
 	LPBYTE		ptext;
 
@@ -200,14 +202,14 @@ VOID __near fs_sget(LPTREE tree, WORD obj, LPBYTE pstr, WORD maxlen)
 }
 
 
-VOID __near inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
+VOID  inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
 {
 	fs_sget(tree, obj, ADDR(pstr), maxlen);
 }
 
 
 /* v3.2: Allow proper field states, not the rather blunt methods of DR GEM */
-VOID __near inf_fldset(LPTREE tree, WORD obj, 
+VOID  inf_fldset(LPTREE tree, WORD obj, 
 				UWORD testfld, UWORD testbit, 
 				UWORD truestate, UWORD falsestate)
 {
@@ -224,7 +226,7 @@ VOID __near inf_fldset(LPTREE tree, WORD obj,
 }
 
 
-WORD __near inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
+WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
 {
 	WORD		retobj;
 
@@ -242,7 +244,7 @@ WORD __near inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
 *	nothing was selected.
 */
 
-WORD __near inf_what(LPTREE tree, WORD ok, WORD cncl)
+WORD  inf_what(LPTREE tree, WORD ok, WORD cncl)
 {
 /* [JCE] Rewritten to avoid "dangerous" assumptions of object order */
 
@@ -261,8 +263,7 @@ WORD __near inf_what(LPTREE tree, WORD ok, WORD cncl)
 	return(field);
 }
 
-
-VOID __near merge_str(BYTE *pdst, BYTE *ptmp, ...)
+VOID  merge_str(BYTE *pdst, BYTE *ptmp, ...)
 {
 	va_list		ap;
 
@@ -272,6 +273,58 @@ VOID __near merge_str(BYTE *pdst, BYTE *ptmp, ...)
 	
 }
 
+VOID   merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
+{
+	WORD		do_value;
+	BYTE		lholder[12];
+	BYTE		*pnum, *psrc;
+	LONG		lvalue, divten;
+	WORD		digit;
+	
+	while(*ptmp)
+	{
+		if (*ptmp != '%') 
+		{
+			*pdst++ = *ptmp++;
+			continue;
+		}
+	    ptmp++;
+	    do_value = FALSE;
+	    switch(*ptmp++)
+	    {
+	      case '%':
+			*pdst++ = '%'; break;
+	      case 'L':
+			lvalue = va_arg(ap, LONG);
+			do_value = TRUE;
+			break;
+	      case 'W':
+			lvalue = va_arg(ap, UWORD);
+			do_value = TRUE;
+			break;
+	      case 'S':
+			psrc = va_arg(ap, BYTE *);
+			while(*psrc)
+		  		*pdst++ = *psrc++;
+			break;
+	    }
+	    if (do_value)
+	    {
+	    	pnum = &lholder[0];
+	     	while(lvalue)
+	    	{
+				divten = lvalue / 10;
+				digit  = lvalue % 10;
+				*pnum++ = '0' + ((BYTE) digit);
+				lvalue = divten;
+	      	}
+	      	if ( pnum == ((BYTE *) &lholder[0]) ) *pdst++ = '0';
+	      	else while(pnum != ((BYTE *) &lholder[0]) )
+		  		*pdst++ = *--pnum;
+	    }
+	}
+	*pdst = 0;
+}
 
 /*
 *	Routine to see if the test filename matches one of a set of 
@@ -279,7 +332,7 @@ VOID __near merge_str(BYTE *pdst, BYTE *ptmp, ...)
 *		e.g.,	pwld = "*.COM,*.EXE,*.BAT"
 *		 	ptst = "MYFILE.BAT"
 */
-WORD __near wildcmp(BYTE *pwld, BYTE *ptst)
+WORD  wildcmp(BYTE *pwld, BYTE *ptst)
 {
 	BYTE		*pwild;
 	BYTE		*ptest;
@@ -360,7 +413,7 @@ WORD __near wildcmp(BYTE *pwld, BYTE *ptst)
 /*
 *	Routine to insert a character in a string by
 */
-	VOID __near
+MLOCAL 	VOID 
 ins_char(str, pos, chr, tot_len)
 	REG BYTE	*str;
 	WORD		pos;

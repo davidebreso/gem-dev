@@ -22,7 +22,11 @@
 #define MAX_OBS 60
 #endif
 
-WORD __near gr_obfind(LPTREE tree, WORD root, WORD mx, WORD my)
+/* Forward declarations */
+MLOCAL WORD  act_chkobj(LPTREE tree, WORD root, WORD obj, WORD mx, WORD my, WORD w, WORD h);
+
+
+MLOCAL WORD  gr_obfind(LPTREE tree, WORD root, WORD mx, WORD my)
 {
 	WORD		sobj;
 
@@ -38,7 +42,7 @@ WORD __near gr_obfind(LPTREE tree, WORD root, WORD mx, WORD my)
 *	Return TRUE as long as the mouse is down.  Block until the
 *	mouse moves into or out of the specified rectangle.
 */
-WORD __near gr_isdown(WORD out, WORD x, WORD y, WORD w, WORD h, 
+MLOCAL WORD  gr_isdown(WORD out, WORD x, WORD y, WORD w, WORD h, 
 			   UWORD *pmx, UWORD *pmy, UWORD *pbutton, UWORD *pkstate)
 {
 
@@ -56,7 +60,7 @@ WORD __near gr_isdown(WORD out, WORD x, WORD y, WORD w, WORD h,
 } /* gr_isdown */
 
 
-VOID __near gr_accobs(LPTREE tree, WORD root, WORD *pnum, WORD *pxypts)
+MLOCAL VOID  gr_accobs(LPTREE tree, WORD root, WORD *pnum, WORD *pxypts)
 {
 	WORD		i;
 	LPTREE		olist;
@@ -80,7 +84,7 @@ VOID __near gr_accobs(LPTREE tree, WORD root, WORD *pnum, WORD *pxypts)
 }
 
 
-VOID __near move_drvicon(LPTREE tree, // 1C
+MLOCAL VOID  move_drvicon(LPTREE tree, // 1C
 				WORD root, 	 // 20
 				WORD x, 	 // 22
 				WORD y,		 // 24
@@ -124,7 +128,7 @@ VOID __near move_drvicon(LPTREE tree, // 1C
 /*
 *	Calculate the extent of the list of x,y points given.
 */
-	VOID  __near
+MLOCAL 	VOID  
 gr_extent(numpts, xylnpts, pt)
 	WORD		numpts;
 	WORD		*xylnpts;
@@ -156,7 +160,7 @@ gr_extent(numpts, xylnpts, pt)
 *	x,y object locations that are all relative to a certain x,y
 *	offset.
 */
-	VOID  __near
+MLOCAL 	VOID  
 gr_plns(x, y, numpts, xylnpts, numobs, xyobpts)
 	WORD		x, y;
 	WORD		numpts;
@@ -177,7 +181,7 @@ gr_plns(x, y, numpts, xylnpts, numobs, xyobpts)
 }
  
 
-	WORD  __near
+MLOCAL 	WORD  
 gr_bwait(po, mx, my, numpts, xylnpts, numobs, xyobpts)
 	GRECT		*po;
 	WORD		mx, my;
@@ -200,7 +204,7 @@ gr_bwait(po, mx, my, numpts, xylnpts, numobs, xyobpts)
 }
 
 /* DESKTOP v1.2: In later desktops this function was inlined */ 
-MLOCAL VOID __near gr_obalign(WORD numobs, WORD x, WORD y, WORD *xyobpts)
+MLOCAL VOID  gr_obalign(WORD numobs, WORD x, WORD y, WORD *xyobpts)
 {
 	WORD i, j;
 	
@@ -217,7 +221,7 @@ MLOCAL VOID __near gr_obalign(WORD numobs, WORD x, WORD y, WORD *xyobpts)
 *	This routine was formerly used to drag a list of polylines.
 *   DESKTOP v1.2: Now it does again.
 */
-VOID __near gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD numpts, 
+MLOCAL VOID  gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD numpts, 
 		   WORD *xylnpts, WORD numobs, WORD *xyobpts, 
 		   WORD *pdulx, WORD *pduly, WORD *pdwh, WORD *pdobj)
 {
@@ -358,7 +362,7 @@ gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD numpts,
 		   WORD *xylnpts, WORD numobs, WORD *xyobpts, 
 		   WORD *pdulx, WORD *pduly, WORD *pdwh, WORD *pdobj)
 */
-VOID __near gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD *pdulx, 
+MLOCAL VOID  gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD *pdulx, 
 				WORD *pduly, WORD *pdwh, WORD *pdobj)
 {
 	LPTREE		tree, curr_tree;
@@ -473,7 +477,7 @@ VOID __near gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD *pdulx,
 /*
 *	See if the bit at x,y in a rater form is on or off
 */
-	WORD __near
+MLOCAL 	WORD 
 bit_on(x, y, praster, bwidth)
 	WORD		x, y;
 	LPBYTE		praster;
@@ -495,7 +499,7 @@ bit_on(x, y, praster, bwidth)
 *	If the current view is by text strings then use the name
 *	portion of the text string.
 */
-WORD __near act_chkobj(LPTREE tree, WORD root, WORD obj, WORD mx, WORD my, WORD w, WORD h)
+MLOCAL WORD  act_chkobj(LPTREE tree, WORD root, WORD obj, WORD mx, WORD my, WORD w, WORD h)
 {
 	LPTREE		olist;
 	ICONBLK		*ib;
@@ -542,7 +546,7 @@ WORD __near act_chkobj(LPTREE tree, WORD root, WORD obj, WORD mx, WORD my, WORD 
 /*
 *	Change a single objects state.
 */
-WORD __near act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc, 
+WORD  act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc, 
 			UWORD chgvalue, WORD dochg, WORD dodraw, WORD chkdisabled)
 {
 	UWORD		curr_state;
@@ -589,7 +593,7 @@ WORD __near act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc,
 *	Change state of all objects partially intersecting the given rectangle
 *	but allow one object to be excluded.
 */
-VOID __near act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj, 
+VOID  act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj, 
 			GRECT *pt, GRECT *pc, 
 			WORD chgvalue, WORD dochg, WORD dodraw)
 {
@@ -655,7 +659,7 @@ VOID __near act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj,
 *	Single click action on the specified tree of objects.
 */
 /* BugFix	*/
-VOID __near act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my, 
+VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my, 
 				WORD keystate, GRECT *pc, WORD dclick)
 {
 	WORD		obj;
@@ -702,7 +706,7 @@ VOID __near act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my,
 /*
 *	Button stayed down over the specified tree of objects.
 */
-WORD __near act_bdown(WORD wh, 		//22
+WORD  act_bdown(WORD wh, 		//22
 				LPTREE tree, 	//24
 				WORD root, 		//28
 				WORD *in_mx, 	//2a
