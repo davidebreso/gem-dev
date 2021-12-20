@@ -37,7 +37,7 @@
 /****************************************************************
  * Create and open a window. Return handle, -1 if error.
  */
-WORD  create_window( WORD wkind, BYTE * title, BYTE * info, GRECT *work )
+WORD __near create_window( WORD wkind, BYTE * title, BYTE * info, GRECT *work )
 {
 WORD	wh ;
 
@@ -84,7 +84,7 @@ WORD	wh ;
 } /* create_window() */
 
 
-VOID  win_view(WORD vtype, WORD isort)
+VOID __near win_view(WORD vtype, WORD isort)
 {
 	G.g_iview = vtype;
 	G.g_isort = isort;
@@ -118,7 +118,7 @@ VOID  win_view(WORD vtype, WORD isort)
 */
 
 
-VOID  win_start()
+VOID __near win_start()
 {
 	WNODE		*pw;
 	WORD		i;
@@ -137,7 +137,7 @@ VOID  win_start()
 /*
 *	Free a window node.
 */
-	VOID 
+	VOID __near
 win_free(thewin)
 	WNODE		*thewin;
 {
@@ -153,7 +153,7 @@ win_free(thewin)
 /*
 *	Allocate a window for use as a folder window
 */
-WNODE *  win_alloc(WORD obid)
+WNODE * __near win_alloc(WORD obid)
 {
 	WNODE		*pw;
 	WORD		wob;
@@ -203,7 +203,7 @@ WNODE *  win_alloc(WORD obid)
 /*
 *	Find the WNODE that has this id.
 */
-	WNODE * 
+	WNODE * __near
 win_find(wh)
 	WORD		wh;
 {
@@ -220,7 +220,7 @@ win_find(wh)
 /*
 *	Bring a window node to the top of the window list.
 */
-	VOID 
+	VOID __near
 win_top(thewin)
 	WNODE		*thewin;
 {
@@ -269,7 +269,7 @@ win_cnt(level)
 *	Find the window node that is the ith from the bottom.  Where
 *	0 is the bottom (desktop surface) and 1-4 are windows.
 */
-	WNODE * 
+	WNODE * __near
 win_ith(level)
 	WORD		level;
 {
@@ -356,7 +356,7 @@ MLOCAL VOID  win_icalc(FNODE *pfnode)
 *	tree to take into account the current view of the full-screen
 *	through a window on the physical display.
 */
-VOID  win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
+VOID __near win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 {
 	FNODE		*pstart;
 	WORD		obid, skipcnt;
@@ -560,7 +560,7 @@ MLOCAL VOID  win_blt(WNODE *pw, BOOLEAN vertical, WORD newcv)
 */
 
 // DESKTOP v1.2 version
-VOID  win_slide(WORD wh, WORD sl_value, WORD vertical)
+VOID __near win_slide(WORD wh, WORD sl_value, WORD vertical)
 {
 	WNODE		*pw;
 	WORD		newcv;
@@ -605,7 +605,7 @@ VOID win_slide(WORD wh, WORD sl_value)
 *	Routine to change the current virtual row or column being viewed
 *	in the upper left corner based on a new slide amount.
 */
-VOID  win_arrow(WORD wh, WORD arrow_type)
+VOID __near win_arrow(WORD wh, WORD arrow_type)
 {
 	WNODE		*pw;
 	WORD		newcv;
@@ -651,7 +651,7 @@ VOID  win_arrow(WORD wh, WORD arrow_type)
 /*
 *	Routine to sort all existing windows again
 */
-	VOID 
+	VOID __near
 win_srtall()
 {
 	WORD		ii;
@@ -679,7 +679,7 @@ win_srtall()
 /*
 *	Routine to build all existing windows again.
 */
-	VOID 
+	VOID __near
 win_bdall()
 {
 	WORD		ii;
@@ -699,7 +699,7 @@ win_bdall()
 /*
 *	Routine to draw all existing windows.
 */
-	VOID 
+	VOID __near 
 win_shwall()
 {
 	WORD		ii;
@@ -731,7 +731,7 @@ win_shwall()
 /*
 *	Return the next icon that was selected after the current icon.
 */
-WORD  win_isel(OBJECT *olist, WORD root, WORD curr)
+WORD __near win_isel(OBJECT *olist, WORD root, WORD curr)
 {
 	if (!curr) curr = olist[root].ob_head;
 	else	   curr = olist[curr].ob_next;
@@ -749,7 +749,7 @@ WORD  win_isel(OBJECT *olist, WORD root, WORD curr)
 *	is on the desktop.
 */
 
-LPBYTE  win_iname(WORD curr)
+LPBYTE __near win_iname(WORD curr)
 {
 	LPICON		pib;
 	LPBYTE		ptext;
@@ -762,7 +762,7 @@ LPBYTE  win_iname(WORD curr)
 /*
 *	Set the name and information lines of a particular window
 */
-VOID  win_sname(WNODE *pw)
+VOID __near win_sname(WNODE *pw)
 {
 	BYTE		*psrc;
 	BYTE		*pdst;
@@ -780,7 +780,7 @@ VOID  win_sname(WNODE *pw)
 
 
 /* Added for DESKTOP v1.2 */
-VOID  win_sinfo(WNODE *pwin)
+VOID __near win_sinfo(WNODE *pwin)
 {
 	PNODE *pn;
 

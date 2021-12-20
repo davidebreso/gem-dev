@@ -21,7 +21,7 @@ MLOCAL VOID   ob_relxywh();
 */
 
 
-WORD  is_installed(ANODE *pa)
+WORD __near is_installed(ANODE *pa)
 {
 	return ( !((*pa->a_pappl == '*') || (*pa->a_pappl == '?') ||
 		   (*pa->a_pappl == 0)  ) );
@@ -56,7 +56,7 @@ lastdisk()
 /* DESKTOP v1.2: uncommented */
 /* JCE 14-8-2005: Try to reduce the likelihood of one icon appearing 
  * atop another */
-VOID  ins_posdisk(WORD dx, WORD dy, WORD *pdx, WORD *pdy)
+VOID __near ins_posdisk(WORD dx, WORD dy, WORD *pdx, WORD *pdy)
 {
 	WORD		tx, ty, na, n, nx, ny;
 	WORD		xdiff, ydiff, xdir, ydir;
@@ -168,7 +168,7 @@ MLOCAL ANODE *  get_disk(WORD letter)
 /* Modified 19990721 by BALJ for CD-ROM/Network icon support.           */
 /* Also added 'Unknown' button - displays 5.25" icon, for removables?   */
 /************************************************************************/
-WORD  ins_disk(ANODE *pa)
+WORD __near ins_disk(ANODE *pa)
 {			       
 	LPTREE		tree;
 	WORD		change, icon, flop, hard, cd, net, other;
@@ -493,7 +493,7 @@ ins_latoi(st_ad)
 /************************************************************************/
 /* i n s _ a p p	  						*/
 /************************************************************************/
-WORD  ins_app(BYTE *pfname, ANODE *pa)
+WORD __near ins_app(BYTE *pfname, ANODE *pa)
 {			       
 	LPTREE		tree;
 	ANODE		*newpa;

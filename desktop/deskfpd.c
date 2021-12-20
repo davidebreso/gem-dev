@@ -50,7 +50,7 @@ MLOCAL VOID  pn_init()
 /*
 *	Start up by initializing global variables
 */
-VOID  fpd_start()
+VOID __near fpd_start()
 {
 	G.a_wdta = ADDR(&G.g_wdta[0]);
 	G.a_wspec = ADDR(&G.g_wspec[0]);
@@ -62,7 +62,7 @@ VOID  fpd_start()
 *	Build a filespec out of drive letter, a pointer to a path, a pointer
 *	to a filename, and a pointer to an extension.
 */
-WORD  fpd_bldspec(WORD drive, BYTE *ppath, BYTE *pname, 
+WORD __near fpd_bldspec(WORD drive, BYTE *ppath, BYTE *pname, 
 				 BYTE *pext, BYTE *pspec)
 {
 /* BUGFIX 2.1	*/
@@ -99,7 +99,7 @@ WORD  fpd_bldspec(WORD drive, BYTE *ppath, BYTE *pname,
 *	Parse a filespec into its drive, path, name, and extension
 *	parts.
 */
-VOID  fpd_parse(BYTE *pspec, WORD *pdrv, BYTE *ppath, BYTE *pname, 
+VOID __near fpd_parse(BYTE *pspec, WORD *pdrv, BYTE *ppath, BYTE *pname, 
 			   BYTE *pext)
 {
 	BYTE		*pstart, *p1st, *plast, *pperiod;
@@ -163,7 +163,7 @@ VOID  fpd_parse(BYTE *pspec, WORD *pdrv, BYTE *ppath, BYTE *pname,
 *	Find the file node that matches a particular object id.
 */
 
-FNODE *  fpd_ofind(FNODE *pf, WORD obj)
+FNODE * __near fpd_ofind(FNODE *pf, WORD obj)
 {
 	while(pf)
 	{
@@ -179,7 +179,7 @@ FNODE *  fpd_ofind(FNODE *pf, WORD obj)
 *	Find the list item that is after start and points to stop item.
 */
 
-MLOCAL BYTE *  fpd_elist(FNODE *pfpd, FNODE *pstop)
+MLOCAL BYTE * __near fpd_elist(FNODE *pfpd, FNODE *pstop)
 {
 	while( pfpd->f_next != pstop )
 	  pfpd = pfpd->f_next;
@@ -327,7 +327,7 @@ MLOCAL VOID  pn_free(PNODE *thepath)
 /*
 *	Close a particular path.
 */
-VOID  pn_close(PNODE *thepath)
+VOID __near pn_close(PNODE *thepath)
 {
 	//dbg("pn_close(%x)\n", thepath);
 	pn_free(thepath);
@@ -336,7 +336,7 @@ VOID  pn_close(PNODE *thepath)
 /*
 *	Open a particular path.  
 */
-PNODE *  pn_open(WORD drive, BYTE *path, BYTE *name, BYTE *ext, WORD attr)
+PNODE * __near pn_open(WORD drive, BYTE *path, BYTE *name, BYTE *ext, WORD attr)
 {
 	PNODE		*thepath;
 
@@ -451,7 +451,7 @@ MLOCAL int pn_qcomp(const void *pf1, const void *pf2)
 *
 *
 */
-FNODE *  pn_sort(WORD lstcnt, FNODE *pflist)
+FNODE * __near pn_sort(WORD lstcnt, FNODE *pflist)
 {
 	FNODE		*pf, *pftemp;
 	FNODE		*newlist;
@@ -657,7 +657,7 @@ WORD pn_active(PNODE *thepath)
 */
 
 
-WORD  pn_active(PNODE *thepath)
+WORD __near pn_active(PNODE *thepath)
 {
 	FNODE *thefile, *prevfile;
 	WORD ret;

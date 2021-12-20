@@ -18,6 +18,9 @@ DESKLM.APP   - large model, for GEM/XM.
 Release 3.2.5 Changes (most recent at the top)
 ===============================================================================
 
+* Mixed-memory model build. This build keeps all functionalities with a 
+  memory footprint that is smaller than the Pacific C's small-model build.
+
 * Code is now compiled with Open Watcom v2 on MacOS Big Sur. "Show Content" is
   disabled on the small-model desktop. Function that calls DOS interrrupts 
   have been rewritten in ASM to keep the code segment below the 64K limit.

@@ -36,7 +36,7 @@ bit_num(flag)
 	return(i);
 }
 
-VOID  rc_constrain(LPGRECT pc, LPGRECT pt)
+VOID __near rc_constrain(LPGRECT pc, LPGRECT pt)
 {
 	  if (pt->g_x < pc->g_x)
 	    pt->g_x = pc->g_x;
@@ -109,7 +109,7 @@ MLOCAL 	BYTE
 /*
 *	Strip out period and turn into raw data.
 */
-	VOID 
+	VOID __near
 fmt_str(instr, outstr)
 	BYTE		*instr, *outstr;
 {
@@ -135,7 +135,7 @@ fmt_str(instr, outstr)
 /*
 *	Insert in period and make into true data.
 */
-	VOID 
+	VOID __near
 unfmt_str(instr, outstr)
 	BYTE		*instr, *outstr;
 {
@@ -184,7 +184,7 @@ MLOCAL VOID  fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *pt
 }
 
 
-VOID  inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
+VOID __near inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
 {
 	LPBYTE		text;
 	WORD		txtlen;
@@ -202,14 +202,14 @@ MLOCAL VOID  fs_sget(LPTREE tree, WORD obj, LPBYTE pstr, WORD maxlen)
 }
 
 
-VOID  inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
+VOID __near inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
 {
 	fs_sget(tree, obj, ADDR(pstr), maxlen);
 }
 
 
 /* v3.2: Allow proper field states, not the rather blunt methods of DR GEM */
-VOID  inf_fldset(LPTREE tree, WORD obj, 
+VOID __near inf_fldset(LPTREE tree, WORD obj, 
 				UWORD testfld, UWORD testbit, 
 				UWORD truestate, UWORD falsestate)
 {
@@ -226,7 +226,7 @@ VOID  inf_fldset(LPTREE tree, WORD obj,
 }
 
 
-WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
+WORD __near inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
 {
 	WORD		retobj;
 
@@ -244,7 +244,7 @@ WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
 *	nothing was selected.
 */
 
-WORD  inf_what(LPTREE tree, WORD ok, WORD cncl)
+WORD __near inf_what(LPTREE tree, WORD ok, WORD cncl)
 {
 /* [JCE] Rewritten to avoid "dangerous" assumptions of object order */
 
@@ -263,7 +263,7 @@ WORD  inf_what(LPTREE tree, WORD ok, WORD cncl)
 	return(field);
 }
 
-VOID  merge_str(BYTE *pdst, BYTE *ptmp, ...)
+VOID __near merge_str(BYTE *pdst, BYTE *ptmp, ...)
 {
 	va_list		ap;
 
@@ -273,7 +273,7 @@ VOID  merge_str(BYTE *pdst, BYTE *ptmp, ...)
 	
 }
 
-VOID   merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
+VOID __near  merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
 {
 	WORD		do_value;
 	BYTE		lholder[12];
@@ -332,7 +332,7 @@ VOID   merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
 *		e.g.,	pwld = "*.COM,*.EXE,*.BAT"
 *		 	ptst = "MYFILE.BAT"
 */
-WORD  wildcmp(BYTE *pwld, BYTE *ptst)
+WORD __near wildcmp(BYTE *pwld, BYTE *ptst)
 {
 	BYTE		*pwild;
 	BYTE		*ptest;

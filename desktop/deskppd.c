@@ -12,14 +12,14 @@
  * This does not work; DESKTOP's sound() binding corresponds to both v_sound()
  * and vs_mute() */
 
-WORD  desk_sound( WORD isfreq, WORD frequency, WORD duration )
+WORD __near desk_sound( WORD isfreq, WORD frequency, WORD duration )
 {
     if (isfreq) return v_sound(gl_handle, frequency, duration);
     else        return vs_mute(gl_handle, frequency);
 }
 
 
-char *scasb(char *s, char b)
+char * __near scasb(char *s, char b)
 {
 	char *t = strchr(s, b);
 
@@ -29,7 +29,7 @@ char *scasb(char *s, char b)
 
 
 
-WORD  wmax(WORD a, WORD b)
+WORD __near wmax(WORD a, WORD b)
 {
 	return (a > b) ? a : b;
 }
@@ -42,7 +42,7 @@ MLOCAL WORD  wmin(WORD a, WORD b)
 extern VOID dos_lpvoid(UWORD, LPVOID);
 
 
-VOID  dos_label(BYTE drive, BYTE *plabel)
+VOID __near dos_label(BYTE drive, BYTE *plabel)
 {
 	BYTE		label_buf[128];
 	BYTE		ex_fcb[40];
@@ -78,7 +78,7 @@ WORD LSTCPY(LPBYTE d, LPBYTE s)
 }
 
 
-VOID lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
+VOID __near lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
 {
 	while (*s) 
 	{
@@ -91,7 +91,7 @@ VOID lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
 
 
 
-VOID  r_get(GRECT *pxywh, WORD *px, WORD *py, WORD *pw, WORD *ph)
+VOID __near r_get(GRECT *pxywh, WORD *px, WORD *py, WORD *pw, WORD *ph)
 {
 	*px = pxywh->g_x;
 	*py = pxywh->g_y;
@@ -101,7 +101,7 @@ VOID  r_get(GRECT *pxywh, WORD *px, WORD *py, WORD *pw, WORD *ph)
 
 
 
-VOID  r_set(GRECT *pxywh, WORD x, WORD y, WORD w, WORD h)
+VOID __near r_set(GRECT *pxywh, WORD x, WORD y, WORD w, WORD h)
 {
 	pxywh->g_x = x;
 	pxywh->g_y = y;
@@ -109,7 +109,7 @@ VOID  r_set(GRECT *pxywh, WORD x, WORD y, WORD w, WORD h)
 	pxywh->g_h = h;
 }
 
-	UWORD  
+	UWORD __near 
 inside(x, y, pt)		/* determine if x,y is in rectangle	*/
 	WORD		x, y;
 	GRECT		*pt;
@@ -122,7 +122,7 @@ inside(x, y, pt)		/* determine if x,y is in rectangle	*/
 	} /* inside */
 
 
-VOID  rc_union(LPGRECT p1, LPGRECT p2)
+VOID __near rc_union(LPGRECT p1, LPGRECT p2)
 	{
 	WORD		tx, ty, tw, th;
 
@@ -139,7 +139,7 @@ VOID  rc_union(LPGRECT p1, LPGRECT p2)
 
 /* Get drive type. Based on BALJ's Desktop. */
 /* DB: rewrite in asm to reduce code size. */
-__declspec( naked ) WORD  dos_dtype(WORD drive)
+__declspec( naked ) WORD __near dos_dtype(WORD drive)
 {
 	_asm{
 		mov dx, ax	/* param drive is now in DX */

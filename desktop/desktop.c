@@ -177,7 +177,7 @@ MLOCAL VOID  desk_all(WORD sort)
 /*
 *	Given an icon index, go find the ANODE which it represents
 */
-ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
+ANODE * __near i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 {
 	ANODE 	*pa;
 	BYTE 	*pname;
@@ -225,7 +225,7 @@ ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 /*
 *	Enable/Disable the menu items in dlist
 */
-VOID  men_list(LPTREE mlist, BYTE *dlist, WORD enable)
+VOID __near men_list(LPTREE mlist, BYTE *dlist, WORD enable)
 {
 	while (*dlist)
 	  menu_ienable(mlist, *dlist++, enable);
@@ -650,7 +650,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 }
 
 
-WORD  hndl_button(WORD clicks, 	// bp+1e
+WORD __near hndl_button(WORD clicks, 	// bp+1e
 				 WORD mx, 	  	// bp+20
 				 WORD my, 	  	// bp+22
 				 WORD button, 	// bp+24
@@ -727,7 +727,7 @@ WORD  hndl_button(WORD clicks, 	// bp+1e
 	return(done);
 }
 
-	WORD 
+	WORD __near
 hndl_kbd(thechar)
 	WORD		thechar;
 {
@@ -822,7 +822,7 @@ hndl_kbd(thechar)
 
 
 
-WORD hndl_menu(WORD title, WORD item)
+WORD __near hndl_menu(WORD title, WORD item)
 {
 	WORD		done;
 
@@ -851,7 +851,7 @@ WORD hndl_menu(WORD title, WORD item)
 	return(done);
 }
 
-VOID  wind_setl(WORD hw, WORD var, LPVOID data)
+VOID __near wind_setl(WORD hw, WORD var, LPVOID data)
 {
 	wind_set(hw, var, FP_OFF(data), FP_SEG(data), 0, 0);
 }
@@ -938,7 +938,7 @@ hot_close(wh)
 
 #endif
 
-WORD  hndl_msg()
+WORD __near hndl_msg()
 {
 	WORD		x,y,w,h;
 	WORD		done;

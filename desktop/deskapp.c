@@ -65,7 +65,7 @@ VOID strlcat(char *dest, char *src, int len)
 /*
 *	Allocate an application object.
 */
-ANODE *  app_alloc(WORD tohead)
+ANODE * __near app_alloc(WORD tohead)
 {
 	ANODE		*pa, *ptmpa;
 
@@ -96,7 +96,7 @@ ANODE *  app_alloc(WORD tohead)
 *	Free an application object.
 */
 
-VOID  app_free(ANODE *pa)
+VOID __near app_free(ANODE *pa)
 {
 	ANODE		*ptmpa;
 
@@ -223,7 +223,7 @@ MLOCAL BYTE *  save_memsz(BYTE *pcurr, UWORD wd)
 *
 */
 
-BYTE *  scan_str(BYTE *pcurr, BYTE **ppstr)
+BYTE * __near scan_str(BYTE *pcurr, BYTE **ppstr)
 {
 	/* Skip over spaces */
 	while(*pcurr == ' ') pcurr++;
@@ -262,7 +262,7 @@ MLOCAL BYTE *  save_str(BYTE *pcurr, BYTE *pstr)
 /*
 *       Autodetect disc drives - Ben A. L. Jemmett, 19990828
 */
-VOID  app_detect()
+VOID __near app_detect()
 {
         WORD            i, ii, ndisks, dtype, dup;
         ANODE           *pa;
@@ -442,7 +442,7 @@ MLOCAL BYTE *  app_parse(BYTE *pcurr, ANODE *pa)
 	return(pcurr);
 }
 
-VOID  app_tran(WORD bi_num)
+VOID __near app_tran(WORD bi_num)
 {
 	LPBIT		lpbi;
 	BITBLK		lb;
@@ -766,7 +766,7 @@ MLOCAL WORD  app_start2()
 *	file, either from memory or from the disk if the shel_get
 *	indicates no message is there.
 */
-WORD  app_start()
+WORD __near app_start()
 {
 	WORD		i;
 	ANODE		*pa;
@@ -926,7 +926,7 @@ MLOCAL VOID  app_revit()
 *	Save the current state of all the icons to a file called 
 *	DESKTOP.INF
 */
-WORD  app_save(WORD todisk)
+WORD __near app_save(WORD todisk)
 {
 	WORD		i, fh, ret;
 	UWORD		envr;
@@ -1102,7 +1102,7 @@ WORD  app_save(WORD todisk)
 *	application list.
 */
 
-BYTE  app_blddesk()
+BYTE __near app_blddesk()
 {
 	WORD		obid;
 	ULONG		bvdisk, bvhard, bvect;
@@ -1172,7 +1172,7 @@ BYTE  app_blddesk()
 /*
 *	Find the ANODE that is appropriate for this object.
 */
-ANODE *  app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *pisapp)
+ANODE * __near app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *pisapp)
 {
 	ANODE		*pa;
 

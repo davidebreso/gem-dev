@@ -25,7 +25,7 @@ MLOCAL WORD  cmp_names(BYTE *psrc, BYTE *pdst);
 *	Routine to transfer a string that requires integrated variables
 *	that are merged in.  The resultant alert is then displayed;
 */
-WORD  fun_alert(WORD defbut, WORD stnum, ...)
+WORD __near fun_alert(WORD defbut, WORD stnum, ...)
 {
 	va_list ap;
 	va_start(ap, stnum);
@@ -41,7 +41,7 @@ WORD  fun_alert(WORD defbut, WORD stnum, ...)
 }
 
 
-VOID  fun_msg(WORD type, WORD w3, WORD w4, WORD w5, 
+VOID __near fun_msg(WORD type, WORD w3, WORD w4, WORD w5, 
 			 WORD w6, WORD w7)
 {
 	/* keep DESKTOP messages internal to DESKTOP -- no AES call	*/
@@ -59,7 +59,7 @@ VOID  fun_msg(WORD type, WORD w3, WORD w4, WORD w5,
 /*
 *	Rebuild window path and pflist
 */
-VOID  fun_rebld(WNODE *pwin)
+VOID __near fun_rebld(WNODE *pwin)
 {
 	WORD		i, x, y, w, h;
 	BYTE		*ptst;
@@ -92,7 +92,7 @@ VOID  fun_rebld(WNODE *pwin)
 /*
 *	Routine that creates a new directory in the specified window/path
 */
-WORD  fun_mkdir(WNODE *pw_node)
+WORD __near fun_mkdir(WNODE *pw_node)
 {
 	PNODE		*pp_node;
 	LPTREE		tree;
@@ -148,7 +148,7 @@ WORD  fun_mkdir(WNODE *pw_node)
 	return(TRUE);
 } /* fun_mkdir */
 
-WORD  fun_op(WORD op, PNODE *pspath, BYTE *pdest, 
+WORD __near fun_op(WORD op, PNODE *pspath, BYTE *pdest, 
 			WORD dulx, WORD duly, WORD from_disk, WORD src_ob)
 {
 	WORD		fcnt, dcnt;
@@ -334,7 +334,7 @@ MLOCAL WORD  fun_disk(WORD src_ob, WNODE *pdw, WORD datype, FNODE *pdf, WORD dul
 *	window to another window (it might be the same window) and 
 *	dropped on a particular icon or open space.
 */
-VOID  fun_drag(WORD src_wh, WORD dst_wh, WORD dst_ob, WORD dulx, WORD duly)
+VOID __near fun_drag(WORD src_wh, WORD dst_wh, WORD dst_ob, WORD dulx, WORD duly)
 {
 	WORD		ret, junk, datype, src_ob, do_both;
 	WNODE		*psw, *pdw;

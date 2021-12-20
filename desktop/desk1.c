@@ -46,7 +46,7 @@ MLOCAL WORD  w_setpath(WNODE *pw, WORD drv, BYTE *path, BYTE *name, BYTE *ext)
 	return res;
 }
 
-WORD  true_closewnd(WNODE *pw)
+WORD __near true_closewnd(WNODE *pw)
 {
 	GRECT rc;	// ich xoff yoff bp10
 	WORD  res = 0;
@@ -62,7 +62,7 @@ WORD  true_closewnd(WNODE *pw)
 }
 
 
-WORD  fun_close(WNODE *pw, WORD trueclose)
+WORD __near fun_close(WNODE *pw, WORD trueclose)
 {
 	BYTE *ppath, *pend;
 	BYTE ext[4];	// bp+50h
@@ -99,7 +99,7 @@ WORD  fun_close(WNODE *pw, WORD trueclose)
 }	
 
 
-WNODE *  win_ontop()
+WNODE * __near win_ontop()
 {
 	WORD tail    = G.g_screen->ob_tail;
 
@@ -109,7 +109,7 @@ WNODE *  win_ontop()
 
 
 /* Align drive icon on a grid */
-VOID  snap_disk(WORD x, WORD y, LPWORD px, LPWORD py)
+VOID __near snap_disk(WORD x, WORD y, LPWORD px, LPWORD py)
 {
 	WORD xgrid, ygrid, icw, ich, xoff, yoff;
 
@@ -309,7 +309,7 @@ MLOCAL VOID  fun_desk2desk(WORD dobj)
 
 
 
-WORD  desk1_drag(WORD wh, WORD dest_wh, WORD sobj, WORD dobj, WORD mx, WORD my)
+WORD __near desk1_drag(WORD wh, WORD dest_wh, WORD sobj, WORD dobj, WORD mx, WORD my)
 {
 	WORD done = 0;
 

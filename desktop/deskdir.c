@@ -47,7 +47,7 @@ MLOCAL VOID  draw_dial(LPTREE tree)
 } /* draw_dial */
 
 
-VOID  show_hide(WORD fmd, LPTREE tree)
+VOID __near show_hide(WORD fmd, LPTREE tree)
 {
 	WORD		xd, yd, wd, hd;
 
@@ -79,7 +79,7 @@ do_namecon()
 *	Draw a single field of a dialog box
 */
 
-VOID  draw_fld(LPTREE tree, WORD obj)
+VOID __near draw_fld(LPTREE tree, WORD obj)
 {
 	GRECT		t;
 
@@ -89,7 +89,7 @@ VOID  draw_fld(LPTREE tree, WORD obj)
 } /* draw_fld */
 
 
-BYTE *  scan_slsh(BYTE *path)
+BYTE * __near scan_slsh(BYTE *path)
 {
 						/* scan to first '*'	*/
 	while (*path != '*')
@@ -138,7 +138,7 @@ MLOCAL VOID  sub_path(BYTE *path)
 /*
 *	Add a file name to the end of an existing path.
 */
-VOID  add_fname(BYTE *path, BYTE *new_name, WORD buflen)
+VOID __near add_fname(BYTE *path, BYTE *new_name, WORD buflen)
 {
 	while (*path != '*')
 	{
@@ -155,7 +155,7 @@ VOID  add_fname(BYTE *path, BYTE *new_name, WORD buflen)
 */
 
 
-MLOCAL WORD  fold_wind(BYTE *path)
+MLOCAL WORD fold_wind(BYTE *path)
 {
 	WORD		i;
 	WNODE		*pwin;
@@ -236,7 +236,7 @@ MLOCAL WORD same_fold(BYTE *psrc, BYTE *pdst)
 *	an \*.*
 */
 
-VOID  del_fname(BYTE *pstr)
+VOID __near del_fname(BYTE *pstr)
 {
 	while (*pstr)
 	  pstr++;
@@ -262,7 +262,7 @@ MLOCAL VOID  get_fname(BYTE *pstr, BYTE *newstr)
 } /* get_fname */
 
 
-	WORD 
+	WORD __near
 d_errmsg()
 {
 	if (DOS_ERR)
@@ -446,7 +446,7 @@ MLOCAL WORD  d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 /*
 *	Directory routine to DO an operation on an entire sub-directory.
 */
-WORD  d_doop(WORD op, LPTREE tree, WORD obj, BYTE *psrc_path, 
+WORD __near d_doop(WORD op, LPTREE tree, WORD obj, BYTE *psrc_path, 
 	    BYTE *pdst_path, WORD srcpthlen, WORD dstpthlen,
 	    WORD *pfcnt, WORD *pdcnt, WORD flag)
 {			       
@@ -610,7 +610,7 @@ ret_path(pcurr)
 *	Return TRUE if all ok else FALSE.
 * 	Must assume that src and dst paths both end with "\*.*".
 */
-	WORD  
+	WORD __near 
 par_chk(psrc_path, pflist, pdst_path)
 	BYTE	*psrc_path;
 	FNODE	*pflist;
@@ -765,7 +765,7 @@ MLOCAL WORD sset_tree(LPTREE tree, WORD fcnt, WORD dcnt)
 *	folders in the source path.  The selected files and folders are 
 *	marked in the source file list.
 */
-	WORD  
+	WORD __near 
 dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
        dulx, duly, from_disk, src_ob)
 	WORD		op;
