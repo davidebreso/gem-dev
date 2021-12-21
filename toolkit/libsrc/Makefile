@@ -56,13 +56,10 @@ SOURCE = ems_all.c ems_fp.c ems_free.c ems_fs.c ems_map.c ems_np.c \
 	 x_duy_xf.c x_mul_di.c x_saspec.c x_sxform.c x_udx_sc.c x_udx_xf.c \
 	 x_udx_yf.c x_udy_sc.c x_ytox.c xfmlib.c
 
-all:	../lib/wccgem-l.lib ../lib/wccgem-m.lib ../lib/wccgem-s.lib
+all:	../lib/wccgem-l.lib ../lib/wccgem-s.lib
 
 ../lib/wccgem-l.lib: large/wccgem-l.lib 
 	cp large/wccgem-l.lib ../lib/wccgem-l.lib
-
-../lib/wccgem-m.lib: medium/wccgem-m.lib
-	cp medium/wccgem-m.lib ../lib/wccgem-m.lib
 
 ../lib/wccgem-s.lib: small/wccgem-s.lib
 	cp small/wccgem-s.lib ../lib/wccgem-s.lib
@@ -70,21 +67,20 @@ all:	../lib/wccgem-l.lib ../lib/wccgem-m.lib ../lib/wccgem-s.lib
 large/wccgem-l.lib: $(SOURCE)
 	$(MAKE) -C large
 
-medium/wccgem-m.lib: $(SOURCE)
-	$(MAKE) -C medium
-
 small/wccgem-s.lib: $(SOURCE)
 	$(MAKE) -C small
 
 tidy:
+	rm -f ../lib/wccgem-l.lib 
+	rm -f ../lib/wccgem-s.lib
 	rm -f *.bak
 	$(MAKE) -C small tidy
-	$(MAKE) -C medium tidy
 	$(MAKE) -C large tidy
 
 clean:	
+	rm -f ../lib/wccgem-l.lib 
+	rm -f ../lib/wccgem-s.lib
 	rm -f *.bak
 	rm -f *.err
 	$(MAKE) -C small clean
-	$(MAKE) -C medium clean
 	$(MAKE) -C large clean

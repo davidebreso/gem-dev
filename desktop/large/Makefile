@@ -20,10 +20,10 @@ desktop.app:	$(OBJECTS)
 	$(LD) name $@ system dos file \{ $(OBJECTS) \} lib $(LIBDIR)/wccgem-l.lib option map=test.map
 
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
-	$(CC) -nt="_TEXT" -ml $(CFLAGS) -fo=$@ $< 
+	$(CC) -ml $(CFLAGS) -fo=$@ $< 
 
 %.obj:	../%.asm
-	$(AS) -0 $< -fo=$@ -ml -nt="_TEXT"
+	$(AS) -0 $< -fo=$@ -ml
 
 clean:
 	rm -f *.obj 
