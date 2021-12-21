@@ -53,7 +53,7 @@ MLOCAL VOID  pro_chcalc(LONG appsize, LPBYTE *begaddr, LONG *chsize)
 #endif
 
 
-WORD __near pro_chdir(WORD drv, BYTE *ppath)
+WORD  pro_chdir(WORD drv, BYTE *ppath)
 {
 	WORD		tmpdrv;
 						/* change to directory	*/
@@ -95,7 +95,7 @@ WORD __near pro_chdir(WORD drv, BYTE *ppath)
 	return(TRUE);
 } /* pro_chdir */
 
-WORD __near pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag)
+WORD  pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag)
 {
 	LPBYTE		lp;
 	WORD		i, ii, drv;
@@ -146,7 +146,7 @@ WORD __near pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag)
 } /* pro_cmd */
 
 
-WORD __near pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr)
+WORD  pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr)
 {
 	WORD		ret, len, i;
 
@@ -234,7 +234,7 @@ dbg("PTAIL  = %s\r\n", ptail);
 
 
 
-WORD __near pro_exit(LPBYTE pcmd, LPBYTE ptail)
+WORD  pro_exit(LPBYTE pcmd, LPBYTE ptail)
 {
 	WORD		ret;
 

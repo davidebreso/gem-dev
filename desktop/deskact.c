@@ -546,7 +546,7 @@ MLOCAL WORD  act_chkobj(LPTREE tree, WORD root, WORD obj, WORD mx, WORD my, WORD
 /*
 *	Change a single objects state.
 */
-WORD __near act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc, 
+WORD  act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc, 
 			UWORD chgvalue, WORD dochg, WORD dodraw, WORD chkdisabled)
 {
 	UWORD		curr_state;
@@ -593,7 +593,7 @@ WORD __near act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc,
 *	Change state of all objects partially intersecting the given rectangle
 *	but allow one object to be excluded.
 */
-VOID __near act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj, 
+VOID  act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj, 
 			GRECT *pt, GRECT *pc, 
 			WORD chgvalue, WORD dochg, WORD dodraw)
 {
@@ -659,7 +659,7 @@ VOID __near act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj,
 *	Single click action on the specified tree of objects.
 */
 /* BugFix	*/
-VOID __near act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my, 
+VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my, 
 				WORD keystate, GRECT *pc, WORD dclick)
 {
 	WORD		obj;
@@ -706,7 +706,7 @@ VOID __near act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my,
 /*
 *	Button stayed down over the specified tree of objects.
 */
-WORD __near act_bdown(WORD wh, 		//22
+WORD  act_bdown(WORD wh, 		//22
 				LPTREE tree, 	//24
 				WORD root, 		//28
 				WORD *in_mx, 	//2a

@@ -243,7 +243,7 @@ WORD dr_code(LPPARM pparms)
 /*
 *	Put up dialog box & call form_do.
 */
-WORD __near inf_show(LPTREE tree, WORD start)
+WORD  inf_show(LPTREE tree, WORD start)
 {
 	WORD		xd, yd, wd, hd;
 
@@ -328,7 +328,7 @@ MLOCAL VOID  inf_dttmsz(LPTREE tree, FNODE *pf, WORD dl_dt, WORD dl_tm, WORD dl_
 /************************************************************************/
 /* i n f _ f i l e							*/
 /************************************************************************/
-WORD __near inf_file(BYTE *ppath, FNODE *pfnode)
+WORD  inf_file(BYTE *ppath, FNODE *pfnode)
 {
 	LPTREE		tree;
 	WORD		attr, more, nmidx;
@@ -401,7 +401,7 @@ WORD __near inf_file(BYTE *ppath, FNODE *pfnode)
 /************************************************************************/
 /* i n f _ f o l d e r							*/
 /************************************************************************/
-WORD __near inf_folder(BYTE *ppath, FNODE *pf)
+WORD  inf_folder(BYTE *ppath, FNODE *pf)
 {
 	LPTREE		tree;
 	WORD		more;
@@ -433,7 +433,7 @@ WORD __near inf_folder(BYTE *ppath, FNODE *pf)
 /************************************************************************/
 /* i n f _ d i s k							*/
 /************************************************************************/
-WORD __near inf_disk(BYTE dr_id)
+WORD  inf_disk(BYTE dr_id)
 {
 	LPTREE		tree;
 	LONG		total, avail;
@@ -474,7 +474,7 @@ WORD __near inf_disk(BYTE dr_id)
 /*
 *	Set preferences dialog.
 */
-	WORD __near
+	WORD 
 inf_pref()
 {
 	LPTREE		tree;
@@ -596,7 +596,7 @@ inf_pref()
 /*
 *	Open application icon
 */
-WORD __near opn_appl(BYTE *papname, BYTE *papparms, BYTE *pcmd, BYTE *ptail, 
+WORD  opn_appl(BYTE *papname, BYTE *papparms, BYTE *pcmd, BYTE *ptail, 
 		WORD taillen)
 {
 	LPTREE		tree;

@@ -42,7 +42,7 @@ MLOCAL VOID  gsx_vclose()
 }
 
 
-VOID __near gsx_vopen()
+VOID  gsx_vopen()
 {
 	WORD		i;
 	WORD		intin[11];
@@ -55,13 +55,13 @@ VOID __near gsx_vopen()
 
 
 
-VOID __near gsx_mon() 
+VOID  gsx_mon() 
 {
 	graf_mouse(M_ON, 0x0L);
 }
 
 
-VOID __near gsx_moff() 
+VOID  gsx_moff() 
 {
 	graf_mouse(M_OFF, 0x0L);
 }

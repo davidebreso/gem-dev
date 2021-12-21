@@ -82,7 +82,7 @@ GLOBAL WORD	gl_font;
 *	is 0, then no clip should be set.  Ohterwise, set the 
 *	appropriate clip.
 */
-WORD __near gsx_sclip(GRECT *pt)
+WORD  gsx_sclip(GRECT *pt)
 {
 	WORD ptsin[4];
 	
@@ -104,7 +104,7 @@ WORD __near gsx_sclip(GRECT *pt)
 /*
 *	Routine to get the current clip setting
 */
-VOID __near gsx_gclip(GRECT *pt)
+VOID  gsx_gclip(GRECT *pt)
 {
 	r_set(pt, gl_xclip, gl_yclip, gl_wclip, gl_hclip);
 }
@@ -140,7 +140,7 @@ MLOCAL VOID  gsx_xline( WORD ptscount, WORD *ppoints )
 *	Routine to draw a certain number of points in a polyline
 *	relative to a given x,y offset.
 */
-VOID __near gsx_pline(WORD offx, WORD offy, WORD cnt, WORD *pts)
+VOID  gsx_pline(WORD offx, WORD offy, WORD cnt, WORD *pts)
 {
 	WORD		i, j, lcnt;
 	WORD 		ptsin[80];
@@ -169,7 +169,7 @@ VOID __near gsx_pline(WORD offx, WORD offy, WORD cnt, WORD *pts)
 /*
 *	Routine to set the text, writing mode, and color attributes.
 */
-VOID __near gsx_attr(UWORD text, UWORD mode, UWORD color)
+VOID  gsx_attr(UWORD text, UWORD mode, UWORD color)
 {
 	if (mode != gl_mode) vswr_mode(gl_handle, gl_mode = mode);
 	if (text)
@@ -185,7 +185,7 @@ VOID __near gsx_attr(UWORD text, UWORD mode, UWORD color)
 /*
 *	Routine to fix up the MFDB of a particular raster form
 */
-VOID __near gsx_fix(MFDB *pfd, LPVOID theaddr, WORD wb, WORD h)
+VOID  gsx_fix(MFDB *pfd, LPVOID theaddr, WORD wb, WORD h)
 {
 	if (theaddr == ORGADDR)
 	{
@@ -243,7 +243,7 @@ MLOCAL VOID  gsx_blt(LPVOID saddr, UWORD sx, UWORD sy, UWORD swb,
 /*
 *	Routine to blit around something on the screen
 */
-VOID __near bb_screen(WORD scrule, WORD scsx, WORD scsy, 
+VOID  bb_screen(WORD scrule, WORD scsx, WORD scsy, 
 				WORD scdx, WORD scdy, WORD scw, WORD sch)
 {
 	gsx_blt(0x0L, scsx, scsy, 0, 
@@ -255,7 +255,7 @@ VOID __near bb_screen(WORD scrule, WORD scsx, WORD scsy,
 *	Routine to transform a standard form to device specific
 *	form.
 */
-VOID __near gsx_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
+VOID  gsx_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
 {
 	gsx_fix(&gl_src, saddr, swb, h);
 	gl_src.ff = TRUE;
@@ -269,7 +269,7 @@ VOID __near gsx_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
 *	Routine to initialize all the global variables dealing
 *	with a particular workstation open
 */
-VOID __near gsx_start()
+VOID  gsx_start()
 {
 	WORD		char_height, nc;
 
@@ -306,7 +306,7 @@ VOID __near gsx_start()
 	r_set(&gl_rmenu, 0, 0, gl_width, gl_hbox);
 }
 
-VOID __near gsx_tblt(WORD tb_f, WORD x, WORD y, WORD tb_nc, BYTE *txt)
+VOID  gsx_tblt(WORD tb_f, WORD x, WORD y, WORD tb_nc, BYTE *txt)
 {
 	WORD		pts_height;
 
@@ -328,7 +328,7 @@ VOID __near gsx_tblt(WORD tb_f, WORD x, WORD y, WORD tb_nc, BYTE *txt)
 /*
 *	Routine to do a filled bit blit, (a rectangle).
 */
-VOID __near bb_fill(WORD mode, WORD fis, WORD patt, WORD hx, WORD hy, WORD hw, WORD hh)
+VOID  bb_fill(WORD mode, WORD fis, WORD patt, WORD hx, WORD hy, WORD hw, WORD hh)
 {
 	WORD ptsin[4];
 	

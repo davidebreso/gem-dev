@@ -27,7 +27,7 @@ MLOCAL WORD ini_tree(WORD which);
 MLOCAL VOID map_tree(LPTREE tree, WORD first, WORD last, MAPROUTINE routine);
 MLOCAL VOID menu_cleanup(LPTREE tr, WORD obj);
 
-VOID __near rsrc_init(VOID)
+VOID  rsrc_init(VOID)
 {
 	WORD n;
 	LPTREE tree;
@@ -44,7 +44,7 @@ VOID __near rsrc_init(VOID)
 }
 
 
-BYTE * __near ini_str(WORD stnum)
+BYTE *  ini_str(WORD stnum)
 {
 	LPBYTE	lstr;
 
@@ -71,7 +71,7 @@ BYTE * __near ini_str(WORD stnum)
 	
 MLOCAL WORD gem5 = -1;
 	
-VOID make_cbox(LPTREE tr, WORD obj)
+VOID  make_cbox(LPTREE tr, WORD obj)
 {	
 	if ((tr[obj].ob_state & EXT3D) == EXT3D)
 	{
