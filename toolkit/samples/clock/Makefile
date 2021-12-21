@@ -13,13 +13,13 @@ all:	../clock-l.app ../clock-s.app # ../clock-l.acc ../clock-s.acc
 	../../bin/exe2acc $< $@
 
 clock-l.app:	clock-l.obj
-	$(LD) name $@ system dos file \{ $< ../../lib/wccgem-l.lib \}
+	$(LD) name $@ system dos file \{ $< \} lib ../../lib/wccgem-l.lib
 
 clock-l.obj:	clock.c
 	$(CC) -ml $(CFLAGS) -fo=$@ $<
 
 clock-s.app:	clock-s.obj
-	$(LD) name $@ system dos file \{ $< ../../lib/wccgem-s.lib \}
+	$(LD) name $@ system dos file \{ $< \} lib ../../lib/wccgem-s.lib 
 
 clock-s.obj:	clock.c
 	$(CC) -ms $(CFLAGS) -fo=$@ $< 

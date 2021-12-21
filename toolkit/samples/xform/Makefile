@@ -12,10 +12,10 @@ all:	../xform-l.app ../xform-s.app ../xform.rsc
 	cp xform.rsc ..
 
 xform-l.app:	xform.c xform.h
-	$(CC) -ml $(CFLAGS) -fe=$@ xform.c ../main-l.obj ../../lib/wccgem-l.lib
+	$(CC) -ml $(CFLAGS) -fe=$@ xform.c -fm=xform-l.map ../main-l.obj ../../lib/wccgem-l.lib
 
 xform-s.app:	xform.c xform.h
-	$(CC) -ms $(CFLAGS) -fe=$@ xform.c ../main-s.obj ../../lib/wccgem-s.lib
+	$(CC) -ms $(CFLAGS) -fe=$@ xform.c -fm=xform-s.map ../main-s.obj ../../lib/wccgem-s.lib
 
 tidy:
 	rm -f *.obj

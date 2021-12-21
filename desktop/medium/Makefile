@@ -17,7 +17,7 @@ OBJECTS=$(OBJECTS0) $(OBJECTS1) $(OBJECTS2) $(OBJECTS3) $(OBJECTS4) $(OBJECTS5)
 all:	desktop.app
 
 desktop.app:	$(OBJECTS) 
-	$(LD) name $@ system dos file \{ $(OBJECTS) $(LIBDIR)/wccgem-m.lib \} option map=test.map
+	$(LD) name $@ system dos file \{ $(OBJECTS) \} lib $(LIBDIR)/wccgem-m.lib option map=test.map
 
 %.obj:	../%.c ../deskprot.h ../desktop.h ../ppddesk.h
 	$(CC) -nt="_TEXT" -mm $(CFLAGS) -fo=$@ $< 

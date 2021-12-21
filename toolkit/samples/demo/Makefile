@@ -13,13 +13,13 @@ all:	../demo-l.app ../demo-s.app ../demo.rsc
 	cp demo.rsc ..
 
 demo-l.app:	demo-l.obj
-	$(LD) name $@ system dos file \{ $< ../main-l.obj ../../lib/wccgem-l.lib \} option map=demo-l
+	$(LD) name $@ system dos file \{ $< ../main-l.obj\} lib ../../lib/wccgem-l.lib option map=demo-l
 
 demo-l.obj:	demo.c demo.h 
 	$(CC) -ml $(CFLAGS) -fo=$@ $< 
 
 demo-s.app:	demo-s.obj
-	$(LD) name $@ system dos file \{ $< ../main-s.obj ../../lib/wccgem-s.lib \} option map=demo-s
+	$(LD) name $@ system dos file \{ $< ../main-s.obj \} lib ../../lib/wccgem-s.lib option map=demo-s
 
 demo-s.obj:	demo.c demo.h
 	$(CC) -ms $(CFLAGS) -fo=$@ $< 

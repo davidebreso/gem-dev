@@ -13,13 +13,13 @@ all:	../hello-l.app ../hello-s.app ../hello-l.acc ../hello-s.acc
 	cp $< ..
 
 hello-l.app:	hello-l.obj
-	$(LD) name $@ system dos file \{ $< ../main-l.obj ../../lib/wccgem-l.lib \}
+	$(LD) name $@ system dos file \{ $< ../main-l.obj \} lib ../../lib/wccgem-l.lib option map
 	
 hello-l.obj:	hello.c
 	$(CC) -ml $(CFLAGS) -fo=$@ $<	
 
 hello-s.app:	hello-s.obj
-	$(LD) name $@ system dos file \{ $< ../main-s.obj ../../lib/wccgem-s.lib \}
+	$(LD) name $@ system dos file \{ $< ../main-s.obj\} lib ../../lib/wccgem-s.lib option map
 
 hello-s.obj:	hello.c
 	$(CC) -ms $(CFLAGS) -fo=$@ $<	
