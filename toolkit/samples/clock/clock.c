@@ -23,7 +23,7 @@ Research Inc. / 70 Garden Court / BOX DRI / Monterey, CA 93940.
 *******************************************************************************
 *******************************************************************************/
 
-#include "ppdgem.h"				/* portable coding conv	*/
+#include "wccgem.h"				/* portable coding conv	*/
 
 #include <dos.h>	/* For fp_off & fp_seg */
 #include <time.h>	/* For time() */

@@ -13,7 +13,7 @@
 /* 19990831 - BALJ - File created, cd_isdrvcd() added.  */
 /* 19991230 - BALJ - Finally got it working!            */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 /********************************************************
  * External function definitions                        * 

@@ -14,7 +14,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 /* forward declarations */
 

@@ -15,7 +15,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 /* forward declarations */
 MLOCAL WORD  pro_exec(WORD isgraf, WORD isover, LPBYTE pcmd, LPBYTE ptail);

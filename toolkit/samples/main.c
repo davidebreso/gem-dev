@@ -1,7 +1,7 @@
 
 /* A quick main() for GEM apps */
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include <dos.h>
 #include <conio.h>
 

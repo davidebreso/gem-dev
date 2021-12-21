@@ -15,7 +15,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 /*
 *	Clear out the selections for this particular window

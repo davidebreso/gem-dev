@@ -11,53 +11,53 @@ OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj 
           rc_inter.obj x_dux_sc.obj x_dux_xf.obj x_duy_sc.obj x_duy_xf.obj x_mul_di.obj \
           x_saspec.obj x_sxform.obj x_udx_sc.obj x_udx_xf.obj x_udx_yf.obj x_udy_sc.obj \
           x_ytox.obj xfmlib.obj formdo.obj ev_event.obj trimage.obj \
-	  ppdd000.obj ppdd001.obj ppdd002.obj ppdd003.obj ppdd004.obj ppdd005.obj \
-	  ppdd006.obj ppdd007.obj ppdd008.obj ppdd009.obj ppdd010.obj ppdd011.obj \
-	  ppdd012.obj ppdd013.obj ppdd014.obj ppdd015.obj ppdd016.obj ppdd017.obj \
-	  ppdd018.obj ppdd019.obj ppdd020.obj ppdd021.obj ppdd022.obj ppdd023.obj \
-	  ppdd024.obj ppdd025.obj ppdd026.obj ppdd027.obj ppdd028.obj ppdfdraw.obj \
-	  ppdg000.obj ppdg001.obj ppdg002.obj ppdg003.obj ppdg004.obj ppdg005.obj \
-	  ppdg006.obj ppdg007.obj ppdg008.obj ppdg009.obj ppdg010.obj ppdg011.obj \
-	  ppdg012.obj ppdg013.obj ppdg014.obj ppdg015.obj ppdg016.obj ppdg017.obj \
-	  ppdg018.obj ppdg019.obj ppdg020.obj ppdg021.obj ppdg022.obj ppdg023.obj \
-	  ppdg024.obj ppdg025.obj ppdg026.obj ppdg027.obj ppdg028.obj ppdg029.obj \
-	  ppdg030.obj ppdg031.obj ppdg032.obj ppdg033.obj ppdg034.obj ppdg035.obj \
-	  ppdg036.obj ppdg037.obj ppdg038.obj ppdg039.obj ppdg040.obj ppdg041.obj \
-	  ppdg042.obj ppdg043.obj ppdg044.obj ppdg045.obj ppdg046.obj ppdg047.obj \
-	  ppdg048.obj ppdg049.obj ppdg050.obj ppdg051.obj ppdg052.obj ppdg053.obj \
-	  ppdg054.obj ppdg055.obj ppdg056.obj ppdg057.obj ppdg058.obj ppdg059.obj \
-	  ppdg060.obj ppdg061.obj ppdg062.obj ppdg063.obj ppdg064.obj ppdg065.obj \
-	  ppdg066.obj ppdg067.obj ppdg068.obj ppdg069.obj ppdg070.obj ppdg071.obj \
-	  ppdg072.obj ppdg073.obj ppdg074.obj ppdg075.obj ppdg076.obj ppdg077.obj \
-	  ppdg078.obj ppdg079.obj ppdg080.obj ppdg081.obj ppdg082.obj ppdg083.obj \
-	  ppdg084.obj ppdg085.obj ppdg086.obj ppdg087.obj ppdg088.obj ppdg089.obj \
-	  ppdg090.obj ppdg091.obj ppdg092.obj ppdg093.obj ppdg094.obj ppdg095.obj \
-	  ppdg096.obj ppdg097.obj \
-	  ppdgcrt.obj ppdgem.obj ppdhook.obj \
-	  ppdv000.obj ppdv001.obj ppdv002.obj ppdv003.obj ppdv004.obj \
-	  ppdv005.obj ppdv006.obj ppdv007.obj ppdv008.obj ppdv009.obj ppdv010.obj \
-	  ppdv011.obj ppdv012.obj ppdv013.obj ppdv014.obj ppdv015.obj ppdv016.obj \
-	  ppdv017.obj ppdv018.obj ppdv019.obj ppdv020.obj ppdv021.obj ppdv022.obj \
-	  ppdv023.obj ppdv024.obj ppdv025.obj ppdv026.obj ppdv027.obj ppdv028.obj \
-	  ppdv029.obj ppdv030.obj ppdv031.obj ppdv032.obj ppdv033.obj ppdv034.obj \
-	  ppdv035.obj ppdv036.obj ppdv037.obj ppdv038.obj ppdv039.obj ppdv040.obj \
-	  ppdv041.obj ppdv042.obj ppdv043.obj ppdv044.obj ppdv045.obj ppdv046.obj \
-	  ppdv047.obj ppdv048.obj ppdv049.obj ppdv050.obj ppdv051.obj ppdv052.obj \
-	  ppdv053.obj ppdv054.obj ppdv055.obj ppdv056.obj ppdv057.obj ppdv058.obj \
-	  ppdv059.obj ppdv060.obj ppdv061.obj ppdv062.obj ppdv063.obj ppdv064.obj \
-	  ppdv065.obj ppdv066.obj ppdv067.obj ppdv068.obj ppdv069.obj ppdv070.obj \
-	  ppdv071.obj ppdv072.obj ppdv073.obj ppdv074.obj ppdv075.obj ppdv076.obj \
-	  ppdv077.obj ppdv078.obj ppdv079.obj ppdv080.obj ppdv081.obj ppdv082.obj \
-	  ppdv083.obj ppdv084.obj ppdv085.obj ppdv086.obj ppdv087.obj ppdv088.obj \
-	  ppdv089.obj ppdv090.obj ppdv091.obj ppdv092.obj ppdv093.obj ppdv094.obj \
-	  ppdv095.obj ppdv096.obj ppdv097.obj ppdv098.obj ppdv099.obj ppdv100.obj \
-	  ppdv101.obj ppdv102.obj ppdv103.obj ppdv104.obj ppdv105.obj ppdv106.obj \
-	  ppdv107.obj ppdv108.obj ppdv109.obj ppdv110.obj ppdv111.obj ppdv112.obj \
-	  ppdv113.obj ppdv114.obj ppdv115.obj ppdv116.obj ppdv117.obj ppdv118.obj \
-	  ppdv119.obj ppdv120.obj ppdv121.obj ppdv122.obj ppdv123.obj ppdv124.obj \
-	  ppdv125.obj ppdv126.obj ppdv127.obj ppdv128.obj ppdv129.obj ppdv130.obj \
-	  ppdv131.obj ppdv132.obj ppdv133.obj ppdv134.obj ppdv135.obj ppdv136.obj \
-          ppdv137.obj ppdv138.obj ppdvdi.obj ppdlptr.obj
+	  wccd000.obj wccd001.obj wccd002.obj wccd003.obj wccd004.obj wccd005.obj \
+	  wccd006.obj wccd007.obj wccd008.obj wccd009.obj wccd010.obj wccd011.obj \
+	  wccd012.obj wccd013.obj wccd014.obj wccd015.obj wccd016.obj wccd017.obj \
+	  wccd018.obj wccd019.obj wccd020.obj wccd021.obj wccd022.obj wccd023.obj \
+	  wccd024.obj wccd025.obj wccd026.obj wccd027.obj wccd028.obj wccfdraw.obj \
+	  wccg000.obj wccg001.obj wccg002.obj wccg003.obj wccg004.obj wccg005.obj \
+	  wccg006.obj wccg007.obj wccg008.obj wccg009.obj wccg010.obj wccg011.obj \
+	  wccg012.obj wccg013.obj wccg014.obj wccg015.obj wccg016.obj wccg017.obj \
+	  wccg018.obj wccg019.obj wccg020.obj wccg021.obj wccg022.obj wccg023.obj \
+	  wccg024.obj wccg025.obj wccg026.obj wccg027.obj wccg028.obj wccg029.obj \
+	  wccg030.obj wccg031.obj wccg032.obj wccg033.obj wccg034.obj wccg035.obj \
+	  wccg036.obj wccg037.obj wccg038.obj wccg039.obj wccg040.obj wccg041.obj \
+	  wccg042.obj wccg043.obj wccg044.obj wccg045.obj wccg046.obj wccg047.obj \
+	  wccg048.obj wccg049.obj wccg050.obj wccg051.obj wccg052.obj wccg053.obj \
+	  wccg054.obj wccg055.obj wccg056.obj wccg057.obj wccg058.obj wccg059.obj \
+	  wccg060.obj wccg061.obj wccg062.obj wccg063.obj wccg064.obj wccg065.obj \
+	  wccg066.obj wccg067.obj wccg068.obj wccg069.obj wccg070.obj wccg071.obj \
+	  wccg072.obj wccg073.obj wccg074.obj wccg075.obj wccg076.obj wccg077.obj \
+	  wccg078.obj wccg079.obj wccg080.obj wccg081.obj wccg082.obj wccg083.obj \
+	  wccg084.obj wccg085.obj wccg086.obj wccg087.obj wccg088.obj wccg089.obj \
+	  wccg090.obj wccg091.obj wccg092.obj wccg093.obj wccg094.obj wccg095.obj \
+	  wccg096.obj wccg097.obj \
+	  wccgcrt.obj wccgem.obj wcchook.obj \
+	  wccv000.obj wccv001.obj wccv002.obj wccv003.obj wccv004.obj \
+	  wccv005.obj wccv006.obj wccv007.obj wccv008.obj wccv009.obj wccv010.obj \
+	  wccv011.obj wccv012.obj wccv013.obj wccv014.obj wccv015.obj wccv016.obj \
+	  wccv017.obj wccv018.obj wccv019.obj wccv020.obj wccv021.obj wccv022.obj \
+	  wccv023.obj wccv024.obj wccv025.obj wccv026.obj wccv027.obj wccv028.obj \
+	  wccv029.obj wccv030.obj wccv031.obj wccv032.obj wccv033.obj wccv034.obj \
+	  wccv035.obj wccv036.obj wccv037.obj wccv038.obj wccv039.obj wccv040.obj \
+	  wccv041.obj wccv042.obj wccv043.obj wccv044.obj wccv045.obj wccv046.obj \
+	  wccv047.obj wccv048.obj wccv049.obj wccv050.obj wccv051.obj wccv052.obj \
+	  wccv053.obj wccv054.obj wccv055.obj wccv056.obj wccv057.obj wccv058.obj \
+	  wccv059.obj wccv060.obj wccv061.obj wccv062.obj wccv063.obj wccv064.obj \
+	  wccv065.obj wccv066.obj wccv067.obj wccv068.obj wccv069.obj wccv070.obj \
+	  wccv071.obj wccv072.obj wccv073.obj wccv074.obj wccv075.obj wccv076.obj \
+	  wccv077.obj wccv078.obj wccv079.obj wccv080.obj wccv081.obj wccv082.obj \
+	  wccv083.obj wccv084.obj wccv085.obj wccv086.obj wccv087.obj wccv088.obj \
+	  wccv089.obj wccv090.obj wccv091.obj wccv092.obj wccv093.obj wccv094.obj \
+	  wccv095.obj wccv096.obj wccv097.obj wccv098.obj wccv099.obj wccv100.obj \
+	  wccv101.obj wccv102.obj wccv103.obj wccv104.obj wccv105.obj wccv106.obj \
+	  wccv107.obj wccv108.obj wccv109.obj wccv110.obj wccv111.obj wccv112.obj \
+	  wccv113.obj wccv114.obj wccv115.obj wccv116.obj wccv117.obj wccv118.obj \
+	  wccv119.obj wccv120.obj wccv121.obj wccv122.obj wccv123.obj wccv124.obj \
+	  wccv125.obj wccv126.obj wccv127.obj wccv128.obj wccv129.obj wccv130.obj \
+	  wccv131.obj wccv132.obj wccv133.obj wccv134.obj wccv135.obj wccv136.obj \
+          wccv137.obj wccv138.obj wccvdi.obj wcclptr.obj
 
 all:	wccgem-l.lib
 #

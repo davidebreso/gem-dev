@@ -42,7 +42,7 @@ Page*/
 //#include "obdefs.h"				/* object definitions	*/
 //#include "gembind.h"				/* gem binding structs	*/
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include <dos.h>				// for FP_OFF and FP_SEG macros
 
 /*------------------------------*/

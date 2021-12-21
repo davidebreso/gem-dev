@@ -36,8 +36,8 @@ Page*/
 /*	includes					*/
 /*------------------------------*/
 
-#include "ppdgem.h"	/* [JCE] prototypes to stop PPD moaning */
-//#include "ppdutils.h"
+#include "wccgem.h"	/* [JCE] prototypes to stop WCC moaning */
+//#include "wccutils.h"
 #include "demo.h" 				/* demo  apl  resource  */
 
 #include <dos.h>		/* for FP_OFF and FP_SEG macros */
@@ -45,7 +45,7 @@ Page*/
 #include <stdio.h>		/* for sprintf() */
 #include <stdlib.h>		/* for atoi() */
 
-/* [JCE] prototypes for this file to keep PPD quiet */
+/* [JCE] prototypes for this file to keep WCC quiet */
 VOID indir_obj( LPTREE tree, WORD which);
 VOID dir_obj(   LPTREE tree, WORD which);
 WORD get_parent(LPTREE tree, WORD obj);
@@ -90,7 +90,7 @@ VOID eraser(WORD x, WORD y);
 
 #define YSCALE(x)	UMUL_DIV(x, scrn_xsize, scrn_ysize) 
 
-/* Don't use these macros; use builtin PPD pointer arithmetic 
+/* Don't use these macros; use builtin WCC pointer arithmetic 
 
 #define TE_TXTLEN(x)    ((LPBYTE)x + 24)   	// TEDINFO text length	 
 
@@ -195,7 +195,7 @@ BYTE	*wdw_title = " GEM Demo Window ";
 
 WORD	usercolor[2] = {1, 0};
 MFDB	userbrush_mfdb; 		/* MFDB for Prog def objects	*/
-PPDUBLK brushab[6]; 			/* 6 Programmer defined objects	*/
+WCCUBLK brushab[6]; 			/* 6 Programmer defined objects	*/
 
 X_BUF_V2 gl_xbuf;
  
@@ -701,7 +701,7 @@ WORD	x, y, w, h; 			/*  checking and 'local'	*/
  * stored in the global variable drawpar, not passed. Similarly the result
  * is passed out using drawret. */
  
-WORD dr_code(LPPARM ppb)				// called by ppd_userdraw() when 	
+WORD dr_code(LPPARM ppb)				// called by wcc_userdraw() when 	
 				 			// drawing Programmer Defined	
 {							// objects in Pen/Eraser Dialog 
 	PARMBLK		pb;
@@ -2187,9 +2187,9 @@ pict_init()				/* transform IMAGES and ICONS	*/
 		brushab[nobj].ub_code = dr_code;
 		brushab[nobj].ub_parm = tree[tr_obj].ob_spec;	//LLGET(OB_SPEC(tr_obj));
 		// fprintf(logfile, "Setting up user defined object with code at %4X and data at %lx\n", brushab[nobj].ub_code, brushab[nobj].ub_parm);
-		// fprintf(logfile, "ppd_userdef(%lx, %d, %lx)\n", tree, tr_obj, &brushab[nobj]);
+		// fprintf(logfile, "wcc_userdef(%lx, %d, %lx)\n", tree, tr_obj, &brushab[nobj]);
 		// fflush(logfile);		
-		ppd_userdef(tree, tr_obj, &brushab[nobj]);
+		wcc_userdef(tree, tr_obj, &brushab[nobj]);
 	}
 }
 

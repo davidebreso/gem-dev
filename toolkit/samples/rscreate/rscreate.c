@@ -36,7 +36,7 @@
 pragma On (Pointers_compatible_with_ints);
 #endif
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include <dos.h>
 
 MLOCAL LONG sub_pointer(VOID FAR *p1, VOID FAR *p2);

@@ -15,7 +15,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 /*
 *	Initialize the list of fnodes

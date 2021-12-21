@@ -15,7 +15,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 #define MIN_WINT 4
 #define MIN_HINT 2

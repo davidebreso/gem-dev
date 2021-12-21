@@ -108,7 +108,7 @@ typedef struct glnode
 
 	 WORD		g_index[NUM_WOBS];
 
-	 PPDUBLK	g_udefs[NUM_WOBS];
+	 WCCUBLK	g_udefs[NUM_WOBS];
 
 						/* view related parms	*/
 	 WORD		g_num;			/* number of points 	*/

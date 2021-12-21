@@ -18,9 +18,10 @@ DESKLM.APP   - large model, for GEM/XM.
 Release 3.2.5 Changes (most recent at the top)
 ===============================================================================
 
-* Code is now compiled with Open Watcom v2 on MacOS Big Sur. "Show Content" is
-  disabled on the small-model desktop. Function that calls DOS interrrupts 
-  have been rewritten in ASM to keep the code segment below the 64K limit.
+* Format disk disabled since it is not working.
+
+* Code is now compiled with Open Watcom v2 on MacOS. All functionalities are 
+  maintained with a smaller memory footprint than Pacific C's builds.
 
 * Icon view auto-arrange icons to match the window size. 
 

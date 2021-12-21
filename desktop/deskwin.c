@@ -15,7 +15,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 #define LEN_FNODE 45
 
@@ -406,7 +406,7 @@ VOID  win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 	    /* Now uses Pacific user-def glue code */
 		G.g_udefs[obid].ub_code = dr_code;
 		G.g_udefs[obid].ub_parm = (LPVOID)( &pstart->f_junk );
-		ppd_userdef(G.g_screen, obid, &G.g_udefs[obid]);
+		wcc_userdef(G.g_screen, obid, &G.g_udefs[obid]);
 		win_icalc(pstart);
 		break;
 	    case V_ICON:

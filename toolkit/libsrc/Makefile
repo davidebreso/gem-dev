@@ -6,52 +6,52 @@ include ../makedefs.i
 SOURCE = ems_all.c ems_fp.c ems_free.c ems_fs.c ems_map.c ems_np.c \
 	 ems_rmap.c ems_smap.c ems_vers.c emslib.c ev_event.c formdo.c \
 	 ob_dofl.c ob_dost.c ob_dr_di.c ob_g_txt.c ob_isfl.c ob_isst.c \
-	 ob_s_txt.c ob_ud_di.c ob_udfl.c ob_udst.c ob_xywh.c ppdd000.c \
-	 ppdd001.c ppdd002.c ppdd003.c ppdd004.c ppdd005.c ppdd006.c \
-	 ppdd007.c ppdd008.c ppdd009.c ppdd010.c ppdd011.c ppdd012.c \
-	 ppdd013.c ppdd014.c ppdd015.c ppdd016.c ppdd017.c ppdd018.c \
-	 ppdd019.c ppdd020.c ppdd021.c ppdd022.c ppdd023.c ppdd024.c \
-	 ppdd025.c ppdd026.c ppdd027.c ppdd028.c ppdfdraw.c ppdg000.c \
-	 ppdg001.c ppdg002.c ppdg003.c ppdg004.c ppdg005.c ppdg006.c \
-	 ppdg007.c ppdg008.c ppdg009.c ppdg010.c ppdg011.c ppdg012.c \
-	 ppdg013.c ppdg014.c ppdg015.c ppdg016.c ppdg017.c ppdg018.c \
-	 ppdg019.c ppdg020.c ppdg021.c ppdg022.c ppdg023.c ppdg024.c \
-	 ppdg025.c ppdg026.c ppdg027.c ppdg028.c ppdg029.c ppdg030.c \
-	 ppdg031.c ppdg032.c ppdg033.c ppdg034.c ppdg035.c ppdg036.c \
-	 ppdg037.c ppdg038.c ppdg039.c ppdg040.c ppdg041.c ppdg042.c \
-	 ppdg043.c ppdg044.c ppdg045.c ppdg046.c ppdg047.c ppdg048.c \
-	 ppdg049.c ppdg050.c ppdg051.c ppdg052.c ppdg053.c ppdg054.c \
-	 ppdg055.c ppdg056.c ppdg057.c ppdg058.c ppdg059.c ppdg060.c \
-	 ppdg061.c ppdg062.c ppdg063.c ppdg064.c ppdg065.c ppdg066.c \
-	 ppdg067.c ppdg068.c ppdg069.c ppdg070.c ppdg071.c ppdg072.c \
-	 ppdg073.c ppdg074.c ppdg075.c ppdg076.c ppdg077.c ppdg078.c \
-	 ppdg079.c ppdg080.c ppdg081.c ppdg082.c ppdg083.c ppdg084.c \
-	 ppdg085.c ppdg086.c ppdg087.c ppdg088.c ppdg089.c ppdg090.c \
-	 ppdgcrt.c ppdgem.c ppdhook.c ppdlptr.c \
-	 ppdv000.c ppdv001.c ppdv002.c ppdv003.c ppdv004.c ppdv005.c \
-	 ppdv006.c ppdv007.c ppdv008.c ppdv009.c ppdv010.c ppdv011.c \
-	 ppdv012.c ppdv013.c ppdv014.c ppdv015.c ppdv016.c ppdv017.c \
-	 ppdv018.c ppdv019.c ppdv020.c ppdv021.c ppdv022.c ppdv023.c \
-	 ppdv024.c ppdv025.c ppdv026.c ppdv027.c ppdv028.c ppdv029.c \
-	 ppdv030.c ppdv031.c ppdv032.c ppdv033.c ppdv034.c ppdv035.c \
-	 ppdv036.c ppdv037.c ppdv038.c ppdv039.c ppdv040.c ppdv041.c \
-	 ppdv042.c ppdv043.c ppdv044.c ppdv045.c ppdv046.c ppdv047.c \
-	 ppdv048.c ppdv049.c ppdv050.c ppdv051.c ppdv052.c ppdv053.c \
-	 ppdv054.c ppdv055.c ppdv056.c ppdv057.c ppdv058.c ppdv059.c \
-	 ppdv060.c ppdv061.c ppdv062.c ppdv063.c ppdv064.c ppdv065.c \
-	 ppdv066.c ppdv067.c ppdv068.c ppdv069.c ppdv070.c ppdv071.c \
-	 ppdv072.c ppdv073.c ppdv074.c ppdv075.c ppdv076.c ppdv077.c \
-	 ppdv078.c ppdv079.c ppdv080.c ppdv081.c ppdv082.c ppdv083.c \
-	 ppdv084.c ppdv085.c ppdv086.c ppdv087.c ppdv088.c ppdv089.c \
-	 ppdv090.c ppdv091.c ppdv092.c ppdv093.c ppdv094.c ppdv095.c \
-	 ppdv096.c ppdv097.c ppdv098.c ppdv099.c ppdv100.c ppdv101.c \
-	 ppdv102.c ppdv103.c ppdv104.c ppdv105.c ppdv106.c ppdv107.c \
-	 ppdv108.c ppdv109.c ppdv110.c ppdv111.c ppdv112.c ppdv113.c \
-	 ppdv114.c ppdv115.c ppdv116.c ppdv117.c ppdv118.c ppdv119.c \
-	 ppdv120.c ppdv121.c ppdv122.c ppdv123.c ppdv124.c ppdv125.c \
-	 ppdv126.c ppdv127.c ppdv128.c ppdv129.c ppdv130.c ppdv131.c \
-	 ppdv132.c ppdv133.c ppdv134.c ppdv135.c ppdv136.c ppdv137.c \
-	 ppdv138.c ppdvdi.c rc_copy.c rc_equal.c rc_gr2ar.c \
+	 ob_s_txt.c ob_ud_di.c ob_udfl.c ob_udst.c ob_xywh.c wccd000.c \
+	 wccd001.c wccd002.c wccd003.c wccd004.c wccd005.c wccd006.c \
+	 wccd007.c wccd008.c wccd009.c wccd010.c wccd011.c wccd012.c \
+	 wccd013.c wccd014.c wccd015.c wccd016.c wccd017.c wccd018.c \
+	 wccd019.c wccd020.c wccd021.c wccd022.c wccd023.c wccd024.c \
+	 wccd025.c wccd026.c wccd027.c wccd028.c wccfdraw.c wccg000.c \
+	 wccg001.c wccg002.c wccg003.c wccg004.c wccg005.c wccg006.c \
+	 wccg007.c wccg008.c wccg009.c wccg010.c wccg011.c wccg012.c \
+	 wccg013.c wccg014.c wccg015.c wccg016.c wccg017.c wccg018.c \
+	 wccg019.c wccg020.c wccg021.c wccg022.c wccg023.c wccg024.c \
+	 wccg025.c wccg026.c wccg027.c wccg028.c wccg029.c wccg030.c \
+	 wccg031.c wccg032.c wccg033.c wccg034.c wccg035.c wccg036.c \
+	 wccg037.c wccg038.c wccg039.c wccg040.c wccg041.c wccg042.c \
+	 wccg043.c wccg044.c wccg045.c wccg046.c wccg047.c wccg048.c \
+	 wccg049.c wccg050.c wccg051.c wccg052.c wccg053.c wccg054.c \
+	 wccg055.c wccg056.c wccg057.c wccg058.c wccg059.c wccg060.c \
+	 wccg061.c wccg062.c wccg063.c wccg064.c wccg065.c wccg066.c \
+	 wccg067.c wccg068.c wccg069.c wccg070.c wccg071.c wccg072.c \
+	 wccg073.c wccg074.c wccg075.c wccg076.c wccg077.c wccg078.c \
+	 wccg079.c wccg080.c wccg081.c wccg082.c wccg083.c wccg084.c \
+	 wccg085.c wccg086.c wccg087.c wccg088.c wccg089.c wccg090.c \
+	 wccgcrt.c wccgem.c wcchook.c wcclptr.c \
+	 wccv000.c wccv001.c wccv002.c wccv003.c wccv004.c wccv005.c \
+	 wccv006.c wccv007.c wccv008.c wccv009.c wccv010.c wccv011.c \
+	 wccv012.c wccv013.c wccv014.c wccv015.c wccv016.c wccv017.c \
+	 wccv018.c wccv019.c wccv020.c wccv021.c wccv022.c wccv023.c \
+	 wccv024.c wccv025.c wccv026.c wccv027.c wccv028.c wccv029.c \
+	 wccv030.c wccv031.c wccv032.c wccv033.c wccv034.c wccv035.c \
+	 wccv036.c wccv037.c wccv038.c wccv039.c wccv040.c wccv041.c \
+	 wccv042.c wccv043.c wccv044.c wccv045.c wccv046.c wccv047.c \
+	 wccv048.c wccv049.c wccv050.c wccv051.c wccv052.c wccv053.c \
+	 wccv054.c wccv055.c wccv056.c wccv057.c wccv058.c wccv059.c \
+	 wccv060.c wccv061.c wccv062.c wccv063.c wccv064.c wccv065.c \
+	 wccv066.c wccv067.c wccv068.c wccv069.c wccv070.c wccv071.c \
+	 wccv072.c wccv073.c wccv074.c wccv075.c wccv076.c wccv077.c \
+	 wccv078.c wccv079.c wccv080.c wccv081.c wccv082.c wccv083.c \
+	 wccv084.c wccv085.c wccv086.c wccv087.c wccv088.c wccv089.c \
+	 wccv090.c wccv091.c wccv092.c wccv093.c wccv094.c wccv095.c \
+	 wccv096.c wccv097.c wccv098.c wccv099.c wccv100.c wccv101.c \
+	 wccv102.c wccv103.c wccv104.c wccv105.c wccv106.c wccv107.c \
+	 wccv108.c wccv109.c wccv110.c wccv111.c wccv112.c wccv113.c \
+	 wccv114.c wccv115.c wccv116.c wccv117.c wccv118.c wccv119.c \
+	 wccv120.c wccv121.c wccv122.c wccv123.c wccv124.c wccv125.c \
+	 wccv126.c wccv127.c wccv128.c wccv129.c wccv130.c wccv131.c \
+	 wccv132.c wccv133.c wccv134.c wccv135.c wccv136.c wccv137.c \
+	 wccv138.c wccvdi.c rc_copy.c rc_equal.c rc_gr2ar.c \
 	 rc_insid.c rc_inter.c trimage.c x_dux_sc.c x_dux_xf.c x_duy_sc.c \
 	 x_duy_xf.c x_mul_di.c x_saspec.c x_sxform.c x_udx_sc.c x_udx_xf.c \
 	 x_udx_yf.c x_udy_sc.c x_ytox.c xfmlib.c

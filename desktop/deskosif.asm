@@ -290,7 +290,7 @@ doscod endp
 ;
 ;
 ;
-takekey proc near
+takekey proc 
     public  "C",takekey
 	mov		word ptr keycnt, 0
 	mov		word ptr f10cnt, 0
@@ -307,7 +307,7 @@ takekey endp
 ;
 ;
 ;
-givekey proc near
+givekey proc 
     public  "C",givekey
 	cli
 	push	bp
@@ -321,7 +321,7 @@ givekey proc near
 givekey endp
 ;
 ;
-takevid proc near
+takevid proc 
     public  "C",takevid
 	cli
 	push	bp
@@ -336,7 +336,7 @@ takevid endp
 ;
 ;
 ;
-givevid proc near
+givevid proc 
     public  "C",givevid
 	cli
 	push	bp
@@ -350,7 +350,7 @@ givevid endp
 ;
 ;
 ;
-takedos proc near
+takedos proc 
     public  "C",takedos
 	cli
 	push	bp
@@ -365,7 +365,7 @@ takedos endp
 ;
 ;
 ;
-givedos proc near
+givedos proc 
     public  "C",givedos
 	cli
 	push	bp

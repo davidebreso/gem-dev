@@ -14,7 +14,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 #if 0
 EXTERN VOID	movs();

@@ -63,7 +63,7 @@
 * 911105  K.H		Fix vr_recfl erased the end pixel of the string.
 *****************************************************************************/
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 		    /* Bytes per line when displaying file in hexadecimal */
 #define BYTES_PER_HEX_LINE  16
@@ -87,7 +87,7 @@ extern BYTE ILL_TYPE[];
 
 typedef signed long SLONG;
 
-#ifdef __SMALL__
+#if (defined(__SMALL__) && defined(MULTIAPP))
 WORD  do_type(WORD curr)
 {
 	form_alert(0, "[3][This function is not available in the |"

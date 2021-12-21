@@ -20,7 +20,7 @@
  *
  *****************************************************************************/
 
-#include "ppdgem.h"
+#include "wccgem.h"
 
 #define FMD_FORWARD  0
 #define FMD_BACKWARD 1

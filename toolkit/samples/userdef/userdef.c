@@ -23,7 +23,7 @@ MLOCAL WORD       work_out[57];
 MLOCAL WORD       ap_id;
 MLOCAL WORD       vdi_handle;
 MLOCAL OBJECT FAR *baum;
-MLOCAL PPDUBLK    cross;
+MLOCAL WCCUBLK    cross;
 
 LPPARM fardr_start();
 VOID fardr_end(WORD retcode);
@@ -69,12 +69,12 @@ VOID main()
 
    for (a = RB1; a <= RB4; a++)
    {
-	  ppd_userdef(baum, a, &cross);
+	  wcc_userdef(baum, a, &cross);
    }
 
    for (a = SB1; a <= SB4; a++)
    {
-	  ppd_userdef(baum, a, &cross);
+	  wcc_userdef(baum, a, &cross);
    }
 
    ob_draw_dialog(baum, 0, 0, 0, 0);

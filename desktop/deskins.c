@@ -10,7 +10,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 /* forward declarations	*/
 MLOCAL VOID   ob_actxywh();

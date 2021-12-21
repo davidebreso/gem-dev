@@ -16,7 +16,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 /* forward declarations */
 MLOCAL WORD  cmp_names(BYTE *psrc, BYTE *pdst);
@@ -32,9 +32,9 @@ WORD  fun_alert(WORD defbut, WORD stnum, ...)
 
 	rsrc_gaddr(R_STRING, stnum, (LPVOID *)&G.a_alert);
 	/* Always use merge_str() */
-	lstlcpy(ADDR(&G.g_2text[0]),G.a_alert, sizeof(G.g_2text));
+	lstlcpy((&G.g_2text[0]),G.a_alert, sizeof(G.g_2text));
 	merge_v(&G.g_1text[0], &G.g_2text[0], ap);
-	G.a_alert = ADDR(&G.g_1text[0]);
+	G.a_alert = (&G.g_1text[0]);
 
 	va_end(ap);
 	return( form_alert(defbut, G.a_alert) );

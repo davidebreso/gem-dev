@@ -1,6 +1,7 @@
 /*	OBDEFS.H		03/15/84 - 02/08/85	Gregg Morris	*/
 /*	GEM DEVELOPER KIT 	06/07/86		Lowell Webster	*/
 /*      Modified for PPD (ANSI) 4 Jan 1998		John Elliott    */
+/*      Modified for WCC (ANSI) 21 Dec 2021		Davide Bresolin */
 
 #define ROOT 0
 #define NIL -1
@@ -320,22 +321,22 @@ typedef FILLPAT FAR * LPFILL;
 
 
 
-/* [JCE 7 Feb 1998] The PPDUBLK allows the library to handle GEM callbacks 
+/* [JCE 7 Feb 1998] The WCCUBLK allows the library to handle GEM callbacks 
  *                  for user-defined objects. Set its ub_code and ub_parm
- *                  as normal, and then call ppd_userdef(). 
+ *                  as normal, and then call wcc_userdef(). 
  */
  
 typedef WORD (*USERFUNC)(LPPARM pb);
 
-typedef struct ppd_userblk
+typedef struct wcc_userblk
 {
 	LPVOID		ub_reserved[2];
 	USERFUNC	ub_code;
 	LPVOID		ub_parm;
-} PPDUBLK;
+} WCCUBLK;
 
 
-typedef PPDUBLK FAR * LPPBLK;
+typedef WCCUBLK FAR * LPPBLK;
 
 /* [JCE 25 May 1999] Mouse event structure for ev_evnt() */
 

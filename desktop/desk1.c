@@ -14,7 +14,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 MLOCAL VOID  zoom_closed(WORD close, WORD w_id, WORD xicon, WORD yicon)
 {

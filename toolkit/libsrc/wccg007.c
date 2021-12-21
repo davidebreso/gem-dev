@@ -1,0 +1,17 @@
+
+
+#include "wccgem.h"
+#include "wccg0.h"
+
+
+
+
+	WORD
+appl_trecord(tbuffer, tlength)
+	LPVOID		tbuffer;
+	WORD		tlength;
+{
+	AP_TBUFFER = tbuffer;
+	AP_TLENGTH = tlength;
+	return( gem_if(APPL_TRECORD) );
+}

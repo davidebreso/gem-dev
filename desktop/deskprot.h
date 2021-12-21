@@ -233,7 +233,7 @@ VOID  givevid(VOID);
 /* deskcds.c */
 BOOLEAN  cd_isdrvcd( BYTE drvno );
 
-/* deskppd.c */
+/* deskwcc.c */
 WORD  desk_sound(WORD isfreq, WORD freq, WORD duration);
 char   *scasb(char *s, char b);
 VOID  dos_label(BYTE drive, BYTE *plabel);

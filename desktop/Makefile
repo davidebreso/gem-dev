@@ -45,9 +45,13 @@ largem/desktop.app:	*.c *.h
 smallm/desktop.app:	*.c *.h
 	$(MAKE) -C smallm
 
-install:	desktop.app deskhi.icn desklo.icn
+install:	desktop.app deskhi.icn desklo.icn desktop.rsc
 	cp deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
 	cp desktop.app $(INSTDIR)\desktop.app
+
+zipfile:	desktop.app desktopl.app deskhi.icn desklo.icn desktop.rsc desktop.inf
+	rm -f wccdesk.zip
+	zip -9 wccdesk.zip $^
 	
 clean:
 	$(MAKE) -C small clean

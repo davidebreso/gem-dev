@@ -1,4 +1,4 @@
-#include "ppdgem.h"
+#include "wccgem.h"
 #include <dos.h>				// for FP_OFF and FP_SEG macros
 #include <time.h>
 #include <stdio.h>
@@ -223,7 +223,7 @@ WORD myaes(LPGEMBLK gb)
 		 * through to the underlying AES/VDI, make the call explicitly and
 		 * then return zero. For example, in this case:
 		 *
-		 * ppd_setresult(gem(gb)) would do it.
+		 * wcc_setresult(gem(gb)) would do it.
 		 *
 		 */
 		
@@ -318,7 +318,7 @@ WORD GEMAIN(WORD argc, BYTE *ARGV[])
 
 	/* Insert our AES into the call chain */
 	
-	ppd_hookon(myaes, NULL, NULL);
+	wcc_hookon(myaes, NULL, NULL);
 	
 	if (growbox_init())			/* initialization	*/
 	{
@@ -326,7 +326,7 @@ WORD GEMAIN(WORD argc, BYTE *ARGV[])
 		growbox();
 	}
 
-	/* If this were not a DA, you would have to put in a ppd_hookoff() 
+	/* If this were not a DA, you would have to put in a wcc_hookoff() 
 	 * around here. As it is a DA, you don't. */
 	
 	return 0;

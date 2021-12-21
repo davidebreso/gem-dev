@@ -16,7 +16,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 #define	S_FILL_STYLE		23		/* used in blank_it()	*/
 #define	S_FILL_INDEX		24

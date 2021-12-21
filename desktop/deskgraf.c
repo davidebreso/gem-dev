@@ -14,7 +14,7 @@
 *	-------------------------------------------------------------
 */
 
-#include "ppddesk.h"
+#include "wccdesk.h"
 
 #define ORGADDR 0x0L
 

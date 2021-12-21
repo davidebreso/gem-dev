@@ -1,11 +1,11 @@
 /*
     Calculation code for XFORM.APP. 
 
-    Doing it within #asm ... #endasm means that PPD generates the stack
+    Doing it within #asm ... #endasm means that WCC generates the stack
     frame code.
 */
 
-#include "ppdgem.h"
+#include "wccgem.h"
 
 /**************************************************************************
 	n = vec_len(delta_x, delta_y);
@@ -29,7 +29,7 @@ WORD vec_len(WORD delta_x, WORD delta_y)
 #asm
 
 ; Check for zeroes.
-		cmp	ax, #0				; for PPD
+		cmp	ax, #0				; for WCC
 		jne	x_squared			; modified
 		cmp	dx, #0				; 8 Jan 1998 John Elliott
 		jne	x_squared
@@ -134,7 +134,7 @@ WORD SMUL_DIV(WORD m1, UWORD m2, WORD d1)
 ;	mov	ax,06+X[bp]	;
 ;	mov	bx,04+X[bp]	;
 	push	si
-	mov		bx,dx	; ppd passes 1st 2 parameters in AX & DX
+	mov		bx,dx	; wcc passes 1st 2 parameters in AX & DX
 	imul	bx		; m2 * m1
 	mov	si, #1
 	and	dx, dx

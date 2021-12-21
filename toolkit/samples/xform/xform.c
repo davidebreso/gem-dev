@@ -22,7 +22,7 @@
 /*									*/ 
 /************************************************************************/
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "xform.h"				/* xform apl resource	*/
 #include <dos.h>
 

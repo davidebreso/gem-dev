@@ -36,6 +36,8 @@
 *.x86_64
 *.hex
 *.acc
+desktop/icn2xml
+desktop/xml2icn
 
 # Debug files
 *.dSYM/
