@@ -53,7 +53,6 @@ VOID main()
 {
    WORD a;
 
-    _asm{ int 3 };
    gem_init();
 
    if (!rsrc_load("USERDEF.RSC"))

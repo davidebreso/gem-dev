@@ -2363,7 +2363,6 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 {
 	WORD	term_type;
 	
-	_asm{ int 3 };
 	logfile = fopen(logfilename, "w");
 	fprintf(logfile, "Starting DEMO.APP. dr_code at %04X:%04X, data segment %04X\n", FP_SEG(dr_code), FP_OFF(dr_code), FP_SEG(brushab));
 	fflush(logfile);
