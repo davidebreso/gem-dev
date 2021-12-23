@@ -8,6 +8,7 @@
 #define END_UPDATE	0
 #define	BEG_UPDATE	1
 
+#define GEMENTRY 0xEF
 
 /*------------------------------*/
 /*			Local				*/
@@ -31,7 +32,11 @@ WORD	gl_hfull;			/* full window 'h' height	*/
 WORD	ev_which;			/* event message returned value	*/
 WORD	type_size;			/* system font cell size	*/
 
+MLOCAL BYTE _reentry = 0;
 
+#define NEWSTACK_SIZ 1024
+MLOCAL BYTE newstack[NEWSTACK_SIZ];
+MLOCAL WORD save_ss, save_sp;
 
 /*------------------------------*/
 /*	hndl_mesag		*/
@@ -149,118 +154,116 @@ void animate_rect(GRECT *rectSrc, GRECT *rectDest)
 
 static GRECT rects[3];
 
-
 WORD myaes(LPGEMBLK gb)
 {	
-// 	WORD func = gb->gb_pcontrol[0];
-// 	WORD diff_w, diff_h;
-// 	WORD lineattr[10];
-// 	
-// 	if (func == GRAF_GROWBOX || func == GRAF_SHRINKBOX)
-// 	{
-// //		FILE *fp = fopen("d:/gemapp.log", "a");
-// 		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
-// //		fprintf(fp, "%s %d,%d,%d,%d %d,%d,%d,%d\n",
-// //				(func == GRAF_GROWBOX) ? "graf_growbox  " : "graf_shrinkbox",
-// //				rects[0].g_x, rects[0].g_y, rects[0].g_w, rects[0].g_h,
-// //				rects[1].g_x, rects[1].g_y, rects[1].g_w, rects[1].g_h);
-// //		fclose(fp);
-// 		
-// 		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
-// 		
-// 	}
-// 	if (func == FORM_DIAL)
-// 	{
-// 		if (gb->gb_pintin[0] == 1)
-// 		{
-// 			func = GRAF_GROWBOX;
-// 			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
-// 		} 
-// 		if (gb->gb_pintin[0] == 2)
-// 		{
-// 			func = GRAF_SHRINKBOX;
-// 			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
-// 		} 
-// 	}
-// 
-// 	if (func == GRAF_GROWBOX)
-// 	{
-// 		/* This code changes various vdi settings, so we carefully change
-// 		 * them back afterwards */
-// 		 
-// 		vql_attributes(vdi_handle, lineattr);
-// 		 
-// 		vswr_mode(vdi_handle, 3);
-// 		vsl_color(vdi_handle, 1);
-// 		vsl_udsty(vdi_handle, 0x5555);
-// 		vsl_type (vdi_handle, work_out[6] - 1);
-// 		vsl_width(vdi_handle, 1);
-// 
-// 		/* Work out the intermediate rectangle - it should be in the
-// 		 * position of the "final" rectangle but the size of the "initial" 
-// 		 * one */
-// 
-// 		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
-// 		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
-// 
-// 		rects[2].g_x = rects[1].g_x + diff_w;
-// 		rects[2].g_y = rects[1].g_y + diff_h;
-// 		rects[2].g_w = rects[0].g_w;
-// 		rects[2].g_h = rects[0].g_h;
-// 		
-// 		animate_rect(&rects[0], &rects[2]);
-// 		animate_rect(&rects[2], &rects[1]);
-// 
-// 		vsl_type (vdi_handle, lineattr[0]);
-// 		vsl_color(vdi_handle, lineattr[1]);
-// 		vswr_mode(vdi_handle, lineattr[2]);
-// 		vsl_width(vdi_handle, lineattr[3]);
-// 		
-// 		
-// 		/* If we have called the AES or the VDI then we MUST return zero.
-// 		 * 
-// 		 * To have the effect of doing something and then passing the call
-// 		 * through to the underlying AES/VDI, make the call explicitly and
-// 		 * then return zero. For example, in this case:
-// 		 *
-// 		 * wcc_setresult(gem(gb)) would do it.
-// 		 *
-// 		 */
-// 		
-// 		return 0;
-// 	}
-// 	if (func == GRAF_SHRINKBOX)	/* GRAF_GROWBOX in reverse */
-// 	{
-// 		vql_attributes(vdi_handle, lineattr);
-// 		 
-// 		vswr_mode(vdi_handle, 3);
-// 		vsl_color(vdi_handle, 1);
-// 		vsl_udsty(vdi_handle, 0x5555);
-// 		vsl_type (vdi_handle, work_out[6] - 1);
-// 		vsl_width(vdi_handle, 1);
-// 
-// 		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
-// 		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
-// 
-// 		rects[2].g_x = rects[1].g_x + diff_w;
-// 		rects[2].g_y = rects[1].g_y + diff_h;
-// 		rects[2].g_w = rects[0].g_w;
-// 		rects[2].g_h = rects[0].g_h;
-// 		
-// 		animate_rect(&rects[1], &rects[2]);
-// 		animate_rect(&rects[2], &rects[0]);
-// 
-// 		vsl_type (vdi_handle, lineattr[0]);
-// 		vsl_color(vdi_handle, lineattr[1]);
-// 		vswr_mode(vdi_handle, lineattr[2]);
-// 		vsl_width(vdi_handle, lineattr[3]);
-// 		
-// 		return 0;
-// 	}
+	WORD func = gb->gb_pcontrol[0];
+	WORD diff_w, diff_h;
+	WORD lineattr[10];
+	
+	if (func == GRAF_GROWBOX || func == GRAF_SHRINKBOX)
+	{
+//		FILE *fp = fopen("d:/gemapp.log", "a");
+		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
+//		fprintf(fp, "%s %d,%d,%d,%d %d,%d,%d,%d\n",
+//				(func == GRAF_GROWBOX) ? "graf_growbox  " : "graf_shrinkbox",
+//				rects[0].g_x, rects[0].g_y, rects[0].g_w, rects[0].g_h,
+//				rects[1].g_x, rects[1].g_y, rects[1].g_w, rects[1].g_h);
+//		fclose(fp);
+		
+		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
+		
+	}
+	if (func == FORM_DIAL)
+	{
+		if (gb->gb_pintin[0] == 1)
+		{
+			func = GRAF_GROWBOX;
+			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
+		} 
+		if (gb->gb_pintin[0] == 2)
+		{
+			func = GRAF_SHRINKBOX;
+			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
+		} 
+	}
 
+	if (func == GRAF_GROWBOX)
+	{
+		/* This code changes various vdi settings, so we carefully change
+		 * them back afterwards */
+		 
+		vql_attributes(vdi_handle, lineattr);
+		 
+		vswr_mode(vdi_handle, 3);
+		vsl_color(vdi_handle, 1);
+		vsl_udsty(vdi_handle, 0x5555);
+		vsl_type (vdi_handle, work_out[6] - 1);
+		vsl_width(vdi_handle, 1);
+
+		/* Work out the intermediate rectangle - it should be in the
+		 * position of the "final" rectangle but the size of the "initial" 
+		 * one */
+
+		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
+		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
+
+		rects[2].g_x = rects[1].g_x + diff_w;
+		rects[2].g_y = rects[1].g_y + diff_h;
+		rects[2].g_w = rects[0].g_w;
+		rects[2].g_h = rects[0].g_h;
+		
+		animate_rect(&rects[0], &rects[2]);
+		animate_rect(&rects[2], &rects[1]);
+
+		vsl_type (vdi_handle, lineattr[0]);
+		vsl_color(vdi_handle, lineattr[1]);
+		vswr_mode(vdi_handle, lineattr[2]);
+		vsl_width(vdi_handle, lineattr[3]);
+		
+		
+		/* If we have called the AES or the VDI then we MUST return zero.
+		 * 
+		 * To have the effect of doing something and then passing the call
+		 * through to the underlying AES/VDI, make the call explicitly and
+		 * then return zero. For example, in this case:
+		 *
+		 * wcc_setresult(gem(gb)) would do it.
+		 *
+		 */
+		
+		return 0;
+	}
+	if (func == GRAF_SHRINKBOX)	/* GRAF_GROWBOX in reverse */
+	{
+		vql_attributes(vdi_handle, lineattr);
+		 
+		vswr_mode(vdi_handle, 3);
+		vsl_color(vdi_handle, 1);
+		vsl_udsty(vdi_handle, 0x5555);
+		vsl_type (vdi_handle, work_out[6] - 1);
+		vsl_width(vdi_handle, 1);
+
+		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
+		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
+
+		rects[2].g_x = rects[1].g_x + diff_w;
+		rects[2].g_y = rects[1].g_y + diff_h;
+		rects[2].g_w = rects[0].g_w;
+		rects[2].g_h = rects[0].g_h;
+		
+		animate_rect(&rects[1], &rects[2]);
+		animate_rect(&rects[2], &rects[0]);
+
+		vsl_type (vdi_handle, lineattr[0]);
+		vsl_color(vdi_handle, lineattr[1]);
+		vswr_mode(vdi_handle, lineattr[2]);
+		vsl_width(vdi_handle, lineattr[3]);
+		
+		return 0;
+	}
+	
 	/* Return 1 if you have not called the AES or the VDI, and you want
 	 * GEM to handle the call. */
-	_asm{ int 3 };
 	return 1;
 }
 
@@ -293,6 +296,89 @@ growbox_init()
 	return(TRUE);
 }
 
+/* the pointer to the old GEM interrupt handler should be in the code segment,
+ * so that it can be accessed easily by the new interrupt handler
+ */
+void  (__interrupt __far * __based( __segname( "_CODE" ) ) _old_ef)() = NULL;
+
+/*
+ *This is our handler for INT 0xEF.
+ */
+__declspec( naked ) void __interrupt __far _gem_call()
+{
+_asm
+{
+	jmp		gcall1
+	byte	'GEMAES20',0
+
+gcall1:
+	/* Save registers */
+	push	ds	
+	push	es
+	push	ax
+	push	bx
+	push	cx
+	push	dx
+	/* Set DS to our data, so that we can write to local variables like _reentry. */ 
+	mov	ax,seg _reentry
+	mov	ds,ax
+	mov	al,_reentry
+	or	al,al			/* Re-entrant call? */
+	jnz	gopast
+	cmp	cx, 0xC8		/* Call to AES? */
+	jne	gopast
+	/* Increment _reentry */
+	inc	al
+	mov	_reentry, al
+        /* save current SS:SP */
+        mov save_ss, ss
+        mov save_sp, sp
+        /* set stack to newstack */
+        mov ax, seg newstack
+        mov ss, ax
+        mov sp, offset newstack + NEWSTACK_SIZ - 2
+	/* AES parameter, far pointer in es:bx */
+	mov	dx, es			; myaes expect parameter in DX:AX
+	mov	ax, bx
+#ifdef __SMALL__        
+        call myaes
+#else
+        callf myaes
+        /* Restore DS since in the large model myaes may change it */
+        mov dx, seg newstack
+        mov ds, dx
+#endif
+        /* Restore SS:SP */
+        mov ss, save_ss
+        mov sp, save_sp
+	push	ax			/* save return value in AX */
+	/* decrement reentry */
+	mov	al,_reentry
+	dec	al
+	mov	_reentry, al
+	pop	ax			/* Test if we have to chain interrupt */
+	or	ax,ax		
+	jnz	gopast	
+    	/* If AX = 0, restore registers and return */
+	pop	dx
+	pop	cx
+	pop	bx
+	pop	ax
+	pop	es
+	pop	ds
+	iret
+gopast:
+	/* Restore registers and call old EF int handler */
+	pop	dx
+	pop	cx
+	pop	bx
+	pop	ax
+	pop	es
+	pop	ds
+	jmpf	dword ptr CS:_old_ef
+};
+}
+
 
 /*------------------------------*/
 /*	GEMAIN			*/
@@ -316,9 +402,10 @@ WORD GEMAIN(WORD argc, BYTE *ARGV[])
 	while (t2 == time(NULL)) ++sleeptime;
 
 	/* Insert our AES into the call chain */
-	_asm{ int 3 };
+	_old_ef = _dos_getvect(GEMENTRY);
+	_dos_setvect(GEMENTRY, _gem_call);
 	
-	wcc_hookon(myaes, NULL, NULL);
+	// wcc_hookon(myaes, NULL, NULL);
 	
 	if (growbox_init())			/* initialization	*/
 	{

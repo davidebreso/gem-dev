@@ -26,8 +26,8 @@ static VDIFUNC VDI_473 = NULL;
 static AESFUNC oldaes  = NULL;
 static VDIFUNC oldvdi  = NULL;	
 
-#define GEMSTACK_SIZ 1024
-MLOCAL BYTE newstack[GEMSTACK_SIZ];
+#define NEWSTACK_SIZ 1024
+MLOCAL BYTE newstack[NEWSTACK_SIZ];
 MLOCAL WORD save_ss, save_sp;
 
 /* the pointer to the old GEM interrupt handler should be in the code segment,
@@ -159,63 +159,74 @@ asm {
  */
 __declspec( naked ) void __interrupt __far _gem_call()
 {
-_asm
-{
+_asm{
 	jmp		gcall1
 	byte	'GEMAES20',0
-
 gcall1:
-	push	ds				;Set DS to our data, so that we can write to
-	push	ax				;local variables like _aespar. 
-	mov	ax,seg _funcpar
-	mov		ds,ax
-	jmp 	gopast
-	mov		al,_reentry
-	or		al,al			;Re-entrant call?
-	jnz		gopast
-	
-	pop		ax				;AX = caller AX
-	mov		_axpar,ax
-	pop		ax				;AX = caller DS
+	/* Save registers */
+	push	ds
 	push	ax
-
-	mov	_funcpar,    cx	;0x473 for VDI, 0xC8 or 0xC9 for AES
+	/* Set DS to our data, so that we can write to local variables like _reentry. */ 
+	mov	ax,seg _reentry
+	mov	ds,ax
+	mov	al,_reentry
+	or	al,al			/* Re-entrant call? */
+	jnz	gopast	
+	pop		ax			/* AX = caller AX	*/
+	mov		_axpar,ax
+	pop		ax			/* AX = caller DS	*/
+	push	ax
+	mov	_funcpar, cx		/* 0x473 for VDI, 0xC8 or 0xC9 for AES */
 	mov	word ptr _vdipar,     dx
-	mov	word ptr _vdipar + 2, ax	;VDI parameter, far pointer in ds:dx
+	mov	word ptr _vdipar + 2, ax	/* VDI parameter, far pointer in ds:dx */
 	mov	word ptr _aespar,     bx
 	mov	ax,es	
-	mov	word ptr _aespar + 2, ax	;AES parameter, far pointer in es:bx
+	mov	word ptr _aespar + 2, ax	/* AES parameter, far pointer in es:bx */
 
 	push	bp
-	; pushf			 		;gem_hook will return with an iret, so simulate 
-	; call	_gem_hook 		;an interrupt call.
-	mov		_chain, 1		; simulate chain interrupt
+	/* save current SS:SP */
+	mov save_ss, ss
+	mov save_sp, sp
+	/* set stack to newstack */
+	mov ax, seg newstack
+	mov ss, ax
+	mov sp, offset newstack + NEWSTACK_SIZ - 2
+#ifdef __SMALL__
+	call _gem_hook
+#else
+	callf _gem_hook
+	/* Restore DS since in the large model _gem_hook may change it */
+	mov dx, seg newstack
+	mov ds, dx
+#endif
+	/* Restore SS:SP */
+	mov ss, save_ss
+	mov sp, save_sp
 	pop		bp
-	
+    /* If _chain = 0, restore registers and return, otherwise call old EF handler */	
 	mov		ax,_chain
 	or		ax,ax
 	jnz		dochain
-	
 	mov		ax,_gemret
     /* Restore registers and return */
 	pop	ds
 	iret
-;
+
 dochain:
+	/* Restore registers and call old EF int handler */
 	mov		ax,_axpar
 	push	ax
 	mov		bx,word ptr _aespar
 	mov		cx,_funcpar
-	mov		dx,word ptr _vdipar
-	
+	mov		dx,word ptr _vdipar	
 	mov		ax,word ptr _aespar + 2
 	mov		es,ax
 	mov		ax,word ptr _vdipar + 2
 	mov		ds,ax
-
 gopast:
 	pop		ax
 	pop		ds
 	jmpf	dword ptr CS:_old_ef
 };
 }
+
