@@ -2,7 +2,7 @@ include ../../makedefs.i
 
 CC = wcc
 #CFLAGS = -Bs -O -Zg -I../../INCLUDE -I.. $(STDINC)
-CFLAGS = -bt=dos -ms -s -os -0 -i../../include -i..
+CFLAGS = -bt=dos -ms -s-os -0 -i../../include -i..
 
 OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj ems_rmap.obj \
 	  ems_smap.obj ems_vers.obj emslib.obj ob_dofl.obj ob_dost.obj ob_dr_di.obj \

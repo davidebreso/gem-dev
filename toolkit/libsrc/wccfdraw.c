@@ -29,7 +29,6 @@ MLOCAL WORD _dr_code(LPPARM drawpar);
 MLOCAL WORD __declspec( naked ) _far_draw(WORD seg, WORD ofs)
 {
     _asm{
-        int 3
         /* save registers in the stack */
         push ds
         push dx
@@ -56,7 +55,7 @@ MLOCAL WORD __declspec( naked ) _far_draw(WORD seg, WORD ofs)
         /* Restore SS:SP */
         mov ss, save_ss
         mov sp, save_sp
-        /* Resture registers and return */
+        /* Restore registers and return */
         pop dx
         pop ds
         retf

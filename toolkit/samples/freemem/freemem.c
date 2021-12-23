@@ -224,7 +224,8 @@ WORD msg_buf[];
 #if !MS_C
          sprintf(space_date,
                  "%s, %02d.%02d.%04d - %02d:%02d:%02d",
-                 tage[ptm->tm_wday], ptm->tm_mday, ptm->tm_mon, 
+                 tage[ptm->tm_wday], ptm->tm_mday, 
+                 ptm->tm_mon + 1,       /* January is month 0 in open watcom */
                  ptm->tm_year + 1900, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
 #endif
          dos_version(&vh,&vl,&oem,&user);
@@ -232,7 +233,7 @@ WORD msg_buf[];
          sprintf(space_os, "V%d.%02d", vh, vl);
 #endif
          wind_update(BEG_UPDATE);
-         do_redraw(&msg_buf[4]);
+         do_redraw((GRECT *)&msg_buf[4]);
          wind_update(END_UPDATE);
          break;
 

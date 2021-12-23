@@ -20,9 +20,6 @@ fardrawl.o: fardraw.asm
 udef-s.app:	userdef.c userdef.h 
 	$(CC) -ms $(CFLAGS) -fe=$@ -fm=udef-s.map -fo=udef-s.o $<  ../../lib/wccgem-s.lib
 
-fardraws.o: fardraw.asm
-	wasm -ms -0 -bt=dos -fo=$@ $<
-
 tidy:
 	rm -f *.bak
 	rm -f *.sdb

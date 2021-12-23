@@ -3,6 +3,7 @@ include ../makedefs.i
 
 TARGETS=demo-s.app   demo-l.app   \
 	clock-s.app  clock-l.app  \
+	clock-s.acc  clock-l.acc  \
 	xform-s.app  xform-l.app  \
 	hello-s.app  hello-l.app  \
 	hello-s.acc  hello-l.acc  \
@@ -17,24 +18,35 @@ TARGETS=demo-s.app   demo-l.app   \
 	rscr-s.exe
 
 CC = wcc
+AS = wasm
 CFLAGS = -bt=dos -os -s -0 -i../include
 
 MAIN = main-l.obj main-s.obj
 
+STARTUP = start-s.obj start-l.obj
+
 all:	$(TARGETS)
 
 main:	$(MAIN)
+
+startup: $(STARTUP)
 
 main-l.obj:	main.c
 	$(CC) -fo=$@ -ml $(CFLAGS) $<
 
 main-s.obj:	main.c
 	$(CC) -fo=$@ -ms $(CFLAGS) $<
+	
+start-l.obj:	accstart.asm
+	$(AS) -DSTACKSIZ=800h -fo=$@ -ml -bt=dos -0 $<
+
+start-s.obj:	accstart.asm
+	$(AS) -DSTACKSIZ=800h -fo=$@ -ms -bt=dos -0 $<
 
 demo-s.app demo-l.app:	$(MAIN)
 	$(MAKE) -C demo
 
-clock-s.app clock-l.app: $(MAIN)
+clock-s.app clock-l.app clock-s.acc clock-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C clock
 
 events-s.app events-l.app: $(MAIN)
@@ -50,16 +62,16 @@ udef-s.app udef-l.app: $(MAIN)
 	$(MAKE) -C userdef
 
 
-hello-s.app hello-l.app hello-s.acc hello-l.acc: $(MAIN)
+hello-s.app hello-l.app hello-s.acc hello-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C hello
 
-mgraf-s.app mgraf-l.app mgraf-s.acc mgraf-l.acc: 
+mgraf-s.app mgraf-l.app mgraf-s.acc mgraf-l.acc:  $(MAIN) $(STARTUP)
 	$(MAKE) -C memgraf
 
-growbx-s.acc growbx-l.acc: $(MAIN)
+growbx-s.acc growbx-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C growbox
 
-fmem-s.acc fmem-l.acc: $(MAIN)
+fmem-s.acc fmem-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C freemem
 
 rscr-s.exe: $(MAIN)
@@ -70,6 +82,7 @@ xform-s.app xform-l.app: $(MAIN)
 
 tidy:
 	rm -f main-?.obj
+	rm -f start-?.obj
 	rm -f *.bak
 	$(MAKE) -C hello tidy
 	$(MAKE) -C demo tidy
@@ -86,6 +99,7 @@ tidy:
 
 clean:
 	rm -f main-?.obj
+	rm -f start-?.obj
 	rm -f *.rsc
 	rm -f *.app
 	rm -f *.acc

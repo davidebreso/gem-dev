@@ -17,7 +17,6 @@ static WORD     _funcpar = 0;
 static WORD     _gemret = 0;
 // void (__interrupt __far *_hookaddr)() = NULL;
 void __interrupt __far _gem_call();
-void (__interrupt __far *_old_ef)() = NULL;
 static BYTE 	_reentry = 0;
 static WORD		_chain = 0;
 	
@@ -27,30 +26,39 @@ static VDIFUNC VDI_473 = NULL;
 static AESFUNC oldaes  = NULL;
 static VDIFUNC oldvdi  = NULL;	
 
-static WORD _gem_old(void)
+#define GEMSTACK_SIZ 1024
+MLOCAL BYTE newstack[GEMSTACK_SIZ];
+MLOCAL WORD save_ss, save_sp;
+
+/* the pointer to the old GEM interrupt handler should be in the code segment,
+ * so that it can be accessed easily by the new interrupt handler
+ */
+void  (__interrupt __far * __based( __segname( "_CODE" ) ) _old_ef)() = NULL;
+
+__declspec ( naked ) static WORD _gem_old(void)
 {
 _asm 
 {
 	push	ds
 	push	es
-
 ;	int		#3
 	mov		ax,_axpar
 	push	ax
-	mov		bx,offset _aespar
+	mov		bx,word ptr _aespar
 	mov		cx,_funcpar
-	mov		dx,offset _vdipar
+	mov		dx,word ptr _vdipar
 	
-	mov		ax,offset _aespar + 2
+	mov		ax,word ptr _aespar + 2
 	mov		es,ax
-	mov		ax,offset _vdipar + 2
+	mov		ax,word ptr _vdipar + 2
 	mov		ds,ax
 	pop		ax		;AX parameter
 	pushf
-	callf	_old_ef;
+	callf 	dword ptr CS:_old_ef;
 
 	pop		es
 	pop		ds
+	ret
 };
 }
 
@@ -69,12 +77,12 @@ static WORD newaes(LPGEMBLK gb)
 }
 
 	
-void interrupt _gem_hook(void)
+void _gem_hook(void)
 {	
-	_reentry++;
+	// _reentry++;
 	_chain  = 1;
 	_gemret = 0;
-	
+	return ;
 	switch(_funcpar)
 	{
 		case 0xC8:  if (AES_C8)  _chain  = (*AES_C8)(_aespar);
@@ -88,7 +96,7 @@ void interrupt _gem_hook(void)
 				    break;
 		default:	break;
 	}
-	_reentry--;
+	// _reentry--;
 }	
 
 
@@ -150,19 +158,19 @@ asm {
 /*
  *This is our handler for INT 0xEF.
  */
-void __interrupt __far _gem_call()
+__declspec( naked ) void __interrupt __far _gem_call()
 {
 _asm
 {
 	jmp		gcall1
-	byte	'G','E','M','A','E','S','2','0',0
+	byte	'GEMAES20',0
 
 gcall1:
 	push	ds				;Set DS to our data, so that we can write to
 	push	ax				;local variables like _aespar. 
-	mov	ax,#seg _funcpar
+	mov	ax,seg _funcpar
 	mov		ds,ax
-;	int		#3
+	jmp 	gopast
 	mov		al,_reentry
 	or		al,al			;Re-entrant call?
 	jnz		gopast
@@ -180,8 +188,9 @@ gcall1:
 	mov	word ptr _aespar + 2, ax	;AES parameter, far pointer in es:bx
 
 	push	bp
-	pushf			 		;gem_hook will return with an iret, so simulate 
-	callf	_gem_hook 		;an interrupt call.
+	; pushf			 		;gem_hook will return with an iret, so simulate 
+	; call	_gem_hook 		;an interrupt call.
+	mov		_chain, 1		; simulate chain interrupt
 	pop		bp
 	
 	mov		ax,_chain
@@ -189,24 +198,25 @@ gcall1:
 	jnz		dochain
 	
 	mov		ax,_gemret
+    /* Restore registers and return */
 	pop	ds
 	iret
 ;
 dochain:
 	mov		ax,_axpar
 	push	ax
-	mov		bx,offset _aespar
+	mov		bx,word ptr _aespar
 	mov		cx,_funcpar
-	mov		dx,offset _vdipar
+	mov		dx,word ptr _vdipar
 	
-	mov		ax,offset _aespar + 2
+	mov		ax,word ptr _aespar + 2
 	mov		es,ax
-	mov		ax,offset _vdipar + 2
+	mov		ax,word ptr _vdipar + 2
 	mov		ds,ax
 
 gopast:
 	pop		ax
 	pop		ds
-	jmpf	_old_ef
+	jmpf	dword ptr CS:_old_ef
 };
 }

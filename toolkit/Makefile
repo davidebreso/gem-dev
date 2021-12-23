@@ -1,17 +1,14 @@
 include makedefs.i
 
-TARGETS=lib/wccgem-l.lib lib/wccgem-m.lib lib/wccgem-s.lib bin/exe2acc.exe samples
+TARGETS=lib/wccgem-l.lib lib/wccgem-s.lib samples
 
 all:	$(TARGETS)
 
-samples: bin/exe2acc.exe
+samples: lib/wccgem-l.lib lib/wccgem-s.lib
 	$(MAKE) -C samples
 
-lib/wccgem-l.lib lib/wccgem-m.lib lib/wccgem-s.lib:
+lib/wccgem-l.lib lib/wccgem-s.lib:
 	$(MAKE) -C libsrc
-
-bin/exe2acc.exe:
-	$(MAKE) -C exe2acc
 
 install:
 	$(MAKE) -C include install
@@ -21,15 +18,11 @@ install:
 clean:
 	$(MAKE) -C libsrc $@
 	$(MAKE) -C samples $@
-	$(MAKE) -C exe2acc $@
-	$(MAKE) -C bin $@
 	$(MAKE) -C lib $@
 
 tidy:
 	$(MAKE) -C libsrc $@
 	$(MAKE) -C samples $@
-	$(MAKE) -C exe2acc $@
-	$(MAKE) -C bin $@
 	$(MAKE) -C lib $@
 
 zip:

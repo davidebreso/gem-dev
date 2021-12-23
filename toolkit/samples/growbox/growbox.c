@@ -152,115 +152,115 @@ static GRECT rects[3];
 
 WORD myaes(LPGEMBLK gb)
 {	
-	WORD func = gb->gb_pcontrol[0];
-	WORD diff_w, diff_h;
-	WORD lineattr[10];
-	
-	if (func == GRAF_GROWBOX || func == GRAF_SHRINKBOX)
-	{
-//		FILE *fp = fopen("d:/gemapp.log", "a");
-		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
-//		fprintf(fp, "%s %d,%d,%d,%d %d,%d,%d,%d\n",
-//				(func == GRAF_GROWBOX) ? "graf_growbox  " : "graf_shrinkbox",
-//				rects[0].g_x, rects[0].g_y, rects[0].g_w, rects[0].g_h,
-//				rects[1].g_x, rects[1].g_y, rects[1].g_w, rects[1].g_h);
-//		fclose(fp);
-		
-		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
-		
-	}
-	if (func == FORM_DIAL)
-	{
-		if (gb->gb_pintin[0] == 1)
-		{
-			func = GRAF_GROWBOX;
-			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
-		} 
-		if (gb->gb_pintin[0] == 2)
-		{
-			func = GRAF_SHRINKBOX;
-			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
-		} 
-	}
-
-	if (func == GRAF_GROWBOX)
-	{
-		/* This code changes various vdi settings, so we carefully change
-		 * them back afterwards */
-		 
-		vql_attributes(vdi_handle, lineattr);
-		 
-		vswr_mode(vdi_handle, 3);
-		vsl_color(vdi_handle, 1);
-		vsl_udsty(vdi_handle, 0x5555);
-		vsl_type (vdi_handle, work_out[6] - 1);
-		vsl_width(vdi_handle, 1);
-
-		/* Work out the intermediate rectangle - it should be in the
-		 * position of the "final" rectangle but the size of the "initial" 
-		 * one */
-
-		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
-		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
-
-		rects[2].g_x = rects[1].g_x + diff_w;
-		rects[2].g_y = rects[1].g_y + diff_h;
-		rects[2].g_w = rects[0].g_w;
-		rects[2].g_h = rects[0].g_h;
-		
-		animate_rect(&rects[0], &rects[2]);
-		animate_rect(&rects[2], &rects[1]);
-
-		vsl_type (vdi_handle, lineattr[0]);
-		vsl_color(vdi_handle, lineattr[1]);
-		vswr_mode(vdi_handle, lineattr[2]);
-		vsl_width(vdi_handle, lineattr[3]);
-		
-		
-		/* If we have called the AES or the VDI then we MUST return zero.
-		 * 
-		 * To have the effect of doing something and then passing the call
-		 * through to the underlying AES/VDI, make the call explicitly and
-		 * then return zero. For example, in this case:
-		 *
-		 * wcc_setresult(gem(gb)) would do it.
-		 *
-		 */
-		
-		return 0;
-	}
-	if (func == GRAF_SHRINKBOX)	/* GRAF_GROWBOX in reverse */
-	{
-		vql_attributes(vdi_handle, lineattr);
-		 
-		vswr_mode(vdi_handle, 3);
-		vsl_color(vdi_handle, 1);
-		vsl_udsty(vdi_handle, 0x5555);
-		vsl_type (vdi_handle, work_out[6] - 1);
-		vsl_width(vdi_handle, 1);
-
-		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
-		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
-
-		rects[2].g_x = rects[1].g_x + diff_w;
-		rects[2].g_y = rects[1].g_y + diff_h;
-		rects[2].g_w = rects[0].g_w;
-		rects[2].g_h = rects[0].g_h;
-		
-		animate_rect(&rects[1], &rects[2]);
-		animate_rect(&rects[2], &rects[0]);
-
-		vsl_type (vdi_handle, lineattr[0]);
-		vsl_color(vdi_handle, lineattr[1]);
-		vswr_mode(vdi_handle, lineattr[2]);
-		vsl_width(vdi_handle, lineattr[3]);
-		
-		return 0;
-	}
+// 	WORD func = gb->gb_pcontrol[0];
+// 	WORD diff_w, diff_h;
+// 	WORD lineattr[10];
+// 	
+// 	if (func == GRAF_GROWBOX || func == GRAF_SHRINKBOX)
+// 	{
+// //		FILE *fp = fopen("d:/gemapp.log", "a");
+// 		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
+// //		fprintf(fp, "%s %d,%d,%d,%d %d,%d,%d,%d\n",
+// //				(func == GRAF_GROWBOX) ? "graf_growbox  " : "graf_shrinkbox",
+// //				rects[0].g_x, rects[0].g_y, rects[0].g_w, rects[0].g_h,
+// //				rects[1].g_x, rects[1].g_y, rects[1].g_w, rects[1].g_h);
+// //		fclose(fp);
+// 		
+// 		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
+// 		
+// 	}
+// 	if (func == FORM_DIAL)
+// 	{
+// 		if (gb->gb_pintin[0] == 1)
+// 		{
+// 			func = GRAF_GROWBOX;
+// 			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
+// 		} 
+// 		if (gb->gb_pintin[0] == 2)
+// 		{
+// 			func = GRAF_SHRINKBOX;
+// 			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
+// 		} 
+// 	}
+// 
+// 	if (func == GRAF_GROWBOX)
+// 	{
+// 		/* This code changes various vdi settings, so we carefully change
+// 		 * them back afterwards */
+// 		 
+// 		vql_attributes(vdi_handle, lineattr);
+// 		 
+// 		vswr_mode(vdi_handle, 3);
+// 		vsl_color(vdi_handle, 1);
+// 		vsl_udsty(vdi_handle, 0x5555);
+// 		vsl_type (vdi_handle, work_out[6] - 1);
+// 		vsl_width(vdi_handle, 1);
+// 
+// 		/* Work out the intermediate rectangle - it should be in the
+// 		 * position of the "final" rectangle but the size of the "initial" 
+// 		 * one */
+// 
+// 		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
+// 		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
+// 
+// 		rects[2].g_x = rects[1].g_x + diff_w;
+// 		rects[2].g_y = rects[1].g_y + diff_h;
+// 		rects[2].g_w = rects[0].g_w;
+// 		rects[2].g_h = rects[0].g_h;
+// 		
+// 		animate_rect(&rects[0], &rects[2]);
+// 		animate_rect(&rects[2], &rects[1]);
+// 
+// 		vsl_type (vdi_handle, lineattr[0]);
+// 		vsl_color(vdi_handle, lineattr[1]);
+// 		vswr_mode(vdi_handle, lineattr[2]);
+// 		vsl_width(vdi_handle, lineattr[3]);
+// 		
+// 		
+// 		/* If we have called the AES or the VDI then we MUST return zero.
+// 		 * 
+// 		 * To have the effect of doing something and then passing the call
+// 		 * through to the underlying AES/VDI, make the call explicitly and
+// 		 * then return zero. For example, in this case:
+// 		 *
+// 		 * wcc_setresult(gem(gb)) would do it.
+// 		 *
+// 		 */
+// 		
+// 		return 0;
+// 	}
+// 	if (func == GRAF_SHRINKBOX)	/* GRAF_GROWBOX in reverse */
+// 	{
+// 		vql_attributes(vdi_handle, lineattr);
+// 		 
+// 		vswr_mode(vdi_handle, 3);
+// 		vsl_color(vdi_handle, 1);
+// 		vsl_udsty(vdi_handle, 0x5555);
+// 		vsl_type (vdi_handle, work_out[6] - 1);
+// 		vsl_width(vdi_handle, 1);
+// 
+// 		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
+// 		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
+// 
+// 		rects[2].g_x = rects[1].g_x + diff_w;
+// 		rects[2].g_y = rects[1].g_y + diff_h;
+// 		rects[2].g_w = rects[0].g_w;
+// 		rects[2].g_h = rects[0].g_h;
+// 		
+// 		animate_rect(&rects[1], &rects[2]);
+// 		animate_rect(&rects[2], &rects[0]);
+// 
+// 		vsl_type (vdi_handle, lineattr[0]);
+// 		vsl_color(vdi_handle, lineattr[1]);
+// 		vswr_mode(vdi_handle, lineattr[2]);
+// 		vsl_width(vdi_handle, lineattr[3]);
+// 		
+// 		return 0;
+// 	}
 
 	/* Return 1 if you have not called the AES or the VDI, and you want
 	 * GEM to handle the call. */
-	
+	_asm{ int 3 };
 	return 1;
 }
 
@@ -313,10 +313,10 @@ WORD GEMAIN(WORD argc, BYTE *ARGV[])
      * This will, of course, wrap round if we call it more than 4294967295
      * times per second. A processor running at 20-odd GHz might do this.
 	 */
-	
 	while (t2 == time(NULL)) ++sleeptime;
 
 	/* Insert our AES into the call chain */
+	_asm{ int 3 };
 	
 	wcc_hookon(myaes, NULL, NULL);
 	

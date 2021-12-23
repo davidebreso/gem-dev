@@ -65,6 +65,7 @@ GLOBAL WORD	dura[]=
 	4, 4, 4, 4, 4, 4, 4, 12, 4, 8, 4
 };
 
+FILE *logfile;
 
 
 /* 
@@ -1254,6 +1255,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 #endif
 	BYTE		docopyrt;
 /* initialize libraries	*/
+
+	logfile = fopen("desk.log", "w");
+	fprintf(logfile, "Starting Desktop.\n");
+	fflush(logfile);
 #if DEBUG
 	remove("c:/gemapp.log");
 #endif
@@ -1534,16 +1539,28 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* free the screen	*/
 	  wind_update(END_UPDATE);
 	}
+	fprintf(logfile, "Quitting Desktop. Save state in memory.\n");
+	fflush(logfile);
 						/* save state in memory	*/
 						/*   for when we come	*/
 						/*   back to the desktop*/
 	cnx_put();
 	app_save(FALSE);
 						/* turn off the menu bar*/
+	fprintf(logfile, "turn off the menu bar.\n");
+	fflush(logfile);
 	menu_bar(0x0L, FALSE);
 						/* close gsx virtual ws	*/
+	fprintf(logfile, "close gsx virtual ws.\n");
+	fflush(logfile);
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
+	fprintf(logfile, "exit the gem AES.\n");
+	fflush(logfile);
 	appl_exit();
+
+	fprintf(logfile, "Closing logfile.\n");
+	fclose(logfile);
+
 	return(TRUE);
 } /* main */
