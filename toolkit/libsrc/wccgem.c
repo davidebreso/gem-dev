@@ -31,7 +31,7 @@ WORD gem(LPGEMBLK gb)
 
 	if (pAes) return (*pAes)(gb);
 
-	ir.x.cx = 200;
+	ir.x.cx = 0xC8;
 	ir.x.dx = 0;
 	ir.x.bx = FP_OFF(gb);
 	sr.es   = FP_SEG(gb);

@@ -41,7 +41,7 @@ _asm
 {
 	push	ds
 	push	es
-;	int		#3
+//	int		3
 	mov		ax,_axpar
 	push	ax
 	mov		bx,word ptr _aespar
@@ -79,10 +79,9 @@ static WORD newaes(LPGEMBLK gb)
 	
 void _gem_hook(void)
 {	
-	// _reentry++;
+	_reentry++;
 	_chain  = 1;
 	_gemret = 0;
-	return ;
 	switch(_funcpar)
 	{
 		case 0xC8:  if (AES_C8)  _chain  = (*AES_C8)(_aespar);
@@ -96,7 +95,7 @@ void _gem_hook(void)
 				    break;
 		default:	break;
 	}
-	// _reentry--;
+	_reentry--;
 }	
 
 

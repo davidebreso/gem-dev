@@ -103,6 +103,12 @@ GLOBAL WORD   	m_out ;
 GLOBAL WORD	avail_text[ MX_FONTS][ MX_FSIZES ] ;
 GLOBAL WORD	nfonts ;
 
+static BYTE 	_reentry = 0;
+
+#define NEWSTACK_SIZ 1024
+MLOCAL BYTE newstack[NEWSTACK_SIZ];
+MLOCAL WORD save_ss, save_sp;
+
 //////////////
 //PROTOTYPES//
 //////////////
@@ -1040,8 +1046,6 @@ WORD myaes(LPGEMBLK gb)
 	WORD func = gb->gb_pcontrol[0];
 	WORD diff_w, diff_h;
 	WORD lineattr[10];
-	union  REGS ir, or;
-	struct SREGS sr;
 	
 	if (func == GRAF_GROWBOX || func == GRAF_SHRINKBOX)
 	{
@@ -1144,18 +1148,94 @@ WORD myaes(LPGEMBLK gb)
 		
 		return 0;
 	}
-
-	/* Passthrough INT 0xEF call. */
-	ir.x.cx = 200;
-	ir.x.dx = 0;
-	ir.x.bx = FP_OFF(gb);
-	sr.es   = FP_SEG(gb);
 	
-	int86x(GEMENTRY, &ir, &or, &sr);
-
-	return or.x.ax;
+	/* Return 1 if you have not called the AES or the VDI, and you want
+	 * GEM to handle the call. */
+	return 1;
 }
 
+/* the pointer to the old GEM interrupt handler should be in the code segment,
+ * so that it can be accessed easily by the new interrupt handler
+ */
+void  (__interrupt __far * __based( __segname( "_CODE" ) ) _old_ef)() = NULL;
+
+/*
+ *This is our handler for INT 0xEF.
+ */
+__declspec( naked ) void __interrupt __far _gem_call()
+{
+_asm
+{
+	jmp		gcall1
+	byte	'GEMAES20',0
+
+gcall1:
+	/* Save registers */
+	push	ds	
+	push	es
+	push	ax
+	push	bx
+	push	cx
+	push	dx
+	/* Set DS to our data, so that we can write to local variables like _reentry. */ 
+	mov	ax,seg _reentry
+	mov	ds,ax
+	mov	al,_reentry
+	or	al,al			/* Re-entrant call? */
+	jnz	gopast
+	cmp	cx, 0xC8		/* Call to AES? */
+	jne	gopast
+	/* Increment _reentry */
+	inc	al
+	mov	_reentry, al
+        /* save current SS:SP */
+        mov save_ss, ss
+        mov save_sp, sp
+        /* set stack to newstack */
+        mov ax, seg newstack
+        mov ss, ax
+        mov sp, offset newstack + NEWSTACK_SIZ - 2
+	/* AES parameter, far pointer in es:bx */
+	mov	dx, es			; myaes expect parameter in DX:AX
+	mov	ax, bx
+#ifdef __SMALL__        
+        call myaes
+#else
+        callf myaes
+        /* Restore DS since in the large model myaes may change it */
+        mov dx, seg newstack
+        mov ds, dx
+#endif
+        /* Restore SS:SP */
+        mov ss, save_ss
+        mov sp, save_sp
+	push	ax			/* save return value in AX */
+	/* decrement reentry */
+	mov	al,_reentry
+	dec	al
+	mov	_reentry, al
+	pop	ax			/* Test if we have to chain interrupt */
+	or	ax,ax		
+	jnz	gopast	
+    	/* If AX = 0, restore registers and return */
+	pop	dx
+	pop	cx
+	pop	bx
+	pop	ax
+	pop	es
+	pop	ds
+	iret
+gopast:
+	/* Restore registers and call old EF int handler */
+	pop	dx
+	pop	cx
+	pop	bx
+	pop	ax
+	pop	es
+	pop	ds
+	jmpf	dword ptr CS:_old_ef
+};
+}
 
 
 /*----------------------------------------------------------------------*/
@@ -1179,14 +1259,18 @@ WORD GEMAIN(WORD argc, BYTE *argv[])
 	 */
 	while (t2 == time(NULL)) ++sleeptime;
 	
-	oldaes = divert_aes(myaes);
+	/* setup the new int EF handler */
+	_old_ef = _dos_getvect(GEMENTRY);
+	_dos_setvect(GEMENTRY, _gem_call);
 
 	if (!(term_type = xf_init()))
 	{
 		xf();
 	}
 	xf_term(term_type);
-
-	divert_aes(oldaes);
+	
+	/* restore the old int EF handler */
+	_dos_setvect(GEMENTRY, _old_ef);
+	
 }
 

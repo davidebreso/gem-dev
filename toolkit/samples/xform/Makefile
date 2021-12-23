@@ -1,7 +1,8 @@
 include ../../makedefs.i
 
-CFLAGS = -0 -ox -os -s -bcl=dos -i=../../include
-CC = wcl
+CFLAGS = -bt=dos -os -s -0 -i../../include
+CC = wcc
+LD = wlink
 
 all:	../xform-l.app ../xform-s.app ../xform.rsc
 
@@ -11,11 +12,17 @@ all:	../xform-l.app ../xform-s.app ../xform.rsc
 ../xform.rsc:	xform.rsc
 	cp xform.rsc ..
 
-xform-l.app:	xform.c xform.h
-	$(CC) -ml $(CFLAGS) -fe=$@ xform.c -fm=xform-l.map ../main-l.obj ../../lib/wccgem-l.lib
+xform-l.app:	xform-l.obj
+	$(LD) name $@ system dos file \{ $< ../main-l.obj \} lib ../../lib/wccgem-l.lib option map
+	
+xform-l.obj:	xform.c xform.h
+	$(CC) -ml $(CFLAGS) -fo=$@ $<	
 
-xform-s.app:	xform.c xform.h
-	$(CC) -ms $(CFLAGS) -fe=$@ xform.c -fm=xform-s.map ../main-s.obj ../../lib/wccgem-s.lib
+xform-s.app:	xform-s.obj
+	$(LD) name $@ system dos file \{ $< ../main-s.obj \} lib ../../lib/wccgem-s.lib option map
+	
+xform-s.obj:	xform.c xform.h
+	$(CC) -ms $(CFLAGS) -fo=$@ $<	
 
 tidy:
 	rm -f *.obj
@@ -23,7 +30,7 @@ tidy:
 	rm -f *.sdb
 	rm -f *.sym
 	rm -f *.map
-	rm -f *.o
+	rm -f *.obj
 	rm -f xform-?.app
 	rm -f *.err
 
