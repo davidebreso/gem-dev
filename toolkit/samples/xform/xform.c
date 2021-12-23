@@ -25,6 +25,7 @@
 #include "wccgem.h"
 #include "xform.h"				/* xform apl resource	*/
 #include <dos.h>
+#include <time.h>
 
 /* user or page coordinate system is IN_COORDS points per inch, with 	*/
 /* (0,0) in the upper left corner.					*/
@@ -46,6 +47,9 @@
 #define MX_COORDS	256
 #define MX_FONTS	4
 #define MX_FSIZES	8
+
+#define GEMENTRY 0xEF
+
 /*
 
 Page*/
@@ -963,16 +967,226 @@ xf_init()
 	return(0);
 }
 
+/* usleep() busy-waits for a short length of time (about 1/300 of a 
+   second) */
+
+static unsigned long sleeptime;
+
+void usleep(void)
+{
+	long t,s;
+
+	for (t = 0; t < (sleeptime / 300); t++) s=time(NULL);
+}
+
+
+/* Animate a rectangle moving between two places */
+
+void animate_rect(GRECT *rectSrc, GRECT *rectDest)
+{
+	float xs = (rectDest->g_x - rectSrc->g_x) / 25.0;
+	float ys = (rectDest->g_y - rectSrc->g_y) / 25.0;
+	float ws = (rectDest->g_w - rectSrc->g_w) / 25.0;
+	float hs = (rectDest->g_h - rectSrc->g_h) / 25.0;
+	static WORD c[10];
+	WORD nr, ns, nc;
+	WORD *coords;
+		
+	/* [v0.3] Don't animate if the rectangles are in the same place */
+	if (xs == 0 && ys == 0 && ws == 0 && hs == 0) return;
+	
+	for (ns = 0; ns < 2; ns++) for (nr = 0; nr < 25; nr++)
+	{
+		int sx = (int)(nr * xs);
+		int sy = (int)(nr * ys);
+		int sw = (int)(nr * ws);
+		int sh = (int)(nr * hs);
+	
+		coords = c;
+		
+		coords[0] = rectSrc->g_x +                sx;
+		coords[1] = rectSrc->g_y +                sy;	
+		coords[2] = rectSrc->g_x + rectSrc->g_w + sx + sw;
+		coords[3] = rectSrc->g_y +                sy;
+		coords[4] = rectSrc->g_x + rectSrc->g_w + sx + sw;
+		coords[5] = rectSrc->g_y + rectSrc->g_h + sy + sh;
+		coords[6] = rectSrc->g_x +                sx;
+		coords[7] = rectSrc->g_y + rectSrc->g_h + sy + sh;
+		coords[8] = rectSrc->g_x +                sx;	
+		coords[9] = rectSrc->g_y +                sy;	
+
+		/* [v0.3] Check the coordinates don't go negative */
+		for (nc = 0; nc < 10; nc++) 
+		{
+			if (coords[nc] < 0)         coords[nc] = 0;
+		}
+		v_pline(vdi_handle, 5, coords);
+		usleep();
+	}
+}
+
+
+/* Intercept AES calls and make any changes we like.
+ *
+ * This function adds graf_growbox() and graf_shrinkbox() back into the AES;
+ * also the two zoombox functions in form_dial()
+ *
+ */
+
+static GRECT rects[3];
+
+WORD myaes(LPGEMBLK gb)
+{	
+	WORD func = gb->gb_pcontrol[0];
+	WORD diff_w, diff_h;
+	WORD lineattr[10];
+	union  REGS ir, or;
+	struct SREGS sr;
+	
+	if (func == GRAF_GROWBOX || func == GRAF_SHRINKBOX)
+	{
+//		FILE *fp = fopen("d:/gemapp.log", "a");
+		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
+//		fprintf(fp, "%s %d,%d,%d,%d %d,%d,%d,%d\n",
+//				(func == GRAF_GROWBOX) ? "graf_growbox  " : "graf_shrinkbox",
+//				rects[0].g_x, rects[0].g_y, rects[0].g_w, rects[0].g_h,
+//				rects[1].g_x, rects[1].g_y, rects[1].g_w, rects[1].g_h);
+//		fclose(fp);
+		
+		LWCOPY((LPWORD)(rects), (LPWORD)(gb->gb_pintin), 8);
+		
+	}
+	if (func == FORM_DIAL)
+	{
+		if (gb->gb_pintin[0] == 1)
+		{
+			func = GRAF_GROWBOX;
+			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
+		} 
+		if (gb->gb_pintin[0] == 2)
+		{
+			func = GRAF_SHRINKBOX;
+			LWCOPY((LPWORD)(rects), (LPWORD)(&gb->gb_pintin[1]), 8);
+		} 
+	}
+
+	if (func == GRAF_GROWBOX)
+	{
+		/* This code changes various vdi settings, so we carefully change
+		 * them back afterwards */
+		 
+		vql_attributes(vdi_handle, lineattr);
+		 
+		vswr_mode(vdi_handle, 3);
+		vsl_color(vdi_handle, 1);
+		vsl_udsty(vdi_handle, 0x5555);
+		vsl_type (vdi_handle, work_out[6] - 1);
+		vsl_width(vdi_handle, 1);
+
+		/* Work out the intermediate rectangle - it should be in the
+		 * position of the "final" rectangle but the size of the "initial" 
+		 * one */
+
+		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
+		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
+
+		rects[2].g_x = rects[1].g_x + diff_w;
+		rects[2].g_y = rects[1].g_y + diff_h;
+		rects[2].g_w = rects[0].g_w;
+		rects[2].g_h = rects[0].g_h;
+		
+		animate_rect(&rects[0], &rects[2]);
+		animate_rect(&rects[2], &rects[1]);
+
+		vsl_type (vdi_handle, lineattr[0]);
+		vsl_color(vdi_handle, lineattr[1]);
+		vswr_mode(vdi_handle, lineattr[2]);
+		vsl_width(vdi_handle, lineattr[3]);
+		
+		
+		/* If we have called the AES or the VDI then we MUST return zero.
+		 * 
+		 * To have the effect of doing something and then passing the call
+		 * through to the underlying AES/VDI, make the call explicitly and
+		 * then return zero. For example, in this case:
+		 *
+		 * wcc_setresult(gem(gb)) would do it.
+		 *
+		 */
+		
+		return 0;
+	}
+	if (func == GRAF_SHRINKBOX)	/* GRAF_GROWBOX in reverse */
+	{
+		vql_attributes(vdi_handle, lineattr);
+		 
+		vswr_mode(vdi_handle, 3);
+		vsl_color(vdi_handle, 1);
+		vsl_udsty(vdi_handle, 0x5555);
+		vsl_type (vdi_handle, work_out[6] - 1);
+		vsl_width(vdi_handle, 1);
+
+		diff_w = (rects[1].g_w - rects[0].g_w) / 2;
+		diff_h = (rects[1].g_h - rects[0].g_h) / 2;
+
+		rects[2].g_x = rects[1].g_x + diff_w;
+		rects[2].g_y = rects[1].g_y + diff_h;
+		rects[2].g_w = rects[0].g_w;
+		rects[2].g_h = rects[0].g_h;
+		
+		animate_rect(&rects[1], &rects[2]);
+		animate_rect(&rects[2], &rects[0]);
+
+		vsl_type (vdi_handle, lineattr[0]);
+		vsl_color(vdi_handle, lineattr[1]);
+		vswr_mode(vdi_handle, lineattr[2]);
+		vsl_width(vdi_handle, lineattr[3]);
+		
+		return 0;
+	}
+
+	/* Passthrough INT 0xEF call. */
+	ir.x.cx = 200;
+	ir.x.dx = 0;
+	ir.x.bx = FP_OFF(gb);
+	sr.es   = FP_SEG(gb);
+	
+	int86x(GEMENTRY, &ir, &or, &sr);
+
+	return or.x.ax;
+}
+
+
 
 /*----------------------------------------------------------------------*/
 WORD GEMAIN(WORD argc, BYTE *argv[])
 {
 	WORD	term_type;
+	static AESFUNC oldaes;
+	/* Estimate CPU speed. sleeptime = no. of calls to time() per second. */
+	
+	time_t t1, t2;
+	sleeptime = 0;
+
+	/* Wait until the start of a new second */
+	
+	t1 = time(NULL); while ((t2 = time(NULL)) == t1);
+
+	/* Then count how many times we can call time() before the next second. 
+     *
+     * This will, of course, wrap round if we call it more than 4294967295
+     * times per second. A processor running at 20-odd GHz might do this.
+	 */
+	while (t2 == time(NULL)) ++sleeptime;
+	
+	oldaes = divert_aes(myaes);
 
 	if (!(term_type = xf_init()))
 	{
 		xf();
 	}
 	xf_term(term_type);
+
+	divert_aes(oldaes);
 }
 
