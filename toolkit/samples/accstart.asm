@@ -142,22 +142,15 @@ _accstart proc near
                                         ; SP should be equal to stack size (800h) ?
         add     bx, STACKSIZ            ; calculate top address for stack
         add     bx,0Fh                  ; round up to paragraph boundary
-        and     bl,0F0h                 ; ...
+        jnc     not64k                  ; if 64K
+        mov     bx,0fffeh               ; set _STACKTOP to 0xfffe
+not64k:
+        and     bl,0F0h                 ; round up to paragraph boundary
         mov     ss,cx                   ; set stack segment
         mov     sp,bx                   ; set sp relative to DGROUP
         mov     _STACKTOP,bx            ; set stack top
-                                        ; (this is actually es:_STACKTOP)
-                                        ; here bx contains # of paragraphs in data segment
-        shl     bx,1                    ; calc # of bytes
-        shl     bx,1                    ; ...
-        shl     bx,1                    ; ...
-        shl     bx,1                    ; ...
-        jne     not64k                  ; if 64K
-        mov     bx,0fffeh               ; - set _curbrk to 0xfffe
-not64k:                                 ; endif
         mov     _curbrk,bx              ; set top of memory owned by process 
                                         ; (this is actually es:_curbrk)
-                                        ; AND SHOULD BE KEPT TO INITIALIZE _curbrk
         mov     dx,DGROUP
         mov     es,dx                   ; es:di is destination
         mov     di,_STACKLOW
@@ -226,7 +219,5 @@ __null_ovl_rtn proc far
 __null_ovl_rtn endp
 
 BEGTEXT   ends
-
-
 
         end  
