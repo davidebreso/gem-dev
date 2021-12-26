@@ -308,9 +308,8 @@ __declspec( naked ) void __interrupt __far _gem_call()
 {
 _asm
 {
-	jmp		gcall1
-	byte	'GEMAES20',0
-
+	jmp	short gcall1
+	db	'G','E','M','A','E','S','2','0',0
 gcall1:
 	/* Save registers */
 	push	ds	

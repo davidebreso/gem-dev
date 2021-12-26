@@ -25,9 +25,9 @@ MAIN = main-l.obj main-s.obj
 
 STARTUP = start-s.obj start-l.obj
 
-all:	$(TARGETS)
+all: $(TARGETS)
 
-main:	$(MAIN)
+main: $(MAIN)
 
 startup: $(STARTUP)
 
@@ -36,7 +36,7 @@ main-l.obj:	main.c
 
 main-s.obj:	main.c
 	$(CC) -fo=$@ -ms $(CFLAGS) $<
-	
+
 start-l.obj:	accstart.asm
 	$(AS) -DSTACKSIZ=800h -fo=$@ -ml -bt=dos -0 $<
 
@@ -118,4 +118,8 @@ clean:
 	$(MAKE) -C spooler clean
 	$(MAKE) -C userdef clean
 	$(MAKE) -C rscreate clean
+
+# Disable built-in rules	
+.SUFFIXES:
+
 

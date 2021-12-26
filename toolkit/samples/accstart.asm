@@ -43,7 +43,10 @@
         assume  nothing
 
 
- DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,_BSS
+ DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,_BSS,STACK
+
+BEGTEXT  segment word public 'CODE'
+BEGTEXT  ends
 
 _TEXT   segment word public 'CODE'
 
@@ -53,15 +56,19 @@ _TEXT   segment word public 'CODE'
 
 _TEXT   ends
 
-FAR_DATA segment byte public 'FAR_DATA'
-FAR_DATA ends
-
         assume  ds:DGROUP
 
+        INIT_VAL        equ 0101h
+        NUM_VAL         equ 16
+
 _NULL   segment para public 'BEGDATA'
+__nullarea label word
+        dw      NUM_VAL dup(INIT_VAL)
+        public  __nullarea
 _NULL   ends
 
 _AFTERNULL segment word public 'BEGDATA'
+        dw      0                       ; nullchar for string at address 0
 _AFTERNULL ends
 
 CONST   segment word public 'DATA'
@@ -90,8 +97,7 @@ _DATA   segment word public 'DATA'
         extrn   __get_ovl_stack         : word
         extrn   __restore_ovl_stack     : word
         extrn   __close_ovl_file        : word
-;        extrn   __DOSseg__              : byte
-
+        extrn   __DOSseg__              : byte
 _DATA   ends
 
 DATA    segment word public 'DATA'
@@ -105,28 +111,25 @@ _BSS    segment word public 'BSS'
 _BSS    ends
 
 ;
-; Create a special segment EDATA that contains a dummy variable.
-; This special segment EDATA will be placed at the end of the memory map by WLINK,
-; so that the executable file contains all memory needed by the program,
-; including the _BSS and STACK segments that are normally not contained in the 
-; executable file.
+; Allocate space for the stack and put a symbol to mark the end of the stack
 ;
-EDATA    segment word public 'EDATA'
-_end_of_world   dw 0AA55h
-EDATA   ends
+STACK    segment para stack 'STACK'
+        db      (STACKSIZ - 2) dup(?)
+st_end  label word
+        dw 0AA55h 
+        public  "C",st_end       
+STACK   ends
 
-; to guarantee that the _accstart function is at address CS:0 we it in BEGTEXT 
+; to guarantee that the _accstart function is at address CS:0 we put it in BEGTEXT 
 ; (WLINK will keep segment 'BEGTEXT' in front).
 
-BEGTEXT  segment word public 'CODE'
+BEGTEXT segment word public 'CODE'
         assume  nothing
+        public  _cstart_
 
         assume  cs:BEGTEXT
 
-_accstart proc near
-        public  "C",_accstart
-
-        int     3
+_cstart_ proc 
         sti                             ; enable interrupts
         mov     cx,DGROUP               ; get proper stack segment
 
@@ -138,9 +141,9 @@ _accstart proc near
         and     bl,0F0h                 ; ...
         mov     _STACKLOW,bx            ; this is actually es:_STACKLOW
         mov     _psp,ds                 ; and es:_psp. Save segment address of PSP
-                                        ; WHAT TO DO HERE? there is no PSP in a DA
-                                        ; SP should be equal to stack size (800h) ?
-        add     bx, STACKSIZ            ; calculate top address for stack
+                                        ; This is actually the PPS of GEMVDI, since
+                                        ; a Desktop acc do not have a PSP
+        mov     bx,offset DGROUP:st_end      ; get top address for stack
         add     bx,0Fh                  ; round up to paragraph boundary
         jnc     not64k                  ; if 64K
         mov     bx,0fffeh               ; set _STACKTOP to 0xfffe
@@ -208,7 +211,27 @@ endif
         mov     ax,0FFh                 ; run all initalizers
         call    __InitRtns              ; call initializer routines
         call    __CMain
-_accstart endp
+_cstart_ endp
+
+__exit  proc
+        public  "C",__exit
+        public  __do_exit_with_msg_
+__do_exit_with_msg_:
+        mov     ax, 4c00h               ; DOS call to exit with return code
+        int     021h                    ; back to DOS
+__exit  endp
+
+;
+;       set up addressability without segment relocations for emulator
+;
+public  __GETDS
+__GETDS proc    near
+        push    ax                      ; save ax
+        mov     ax,DGROUP               ; get DGROUP
+        mov     ds,ax                   ; load DS with appropriate value
+        pop     ax                      ; restore ax
+        ret                             ; return
+__GETDS endp
 
 __null_FPE_rtn proc far
         ret                             ; return
@@ -220,4 +243,4 @@ __null_ovl_rtn endp
 
 BEGTEXT   ends
 
-        end  
+        end _cstart_

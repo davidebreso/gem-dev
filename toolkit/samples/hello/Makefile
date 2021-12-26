@@ -25,19 +25,17 @@ hello-s.obj:	hello.c
 	$(CC) -ms $(CFLAGS) -fo=$@ $<	
 
 hello-l.acc:	hellolac.obj
-	$(LD) name $@ system dos file \{ ../start-l.obj $< ../main-l.obj\} lib ../../lib/wccgem-l.lib \
-	      option map=hellolac.map \
-	      order clname CODE segment BEGTEXT segment _TEXT clname FAR_DATA \
-	      clname BEGDATA clname DATA clname BSS clname STACK clname EDATA
+	$(LD) name $@ system dos option map=hellolac.map \
+	libfile ../start-l.obj file \{ $< ../main-l.obj\} lib ../../lib/wccgem-l.lib 
+	       
 
 hellolac.obj:	hello.c 
 	$(CC) -ml -DDESKACC=1 $(CFLAGS) -fo=$@ $< 
 	
 hello-s.acc:	hellosac.obj
-	$(LD) name $@ system dos file \{ ../start-s.obj $< ../main-s.obj\} lib ../../lib/wccgem-s.lib \
-	      option map=hellosac.map \
-	      order clname CODE segment BEGTEXT segment _TEXT clname FAR_DATA \
-	      clname BEGDATA clname DATA clname BSS clname STACK clname EDATA
+	$(LD) name $@ system dos option map=hellosac.map \
+	libfile ../start-s.obj file \{  $< ../main-s.obj\} lib ../../lib/wccgem-s.lib 
+	      
 
 hellosac.obj:	hello.c 
 	$(CC) -ms -DDESKACC=1 $(CFLAGS) -fo=$@ $< 

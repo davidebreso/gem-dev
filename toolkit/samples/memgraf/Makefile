@@ -25,19 +25,15 @@ mgrflac.obj:	memgraf.c
 	$(CC) -ml -DDESKACC=1 $(CFLAGS) -fo=$@ $< 
 
 mgrf-l.acc:	mgrflac.obj
-	$(LD) name $@ system dos file \{ ../start-l.obj $< \} lib ../../lib/wccgem-l.lib \
-	      option map=mgrflac.map \
-	      order clname CODE segment BEGTEXT segment _TEXT clname FAR_DATA \
-	      clname BEGDATA clname DATA clname BSS clname STACK clname EDATA
+	$(LD) name $@ system dos libfile ../start-l.obj file \{  $< \} lib ../../lib/wccgem-l.lib \
+	      option map=mgrflac.map
 
 mgrfsac.obj:	memgraf.c 
 	$(CC) -ms -DDESKACC=1 $(CFLAGS) -fo=$@ $< 
 
 mgrf-s.acc:	mgrfsac.obj
-	$(LD) name $@ system dos file \{ ../start-s.obj $< \} lib ../../lib/wccgem-s.lib \
-	      option map=mgrfsac.map \
-	      order clname CODE segment BEGTEXT segment _TEXT clname FAR_DATA \
-	      clname BEGDATA clname DATA clname BSS clname STACK clname EDATA
+	$(LD) name $@ system dos libfile ../start-s.obj file \{  $< \} lib ../../lib/wccgem-s.lib \
+	      option map=mgrfsac.map
 
 tidy:
 	rm -f mgrf-?.acc
