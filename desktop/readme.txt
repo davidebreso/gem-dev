@@ -18,7 +18,7 @@ DESKTOPL.APP - large model, for single-tasking GEM.
 Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
 
-* Format disk disabled since it is not working.
+* Bugfix: correct disk drive detection in "Format Disk"
 
 * Code is now compiled with Open Watcom v2 on MacOS. All functionalities are 
   maintained with a smaller memory footprint than Pacific C's builds.

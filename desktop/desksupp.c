@@ -757,7 +757,9 @@ do_format(curr)
 
 	if ( (pa) && (pa->a_type == AT_ISDISK) )
 	{
-	  msg[0] = pf->f_junk ;
+	  // DESKTOP v2.x+ version pf->f_junk;
+	  junk = (get_spec(G.g_screen, curr)->ib_char) & 0xFF;
+	  msg[0] = junk;
 	  msg[1] = 0;
 	  ret = fun_alert(2, STFORMAT, msg);
 	  strlcpy(msg + 1, ":", 5);
