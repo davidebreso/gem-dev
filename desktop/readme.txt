@@ -1,21 +1,21 @@
 GEM/3 Desktop: Open Watcom version (Release 3.2.5)
 ===============================================================================
 
-  This is a GEM desktop, based on Digital Research's GEM Desktop 3.0. Features 
-that have been added include:
+  This is a GEM desktop, based on John Elliott's GEM Desktop 3.2.4 downloadable
+from <http://www.seasip.info/Gem/desktops.html>. Features that have been added
+to the original Digital Research's GEM Desktop 3.0 include:
 
+* Auto-arrange of icons to match the window size
 * Four windows and desktop icons (like GEM/1)
 * ViewMAX look and feel
 * 'Show contents' function (from ViewMAX)
 
-  There are four APPs in this package:
+  There are two APPs in this package:
 
 DESKTOP.APP  - small model, for single-tasking GEM.
 DESKTOPL.APP - large model, for single-tasking GEM.
-DESKSM.APP   - small model, for GEM/XM.
-DESKLM.APP   - large model, for GEM/XM.
 
-Release 3.2.5 Changes (most recent at the top)
+Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
 
 * Format disk disabled since it is not working.
@@ -25,14 +25,9 @@ Release 3.2.5 Changes (most recent at the top)
 
 * Icon view auto-arrange icons to match the window size. 
 
-* Bugfix: some portions of code cause Pacific C's global optimisation to fail.
-They have been moved to a separate file, so that the rest of the code can be 
-compiled with global optimisation enabled and the small-model desktop remains 
-below the 64K code segment limit without removing functionalities.
-
 * Multi-tasking GEM builds are disabled by default. 
 
-Release 3.2.4 Changes (most recent at the top)
+Release 3.2.4 Changes (most recent at the top) -- John Elliott
 ===============================================================================
 
 * Checks the GEM version before calling menu_click(); this allows the desktop
@@ -87,11 +82,11 @@ a FreeGEM AES. It will also work on a stock GEM/3 AES, though it won't look
 as nice.
 
 To compile DESKTOP.APP from the source in this archive, you will need the
-Pacific C compiler
-<https://clasqm.github.io/freedos-repo/Development.html>
-and John Elliott's GEM bindings for it:
-<http://www.seasip.info/Gem/index.html>
+Open Watcom v2 C compiler, linker and assembler
+<https://open-watcom.github.io>
+and Davide Bresolin's GEM bindings for it:
+<https://github.com/davidebreso/gem-dev>
 
 John Elliott, 26 March 2006
-Davide Bresolin, 18 December 2021
+Davide Bresolin, 26 December 2021
 
