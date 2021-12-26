@@ -12,10 +12,6 @@
 
 #include "wccdesk.h"
 
-/* forward declarations	*/
-MLOCAL VOID   ob_actxywh();
-MLOCAL VOID   ob_relxywh();
-
 /*
 *	Routine to tell if an icon has an associated document type.
 */
@@ -655,7 +651,7 @@ WORD  ins_app(BYTE *pfname, ANODE *pa)
 /*------------------------------*/
 /*	ob_actxywh		*/
 /*------------------------------*/
-MLOCAL VOID  ob_actxywh(LPTREE tree, WORD obj, GRECT *p)
+VOID  ob_actxywh(LPTREE tree, WORD obj, GRECT *p)
 {
 				/* get x,y,w,h for specified object	*/
 	objc_offset(tree, obj, &p->g_x, &p->g_y);
@@ -666,7 +662,7 @@ MLOCAL VOID  ob_actxywh(LPTREE tree, WORD obj, GRECT *p)
 /*------------------------------*/
 /*	ob_relxywh		*/
 /*------------------------------*/
-MLOCAL VOID  ob_relxywh(LPTREE tree, WORD obj, GRECT *prect)
+VOID  ob_relxywh(LPTREE tree, WORD obj, GRECT *prect)
 {
 				/* get x,y,w,h for specified object	*/
 	LWCOPY(ADDR(prect), (LPVOID)&tree[obj].ob_x, sizeof(GRECT) / 2);

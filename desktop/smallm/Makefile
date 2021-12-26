@@ -1,7 +1,9 @@
 
-CC=PACC
-CFLAGS=-Bs -Zg -O -I.. -DMULTIAPP
-LIBDIR=d:/tools/c/lib
+CC=wcc
+LD=wlink
+AS=wasm
+CFLAGS=-bt=dos -os -s -0 -DMULTIAPP=1 -I../../toolkit/include
+LIBDIR=../../toolkit/lib
 
 OBJECTS0=desktop.obj  
 OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj 
@@ -16,22 +18,19 @@ OBJECTS=$(OBJECTS0) $(OBJECTS1) $(OBJECTS2) $(OBJECTS3) $(OBJECTS4) \
 
 all:	desktop.app
 
-desktop.app:	desktop.exe
-	copy $< $@
-
-desktop.exe:	$(OBJECTS) 
-	libr r tmp.lib $(OBJECTS1)
-	libr r tmp.lib $(OBJECTS2)
-	libr r tmp.lib $(OBJECTS3)
-	libr r tmp.lib $(OBJECTS4)
-	libr r tmp.lib $(OBJECTS5)
-	libr r tmp.lib $(OBJECTS6)
-	$(CC) -Mtest.map $(OBJECTS0) tmp.lib $(LIBDIR)/wccgem-s.lib
-	del tmp.lib
+desktop.app:	$(OBJECTS) 
+	$(LD) name $@ system dos file \{ $(OBJECTS) \} lib $(LIBDIR)/wccgem-s.lib option map=test.map
 
 %.obj:	../%.c ../deskprot.h ../desktop.h ../wccdesk.h
-	$(CC) -O$@ $(CFLAGS) -c $<
+	$(CC) -ms $(CFLAGS) -fo=$@ $< 
 
-%.obj:	../%.as
-	$(CC) -O$@ $(CFLAGS) -c $<	
+%.obj:	../%.asm
+	$(AS) -0 $< -fo=$@ -ms
 
+clean:
+	rm -f *.obj 
+	rm -f *.exe 
+	rm -f *.app 
+	rm -f *.lib
+	rm -f *.map
+	rm -f *.err

@@ -14,9 +14,15 @@ to the original Digital Research's GEM Desktop 3.0 include:
 
 DESKTOP.APP  - small model, for single-tasking GEM.
 DESKTOPL.APP - large model, for single-tasking GEM.
+DESKSM.APP   - small model, for GEM/XM.
+DESKLM.APP   - large model, for GEM/XM.
 
 Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
+
+* Multi-tasking GEM APPs compiles correctly. "Show Contents" is available in
+  both the small and large model MULTIAPP desktop but fails to launch reporting
+  a lack of memory. 
 
 * Bugfix: correct disk drive detection in "Format Disk"
 
@@ -24,8 +30,6 @@ Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
   maintained with a smaller memory footprint than Pacific C's builds.
 
 * Icon view auto-arrange icons to match the window size. 
-
-* Multi-tasking GEM builds are disabled by default. 
 
 Release 3.2.4 Changes (most recent at the top) -- John Elliott
 ===============================================================================

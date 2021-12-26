@@ -25,11 +25,7 @@
 
 /* DESKTOP v1.2: Different sets of illegal items */
 #if MULTIAPP
- #ifdef __SMALL__
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,TYPITEM, 0};
- #else
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
- #endif
 #else
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,IACCITEM, 0};
 #endif

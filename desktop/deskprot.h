@@ -127,6 +127,8 @@ WORD  is_installed(ANODE *pa);
 WORD  ins_disk(ANODE *pa);
 WORD  ins_app(BYTE *pfname, ANODE *pa);
 VOID  ins_posdisk(WORD dx, WORD dy, WORD *pdx, WORD *pdy);
+VOID  ob_actxywh();
+VOID  ob_relxywh();
 
 /* deskobj.c */
 VOID  obj_init(VOID);
