@@ -5,10 +5,10 @@
 #include "wccgem.h"				/* portable coding conv	*/
 #include <stdio.h>				/* Proper fopen() etc. */
 #include <string.h>
+#include <stdlib.h>
 #include "rsconv.h"
 #include "rcfile.h"
 #include "rclib.h"
-#include	<stdlib.h>
 
 /*------------------------------*/
 /*	defines			*/
