@@ -301,6 +301,7 @@ do_conv()
 	LPBYTE	str; 
 	LONG	size;
 	WORD	reply, nsym;
+	int	fwret;
 
 	r_file[0] = '\0';
 
@@ -377,7 +378,7 @@ do_conv()
 		}
 
 	set_prog(BYTESWAP);
-	if (!native_in) swap_images();
+	if (native_in) swap_images();
 
 	swap_trees();
 	swap_objs();
@@ -436,7 +437,8 @@ do_conv()
 	reply = nsym;
 	swap_bytes((LPBYTE)&reply, 2);
 
-	if (fwrite( (new_dfn ? &nsym : &reply), 1, sizeof(WORD), d2_fp) < (int)sizeof(WORD))
+	fwret = fwrite( (new_dfn ? &nsym : &reply), 1, sizeof(WORD), d2_fp);
+	if (fwret < (int)sizeof(WORD))
 		{
 		dos_error(errno);
 		free(head);
@@ -453,7 +455,8 @@ do_conv()
 		if (native_in)
 			{			/* insert spare word */
 			reply = 0;
-			if (fwrite(&reply, 1, sizeof(WORD), d2_fp) < (int)sizeof(WORD))
+			fwret = fwrite(&reply, 1, sizeof(WORD), d2_fp);
+			if (fwret < (int)sizeof(WORD))
 				{
 				dos_error(errno);
 				free(head);
@@ -462,15 +465,16 @@ do_conv()
 			}
 		else
 			{			/* delete extra word */ 
-			if (fread(buff, 1, sizeof(WORD), d_fp) < (int)sizeof(WORD))
+			fwret = fread(buff, 1, sizeof(WORD), d_fp);
+			if (fwret < (int)sizeof(WORD))
 				{
 				dos_error(errno);
 				free(head);
 				return;
 				}
 			}
-
-		if (fread(buff, 1, sizeof(WORD), d_fp) < (int)sizeof(WORD))
+		fwret = fread(buff, 1, sizeof(WORD), d_fp);
+		if (fwret < (int)sizeof(WORD))
 			{
 			dos_error(errno);
 			free(head);
@@ -480,13 +484,15 @@ do_conv()
 		if (!new_dfn)			/* Just copy for new fmt */
 			swap_bytes(buff, 2);
 
-		if (fwrite(buff, 1, sizeof(WORD), d2_fp) < (int)sizeof(WORD))
+		fwret = fwrite(buff, 1, sizeof(WORD), d2_fp);
+		if (fwret < (int)sizeof(WORD))
 			{
 			dos_error(errno);
 			free(head);
 			return;
 			}
-		if (fread(buff, 1, 10 + sizeof(WORD), d_fp) < (10 + (int)sizeof(WORD)))
+		fwret = fread(buff, 1, 10 + sizeof(WORD), d_fp);
+		if (fwret < 10)	/* BUGFIX: Last read is 10 bytes instead of 12 */
 			{
 			dos_error(errno);
 			free(head);
@@ -496,7 +502,8 @@ do_conv()
 		if (!new_dfn)
 			swap_bytes(buff, 2);	/* only swap value */
 
-		if (fwrite(buff, 1, 10 + sizeof(WORD), d2_fp) < (10 + (int)sizeof(WORD)))
+		fwret = fwrite(buff, 1, 10 + sizeof(WORD), d2_fp);
+		if (fwret < (10 + (int)sizeof(WORD)))
 			{
 			dos_error(errno);
 			free(head);
@@ -700,7 +707,7 @@ rscv_init()
 WORD GEMAIN(WORD argc, BYTE *argv[])
 	{
 	WORD	rscv_code;
-
+	
 	if ( !(rscv_code = rscv_init()) )	/* initialization	*/
 		rscv_run();
 	rscv_term(rscv_code);			/* termination		*/

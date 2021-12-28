@@ -137,11 +137,12 @@ get_path(BYTE *tmp_path, BYTE *spec)
 	cur_drv = dos_gdrv();
 	tmp_path[0] = cur_drv + 'A';
 	tmp_path[1] = ':';
-	dos_gdir(cur_drv, &tmp_path[2]);
+	tmp_path[2] = '\\';
+	dos_gdir(cur_drv + 1, &tmp_path[3]);
 	if (strlen(tmp_path) > 3)
 		strcat(tmp_path, "\\");
 	else
-		tmp_path[2] = '\0';
+		tmp_path[3] = '\0';
 	strcat(tmp_path, "*.");
 	strcat(tmp_path, spec);
 	}
