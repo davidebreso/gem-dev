@@ -343,7 +343,6 @@ LPLTREE tree_ptr(WORD n)
 	res = (LPLTREE)((LPBYTE)head + 
 	        LW(head->rsh_trindex) + 
 	        LW(n * sizeof(LPTREE)));
-	fprintf(logfile, "tree_ptr(%d) = %lX\n",n,res);
 	return res;	
 	}  
 

@@ -903,17 +903,13 @@ WORD dmcopy(FILE *fp, LONG msrc, LPVOID mdest, WORD mln)
 {
 	WORD lfret;
 	
-	fprintf(logfile,"dmcopy %d bytes\n", mln);
 	if (fseek(fp, msrc, SEEK_SET) == EOF)	{
-		fprintf(logfile,"error in fseek\n", mln);
 		return FALSE;
 	}
 	lfret = lfread( mdest, 1, mln, fp);
 	if (lfret < mln) {
-		fprintf(logfile,"lfread returned %d bytes out of %d\n", lfret, mln);	
 		return FALSE;
 	}
-	fprintf(logfile, "copy completed\n");
 	return(mln);
 
 } /* dmcopy */

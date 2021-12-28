@@ -299,28 +299,20 @@ merge_rsc()
 
 	strcpy(sv_rfile, rcs_rfile);
 	strcpy(sv_dfile, rcs_dfile);
-	fprintf(logfile, "Merge RCS files with sv_rfile=%s, sv_dfile=%s\n", sv_rfile, sv_dfile);
 	mouse_form(HGLASS);
 	if (open_files(FALSE)) 
 		{
-		fprintf(logfile, "open_files() completed. Calling merge_files()\n");				
-		fprintf(logfile, "rcs_rfile=%s, rcs_dfile=%s\n", rcs_rfile, rcs_dfile);
 		if (merge_files())
 			{
-				fprintf(logfile, "Merge succesful, redo_trees()\n");				
 				redo_trees();
 			}
 		}
 	if (rcs_state == FILE_STATE)
 		{
-		fprintf(logfile, "rcs_state == FILE_STATE\n");				
 		strcpy(rcs_rfile, sv_rfile);
 		strcpy(rcs_dfile, sv_dfile);
 		}
-	fprintf(logfile, "rcs_rfile=%s, rcs_dfile=%s\n", rcs_rfile, rcs_dfile);
 	mouse_form(ARROW);
-	fprintf(logfile, "Merge completed\n");					
-	fflush(logfile);
 	}
 	
 	WORD
