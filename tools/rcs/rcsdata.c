@@ -339,9 +339,12 @@ VOID ini_buff()
 
 LPLTREE tree_ptr(WORD n)
 	{
-	return (LPLTREE)((LPBYTE)head + 
+	LPTREE res;
+	res = (LPLTREE)((LPBYTE)head + 
 	        LW(head->rsh_trindex) + 
 	        LW(n * sizeof(LPTREE)));
+	fprintf(logfile, "tree_ptr(%d) = %lX\n",n,res);
+	return res;	
 	}  
 
 LPLSTR str_ptr(WORD n)
