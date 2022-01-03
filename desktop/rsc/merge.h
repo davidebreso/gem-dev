@@ -267,3 +267,4 @@
 #define STFMTINF 54  	/* STRING */
 #define STNODRIV 55  	/* STRING */
 #define STDRIVID 56  	/* STRING */
+

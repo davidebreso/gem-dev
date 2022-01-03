@@ -112,6 +112,8 @@ VOID  gsx_moff(VOID);
 VOID  gsx_mon(VOID);
 
 /* deskinf.c */
+VOID start_dialog(LPTREE tree);
+VOID end_dialog(LPTREE tree);
 WORD  inf_show(LPTREE tree, WORD start);
 WORD  inf_file(BYTE *ppath, FNODE *pfnode);
 WORD  inf_folder(BYTE *ppath, FNODE *pf);

@@ -1,4 +1,4 @@
-INSTDIR=C:\GEMAPPS\GEMSYS
+INSTDIR=../GEMAPPS/GEMSYS
 
 all:	desktop.app desktopl.app desksm.app desklm.app \
 	icn2xml xml2icn desklo.icn deskhi.icn
@@ -47,7 +47,7 @@ smallm/desktop.app:	*.c *.h
 
 install:	desktop.app deskhi.icn desklo.icn desktop.rsc
 	cp deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
-	cp desktop.app $(INSTDIR)\desktop.app
+	cp desktop.app $(INSTDIR)/desktop.app
 
 zipfile:	desktop.app desktopl.app deskhi.icn desklo.icn desktop.rsc desktop.inf
 	rm -f wccdesk.zip
