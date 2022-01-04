@@ -15,7 +15,7 @@ TARGETS=demo-s.app   demo-l.app   \
 	fmem-s.acc   fmem-l.acc   \
 	mgraf-s.app  mgraf-l.app  \
 	mgraf-s.acc  mgraf-l.acc  \
-	rscr-s.exe
+	format.app   rscr-s.exe
 
 CC = wcc
 AS = wasm
@@ -80,6 +80,9 @@ rscr-s.exe: $(MAIN)
 xform-s.app xform-l.app: $(MAIN)
 	$(MAKE) -C xform
 
+format.app: $(MAIN)
+	$(MAKE) -C format
+
 tidy:
 	rm -f main-?.obj
 	rm -f start-?.obj
@@ -96,6 +99,7 @@ tidy:
 	$(MAKE) -C spooler tidy
 	$(MAKE) -C userdef tidy
 	$(MAKE) -C rscreate tidy
+	$(MAKE) -C format tidy
 
 clean:
 	rm -f main-?.obj
@@ -118,6 +122,7 @@ clean:
 	$(MAKE) -C spooler clean
 	$(MAKE) -C userdef clean
 	$(MAKE) -C rscreate clean
+	$(MAKE) -C format clean
 
 # Disable built-in rules	
 .SUFFIXES:
