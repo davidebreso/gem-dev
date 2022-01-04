@@ -241,9 +241,9 @@ WORD dr_code(LPPARM pparms)
 }
 
 /*
- * Start a dialog
- */
-VOID start_dialog(LPTREE tree)
+*	Put up dialog box & call form_do.
+*/
+WORD  inf_show(LPTREE tree, WORD start)
 {
 	WORD		xd, yd, wd, hd;
 
@@ -251,33 +251,11 @@ VOID start_dialog(LPTREE tree)
 	form_dial(FMD_START, 0, 0, 0, 0, xd, yd, wd, hd);
 /* ViewMAX here includes code to hide the help button on helpscreens */
 	objc_draw(tree, ROOT, MAX_DEPTH, xd, yd, wd, hd);
-}
-
-
-/*
- * End a dialog
- */
-VOID end_dialog(LPTREE tree)
-{
-	WORD xd, yd, wd, hd;
-
-	form_center(tree, &xd, &yd, &wd, &hd);
+	form_do(tree, start);
 	form_dial(FMD_FINISH, 0, 0, 0, 0, xd, yd, wd, hd);
 /* ViewMAX here waits for the next two messages. Not sure why. */
+	return(TRUE);
 }
-
-/*
-*	Put up dialog box & call form_do.
-*/
-WORD  inf_show(LPTREE tree, WORD start)
-{
-    start_dialog(tree);
-    form_do(tree, start);
-    end_dialog(tree);
-    
-    return(TRUE);
-}
-
 
 /*
 *	Routine for finishing off a simple ok-only dialog box

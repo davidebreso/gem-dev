@@ -18,12 +18,6 @@
 #include "wccdesk.h"
 
 /*
- *      declarations used by the do_format() code
- */
-#define MAXTRACK        80
-
-
-/*
 *	Clear out the selections for this particular window
 */
 VOID  desk_clear(WORD wh)
@@ -750,129 +744,59 @@ romerr(curr)
 /*
 *	Format the currently selected disk.
 */
-/*
- *  Format a floppy disk
- */
-VOID do_format(WORD curr)
+	VOID 
+do_format(curr)
+	WORD		curr;
 {
-    LPTREE tree, obj;
-    LONG total, avail;
-    WORD i, drivebits, drive;
-    WORD exitobj, rc;
-    WORD max_width, incr;
-    BOOLEAN done = FALSE;
+	WORD		junk, ret, foundit;
+	BYTE		msg[6];
+	ANODE		*pa;
+	FNODE		*pf;
 
-	_asm{ int 3 };
-    tree = G.a_trees[ADFORMAT];
+	pa = i_find(G.g_cwin, curr, &pf, &junk);
 
-    /*
-     * enable button(s) for existent drives, disable for non-existent
-     */
-    drivebits = 3; // dos_sdrv(dos_gdrv()) & 0x0003;  /* floppy devices */
-    for (i = 0, obj = &tree[FMT_DRVA]; i < 2; i++, obj++, drivebits >>= 1)
-    {
-        if (drivebits & 0x0001)
-        {
-            obj->ob_state &= ~DISABLED;
-        }
-        else
-        {
-            obj->ob_state &= ~SELECTED;
-            obj->ob_state |= DISABLED;
-        }
-    }
+	if ( (pa) && (pa->a_type == AT_ISDISK) )
+	{
+	  // DESKTOP v2.x+ version pf->f_junk;
+	  junk = (get_spec(G.g_screen, curr)->ib_char) & 0xFF;
+	  msg[0] = junk;
+	  msg[1] = 0;
+	  ret = fun_alert(2, STFORMAT, msg);
+	  strlcpy(msg + 1, ":", 5);
+	  if (ret == 1)
+	  {
+#if MC68K
+	    ret = pro_cmd( ini_str(STDKFORM), &msg[0], TRUE);
+	    if (ret)
+	      done = pro_run(FALSE, FALSE, G.g_cwin, curr);
+#else
+	    strlcpy(G.g_cmd, ini_str(STDKFRM1), sizeof(G.g_cmd));
+	    foundit = shel_find(G.a_cmd);
+	  /* Not in DESKTOP v1.2  if (!foundit)
+	    {
+	      strlcpy( G.g_cmd, ini_str(STDKFRM2), sizeof(G.g_cmd));
+	      foundit = shel_find(G.a_cmd);
+	    }*/
+	    if (foundit)
+	    {
+	      strlcpy(G.g_tail + 1, msg, sizeof(G.g_tail)-1);
 
-    /*
-     * if a drive is currently selected, don't change it
-     */
-    drive = -1;
-    for (i = 0, obj = &tree[FMT_DRVA]; i < 2; i++, obj++)
-    {
-        if (obj->ob_state & SELECTED)
-        {
-            drive = i;
-            break;
-        }
-    }
+	      takedos();
+	      takekey();
+	      takevid();
 
-    /*
-     * if NO drive was previously selected, select the first enabled one
-     */
-    if (drive < 0)
-    {
-        for (i = 0, obj = &tree[FMT_DRVA]; i < 2; i++, obj++)
-        {
-            if (!(obj->ob_state & DISABLED))
-            {
-                drive = i;
-                break;
-            }
-        }
-        if (drive >= 0)
-            obj->ob_state |= SELECTED;
-    }
-
-    /*
-     * if there are no enabled drives, disallow OK
-     */
-    if (drive < 0)
-        tree[FMT_OK].ob_state |= DISABLED;
-
-    tree[FMT_CNCL].ob_state &= ~SELECTED;
-
-    /*
-     * adjust the initial default formatting option, hiding
-     * the high density option if not available
-     */
-//     if (Supexec((LONG)get_floppy_type) == 0)
-//     {
-//         if (tree[FMT_HD].ob_state & SELECTED)   /* first time */
-//         {
-             tree[FMT_HD].ob_state &= ~SELECTED;
-             tree[FMT_HD].ob_flags |= HIDETREE;
-             tree[FMT_DS].ob_state |= SELECTED;
-//         }
-//     }
-
-    /*
-     * fix up the progress bar width, increment & fill pattern
-     */
-    // incr = tree[FMT_BAR].ob_width / MAXTRACK;
-    // max_width = incr * MAXTRACK;
-    // tree[FMT_BAR].ob_width = max_width;
-    // tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1101L;
-
-    /*
-     * do the actual work
-     */
-//     do {
-        inf_sset(tree, FMTLABEL, "");
-        start_dialog(tree);
-        exitobj = form_do(tree, FMTLABEL) & 0x7fff;
-//         if (exitobj == FMT_OK) {
-//             rc = 0; // format_floppy(tree, max_width, incr);
-//             done = TRUE;
-//         }
-//         else
-//         {
-//             rc = -1;
-//             done = TRUE;
-//         }
-        end_dialog(tree);
-// 
-// //         if (rc == 0)
-// //         {
-// //             drive = (tree[FMT_DRVA].ob_state & SELECTED) ? 0 : 1;
-// //             refresh_drive('A'+drive);           /* update relevant windows */
-// //             dos_space(drive + 1, &total, &avail);
-// //             if (fun_alert_merge(2, STFMTINF, avail) == 2)
-// //                 done = TRUE;
-// //         }
-//         // tree[FMT_BAR].ob_width = max_width;     /* reset to starting values */
-//         // tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1101L;
-//         // tree[FMT_OK].ob_state &= ~SELECTED;
-//     } while (!done);
-}
+	      romerr(curr);
+	      givevid();
+	      givekey();
+	      givedos();
+	    } /* if */
+	    else
+	    /* Not in DESKTOP v1.2  fun_alert(1, STNOFRMT); */
+#endif
+	    graf_mouse(ARROW, 0x0L);	
+	  } /* if ret */
+	} /* if */
+} /* do_format */
 
 /*
 *	Routine to check the all windows directory by doing a change
