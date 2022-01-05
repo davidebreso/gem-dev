@@ -29,6 +29,68 @@ MLOCAL WCCUBLK  cross;
 
 FILE *logfile;
 
+VOID  inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
+{
+	LPTEDI spec;
+	
+	spec = (LPTEDI)tree[obj].ob_spec;
+    _fstrcpy(spec->te_ptext, pstr);
+}
+
+VOID  inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
+{
+	LPTEDI spec;
+	
+	spec = (LPTEDI)tree[obj].ob_spec;
+    _fstrncpy(pstr, spec->te_ptext, maxlen);
+}
+
+/*
+*	Draw a single field of a dialog box
+*/
+VOID  draw_fld(LPTREE tree, WORD obj)
+{
+	GRECT		t;
+
+	LWCOPY((LPWORD)ADDR(&t), (LPWORD)(&tree[obj].ob_x), 4);
+	objc_offset(tree, obj, &t.g_x, &t.g_y);
+	objc_draw(tree, obj, MAX_DEPTH, t.g_x, t.g_y, t.g_w, t.g_h);
+} /* draw_fld */
+
+VOID gem_init()
+{
+    static WORD i;
+    static WORD dummy;
+
+    ap_id = appl_init(NULL);
+
+    vdi_handle = graf_handle(&dummy, &dummy, &dummy, &dummy);
+
+    for (i=0; i<10; work_in[i++] = 1)
+       ;
+    work_in[10] = 2;
+    v_opnvwk(work_in, &vdi_handle, work_out);
+}
+
+VOID gem_exit()
+{
+    v_clsvwk(vdi_handle);
+    appl_exit();
+}
+
+WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
+{
+	WORD		retobj;
+
+	for (retobj=0; retobj < numobj; retobj++)
+	{
+	  if (tree[baseobj+retobj].ob_state & SELECTED)
+	    return(retobj);
+	}
+	return(-1);
+}
+
+
 /**************************************************************
  * Get all of the Floppy Disk Drives accessible by DOS. 
  * Version: 1.00b
@@ -137,53 +199,32 @@ VOID set_format_options(WORD drive)
     }
 }
 
-VOID  inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
-{
-	LPTEDI spec;
-	
-	spec = (LPTEDI)tree[obj].ob_spec;
-    _fstrcpy(spec->te_ptext, pstr);
-}
-
-VOID  inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
-{
-	LPTEDI spec;
-	
-	spec = (LPTEDI)tree[obj].ob_spec;
-    _fstrncpy(pstr, spec->te_ptext, maxlen);
-}
-
 /*
-*	Draw a single field of a dialog box
-*/
-VOID  draw_fld(LPTREE tree, WORD obj)
+ *  Do the real formatting work
+ */
+static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
 {
-	GRECT		t;
+    WORD track;
+    WORD width, rc;
 
-	LWCOPY((LPWORD)ADDR(&t), (LPWORD)(&tree[obj].ob_x), 4);
-	objc_offset(tree, obj, &t.g_x, &t.g_y);
-	objc_draw(tree, obj, MAX_DEPTH, t.g_x, t.g_y, t.g_w, t.g_h);
-} /* draw_fld */
+    tree[FMT_BAR].ob_width = 0;
+    tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1121L;
 
-VOID gem_init()
-{
-    static WORD i;
-    static WORD dummy;
+    graf_mouse(HOURGLASS,NULL);    /* say we're busy */
 
-    ap_id = appl_init(NULL);
+    for (track = 0; track < MAXTRACK ; track++)
+    {
+        /* update progress bar */
+        width = tree[FMT_BAR].ob_width + incr;
+        if (width > max_width)
+            width = max_width;
+        tree[FMT_BAR].ob_width = width;
+        draw_fld(tree,FMT_BAR);
+    }
 
-    vdi_handle = graf_handle(&dummy, &dummy, &dummy, &dummy);
+    graf_mouse(ARROW,NULL);     /* no longer busy */
 
-    for (i=0; i<10; work_in[i++] = 1)
-       ;
-    work_in[10] = 2;
-    v_opnvwk(work_in, &vdi_handle, work_out);
-}
-
-VOID gem_exit()
-{
-    v_clsvwk(vdi_handle);
-    appl_exit();
+    return 0;
 }
 
 VOID main()
@@ -305,6 +346,16 @@ VOID main()
                  */
                 set_format_options(drive);
                 draw_fld(tree, FMTBOX);
+                break;
+            case FMT_OK:
+                /* format floppy */
+                rc = format_floppy(tree, drive, max_width, incr);
+                /* reset to starting values */
+                tree[FMT_BAR].ob_width = max_width;     
+                tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1101L;
+                tree[FMT_OK].ob_state &= ~SELECTED;
+                draw_fld(tree, FMT_BAR);
+                draw_fld(tree, FMT_OK);
                 break;
             default:
                 done = TRUE;
