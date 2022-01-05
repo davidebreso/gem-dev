@@ -158,7 +158,7 @@ endfun: popf                // restore flags and return
  */
 VOID set_format_options(WORD drive)
 {
-    WORD drivetype;
+    WORD drivetype, i, last;
 
     drivetype = get_floppy_type(drive);
     fprintf(logfile,"drive type %d\n", drivetype);
@@ -167,36 +167,58 @@ VOID set_format_options(WORD drive)
       gem_exit();
       return;    
     }
-    if (drivetype >= 3)   /* if drive type 3.5" */
+    /* Enable every option */
+    tree[FMT_5DD].ob_state &= ~DISABLED;
+    tree[FMT_5HD].ob_state &= ~DISABLED;
+    tree[FMT_3DD].ob_state &= ~DISABLED;
+    tree[FMT_3HD].ob_state &= ~DISABLED;    
+    switch(drivetype)
     {
-        fprintf(logfile, "3.5\" drive, disable SS\n");
-        if (tree[FMT_SS].ob_state & SELECTED)   /* if SS selected, select DS */
-        {
-            tree[FMT_DS].ob_state |= SELECTED;
-        }
-        /* disable SS */
-        tree[FMT_SS].ob_state &= ~SELECTED;
-        tree[FMT_SS].ob_state |= DISABLED;
-    } else {
-        fprintf(logfile, "5.25\" drive, enable SS\n");
-        /* enable SS */
-        tree[FMT_SS].ob_state &= ~DISABLED;        
+        case 1:     /* 5.25" 360K drive */
+            /* Disable 5.25" HD option */
+            tree[FMT_5HD].ob_state |= DISABLED;
+            tree[FMT_5HD].ob_state &= ~SELECTED;
+            /* fall through next case */
+        case 2:     /* 5.25" 1.2M drive */
+            /* Disable 3.5" options */
+            tree[FMT_3DD].ob_state |= DISABLED;
+            tree[FMT_3DD].ob_state &= ~SELECTED;
+            tree[FMT_3HD].ob_state |= DISABLED;
+            tree[FMT_3HD].ob_state &= ~SELECTED;
+            break;
+        case 3:     /* 3.5" 720K drive */
+            /* Disable 3.5" HD option */
+            tree[FMT_3HD].ob_state |= DISABLED;
+            tree[FMT_3HD].ob_state &= ~SELECTED;
+            /* fall through next case */
+        default:    /* 3.5" 1.44M drive */
+            /* Disable 5.25" options */
+            tree[FMT_5DD].ob_state |= DISABLED;
+            tree[FMT_5DD].ob_state &= ~SELECTED;
+            tree[FMT_5HD].ob_state |= DISABLED;
+            tree[FMT_5HD].ob_state &= ~SELECTED;
+            break;
     }
-    if (drivetype == 1 || drivetype == 3)   /* if drive type 360k or 720k */
+    /*
+     * if NO option is selected, select the last enabled one
+     */
+    last = FMT_5DD;
+    for (i = FMT_5DD; i <= FMT_3HD; i++)
     {
-        fprintf(logfile, "DD drive, disable HD\n");
-        if (tree[FMT_HD].ob_state & SELECTED)   /* if HD selected, select DS */
+        if(tree[i].ob_state & SELECTED)
         {
-            tree[FMT_DS].ob_state |= SELECTED;
+            fprintf(logfile, "Option %d is currently selected.\n", i);
+            last = i;
+            break;
         }
-        /* disable HD */
-        tree[FMT_HD].ob_state &= ~SELECTED;
-        tree[FMT_HD].ob_state |= DISABLED;
-    } else {
-        fprintf(logfile, "HD drive, enable HD\n");
-        /* enable HD */
-        tree[FMT_HD].ob_state &= ~DISABLED;        
+        if(!(tree[i].ob_state & DISABLED))
+        {
+            fprintf(logfile, "Option %d is enabled.\n", i);
+            last = i;
+        }        
     }
+    fprintf(logfile,"last option is %d, select it\n", last);
+    tree[last].ob_state |= SELECTED;
 }
 
 /*
