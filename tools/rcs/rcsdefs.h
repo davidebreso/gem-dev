@@ -370,3 +370,6 @@ EXTERN	RSHDR	FAR *head;
 EXTERN	RSHDR 	FAR *rs_hdr;
 EXTERN	LONG	buff_size;
 EXTERN	LPBYTE	rcs_free;
+
+// EXTERN FILE *logfile;
+

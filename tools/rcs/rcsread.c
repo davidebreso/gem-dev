@@ -210,9 +210,12 @@ fix_trindex()
 	LPBYTE		ptreebase;
 
 	ptreebase = get_sub(0, RT_TRINDEX, sizeof(LONG));
-
-	for (ii = rs_hdr->rsh_ntree - 1; ii >= 0; ii--)
+	// fprintf(logfile,"fix_trindex with ptreebase %lX for %d trees\n",ptreebase, rs_hdr->rsh_ntree);
+	for (ii = rs_hdr->rsh_ntree - 1; ii >= 0; ii--) {
+	  // fprintf(logfile,"%d: fix_long(%lX)\n",ii,(LPLPTR)(ptreebase + LW(ii*4)));
 	  fix_long((LPLPTR)(ptreebase + LW(ii*4)));
+	}
+	// fflush(logfile);
 }		     
 
 
@@ -229,12 +232,14 @@ fix_objects()
 	WORD		obtype;
 	LPTREE		psubstruct;
 
-
+	// fprintf(logfile,"fix_objects for %d objects\n", rs_hdr->rsh_nobs);
 	for (ii = rs_hdr->rsh_nobs - 1; ii >= 0; ii--)
 	{
 	  psubstruct = (LPTREE)get_addr(R_OBJECT, ii);
+	  // fprintf(logfile,"%d: rs_obfix(%lX,0)\n",ii, psubstruct);
 	  rs_obfix(psubstruct, 0);
 	  obtype = LLOBT( psubstruct->ob_type );
+	  // fprintf(logfile,"object type %d\n",obtype);
 	  switch (obtype)
 	  {
 		case G_TEXT:
@@ -253,6 +258,7 @@ fix_objects()
 	  }
 	psubstruct->ob_flags &= ~LASTOB;	/* zap LASTOB's */
 	}
+	// fflush(logfile);
 }
 
 VOID fix_tedinfo()
@@ -429,6 +435,8 @@ WORD read_files()
 	WORD	ii, where;
 	WORD	ntree, nobj;
 	BYTE	name[9];
+	
+	// fprintf(logfile, "read_files()\n");
 	if ( ad_clip ) 
 		clr_clip();
 	ini_buff();
@@ -493,6 +501,8 @@ WORD read_files()
 			/* convert stored values to addresses */
 	for (ii = 0; ii < rcs_ndxno; ii++)
 		{
+		// fprintf(logfile, "rcs_index[%d].val = %lX\n", ii, rcs_index[ii].val);
+		// fprintf(logfile, "rcs_index[%d].kind = %d\n", ii, rcs_index[ii].kind);
 		switch ( get_kind(ii) ) {
 			case UNKN:
 			case PANL:
@@ -518,6 +528,8 @@ WORD read_files()
 			default:
 				break;
 			}
+		// fprintf(logfile, "rcs_index[%d].val = %lX\n", ii, rcs_index[ii].val);
+		// fprintf(logfile, "rcs_index[%d].kind = %d\n", ii, rcs_index[ii].kind);
 		}
 
 	comp_alerts(head);	/* convert freestrs into alert trees */
@@ -531,6 +543,7 @@ WORD read_files()
 			where = new_index((LPBYTE) tree_addr(ii), UNKN, name);
 			}
 
+	// fprintf(logfile,"Completed\n");
 	return head->rsh_rssize;
 	}
 
@@ -548,46 +561,67 @@ WORD merge_files()
 	LPBYTE	here;
 	LPLPTR  oldndx, newndx;
 	
+	// fprintf(logfile, "Starting merge_files()\n");
 	merge = (LPRSHDR)get_mem(sizeof(RSHDR));
+	// fprintf(logfile, "Allocating %d bytes for merge at %lX\n", sizeof(RSHDR), merge);
 	if(!dmcopy(rcs_frhndl, 0x0L, merge, sizeof(RSHDR) ) || ferror(rcs_frhndl))
 		{ 
+		// fprintf(logfile, "Error 1\n");
+		// fflush(logfile);
 		fclose(rcs_frhndl);
 		return (FALSE);
 		}
 	if (rcs_low || avail_mem() < (UWORD)(merge->rsh_rssize) - (UWORD) sizeof(RSHDR) )
 		{
+		// fprintf(logfile, "Error 2\n");
+		// fflush(logfile);
 		hndl_alert(1, string_addr(STNROOM));
 		return (FALSE);
 		}
 			/* synchronize objects */
-	foo = (UWORD) ((LONG)(   (LPBYTE)merge + merge->rsh_object ) -
-		           (LONG)(   (LPBYTE)head  + head->rsh_object  ));
-	foo %= sizeof(OBJECT);
+	// fprintf(logfile,"head is at %lX, sizeof(OBJECT)=%d\n", head, sizeof(OBJECT));
+	// fprintf(logfile,"merge->rsh_object=%d, head->rsh_object=%d\n",merge->rsh_object, head->rsh_object);
+	foo = (UWORD) ((LONG)(   merge + merge->rsh_object ) -
+		           (LONG)(   head  + head->rsh_object  ));
+	// fprintf(logfile,"foo is %d\n", foo);
+	foo %= (WORD)sizeof(OBJECT);
+	// fprintf(logfile,"synchronize objects: foo is %d\n", foo);
 	if (foo) 
 	{
-		get_mem(foo = sizeof(OBJECT) - foo);
-		merge = merge + foo;
+		foo = sizeof(OBJECT) - foo;
+		here = get_mem(foo);
+		// fprintf(logfile, "Allocating %d bytes at %lX\n", foo, here);	
+		merge = (LPRSHDR)((LONG)merge + foo);
+		// fprintf(logfile,"merge is %lX\n", merge);		
 		if(!dmcopy(rcs_frhndl, 0x0L, merge, sizeof(RSHDR) ) || ferror(rcs_frhndl))
 		{
+			// fprintf(logfile, "Error 3\n");
+			// fflush(logfile);
 			fclose(rcs_frhndl);
 			return FALSE;
 		}
 	} 
-
+	// fprintf(logfile,"merge is %lX\n", merge);	
 	here = get_mem(merge->rsh_rssize - (UWORD) sizeof(RSHDR));
-	if(!dmcopy (rcs_frhndl, (LONG) sizeof(RSHDR), 
-		here, merge->rsh_rssize) || ferror(rcs_frhndl))
+	// fprintf(logfile, "Allocating %d bytes for here at %lX\n", merge->rsh_rssize - (UWORD) sizeof(RSHDR), here);
+	if(!dmcopy (rcs_frhndl, (LONG) sizeof(RSHDR), here, 
+		merge->rsh_rssize - (UWORD) sizeof(RSHDR)) || ferror(rcs_frhndl))
 		{
+		// fprintf(logfile, "Error 4\n");
+		// fflush(logfile);
 		fclose(rcs_frhndl);
 		return (FALSE);
 		}
 	fclose(rcs_frhndl);
 	rs_hdr = merge;
+	// fprintf(logfile,"rs_hdr is %lX\n", rs_hdr);	
+	// fprintf(logfile,"fix_all()\n");
 	fix_all();
 	
 	old_ntree = head->rsh_ntree;
 	if (merge->rsh_ntree)
 		{
+		// fprintf(logfile, "merge->rsh_ntree is true\n");
 		total  = head->rsh_ntree + merge->rsh_ntree;
 		newndx = (LPLPTR)get_mem(sizeof(LONG) * total);
 		indoff = (UWORD) ((LPBYTE)newndx - (LPBYTE)head);		
@@ -622,17 +656,25 @@ WORD merge_files()
 #else
 		{
 		old_ndxno = rcs_ndxno;		
-		if(!dmcopy(rcs_fdhndl, 0x0L, ADDR(&total), sizeof(WORD) ) 
+/* This simple DFN-reader won't work in WCCRCS, because the INDEX struct
+  is a different size from the INDEX on disc 
+		if(!dmcopy(rcs_fdhndl, 0x0L, (&total), sizeof(WORD) ) 
 		|| ferror(rcs_fdhndl)) total = 0;
 		else
 			{
-			if(!dmcopy(rcs_fdhndl, 0x02L, ADDR(&rcs_index[old_ndxno]),
+			if(!dmcopy(rcs_fdhndl, 0x02L, (&rcs_index[old_ndxno]),
 				sizeof(INDEX) * total) || ferror(rcs_fdhndl)) total = 0;
 			else total = total + old_ndxno;
 			}
+*/
+		read_i8086( TRUE );
+		total = rcs_ndxno;
+		rcs_ndxno = old_ndxno;
 		}
 #endif
 
+		// fprintf(logfile, "old_ntree=%d\n", old_ntree);
+		// fprintf(logfile, "for ii = %ld; ii < %d\n", old_ndxno, total);
 		for ( ii = old_ndxno; ii < total; ii++ )				
 			{	
 			if (find_name(&rcs_index[ii].name[0]) != NIL)
@@ -640,42 +682,56 @@ WORD merge_files()
 				unique_name(&rcs_index[ii].name[0], "TREE%W", old_ntree);
 			else
 				unique_name(&rcs_index[ii].name[0], "OBJ%W", 0);
+			// fprintf(logfile, "rcs_index[%d].val = %lX\n", ii, rcs_index[ii].val);
+			// fprintf(logfile, "rcs_index[%d].kind = %d\n", ii, rcs_index[ii].kind);
+			// fprintf(logfile, "rcs_index[%d].name = %s\n", ii, rcs_index[ii].name);
 			switch (rcs_index[ii].kind) {
 				case UNKN:
 				case PANL:
 				case DIAL:
 				case MENU:
-					rcs_index[ii].val = (LPBYTE) tree_addr(
-						(WORD) rcs_index[ii].val + old_ntree);
+					// fprintf(logfile,"case UNKN,PANL,DIAL,MENU\n");
+					// fprintf(logfile,"(WORD) rcs_index[%d].val + old_ntree = %d\n",ii, (WORD) rcs_index[ii].val + old_ntree);
+					// fflush(logfile);
+					rcs_index[ii].val = (LPBYTE) tree_addr( (WORD) rcs_index[ii].val + old_ntree);
 					break;
 				case ALRT:
 				case FRSTR:
-					frstr = (LPLSTR)((LPBYTE)merge + merge->rsh_frstr);
-					rcs_index[ii].val = (BYTE *) LLGET(frstr + 
-						(UWORD) (sizeof(LONG) * (WORD) rcs_index[ii].val));
+					// fprintf(logfile,"case ALRT,FRSTR\n");
+					frstr = (LPLSTR)((LONG)merge + merge->rsh_frstr);
+					rcs_index[ii].val = (LPBYTE) LLGET((LONG)frstr + 
+						(sizeof(LPBYTE) * (WORD) rcs_index[ii].val));
 					break;
 				case FRIMG:
-					frimg = (LPBIT far *)((LPBYTE)merge + merge->rsh_frimg );
-					rcs_index[ii].val = (BYTE *) LLGET(frimg +
-						(UWORD) (sizeof(LONG) * (WORD)rcs_index[ii].val));
+					// fprintf(logfile,"case FRIMG\n");
+					frimg = (LPLBIT)((LONG)merge + merge->rsh_frimg);
+					rcs_index[ii].val = (LPBYTE) LLGET(frimg +
+						(sizeof(LPBYTE) * (WORD)rcs_index[ii].val));
 					break;
-
 				case OBJKIND:
-					nobj = (WORD) LLOBT( (UWORD) rcs_index[ii].val) & 0xff;
-					ntree = (WORD) LHIBT( (UWORD) rcs_index[ii].val) & 0xff;
-					rcs_index[ii].val = (LPBYTE) (tree_addr(ntree + old_ntree) 
+					// fprintf(logfile,"case OBJKIND\n");
+					nobj = (WORD) LLOBT( (UWORD) get_value(ii)) & 0xff;
+					ntree = (WORD) LHIBT( (UWORD) get_value(ii)) & 0xff;
+					rcs_index[ii].val = (LPBYTE) ((LONG)tree_addr(ntree + old_ntree) 
 						+ (UWORD) (nobj * sizeof(OBJECT))); 
 					break;
 				default:
+					// fprintf(logfile,"case default\n");
 					break;
 				}
-			if (new_index(rcs_index[ii].val, rcs_index[ii].kind, &rcs_index[ii].name[0]) == NIL)
+			// fprintf(logfile, "rcs_index[%d].val = %lX\n", ii, rcs_index[ii].val);
+			// fprintf(logfile, "rcs_index[%d].kind = %d\n", ii, rcs_index[ii].kind);
+			// fprintf(logfile, "rcs_index[%d].name = %s\n", ii, rcs_index[ii].name);
+			// fflush(logfile);			
+			if (new_index(rcs_index[ii].val, rcs_index[ii].kind, &rcs_index[ii].name[0]) == NIL) {
+				// fprintf(logfile,"break at ii=%d\n",ii);
 				break;
+			}
 			}
 		fclose(rcs_fdhndl);
 		}
 
-
+	// fprintf(logfile, "for i = %d; i < %d\n", old_ntree, head->rsh_ntree);
 	for (i = old_ntree; i < head->rsh_ntree; i++)
 		{
 		map_tree(tree_addr(i), ROOT, NIL, trans_obj); 
@@ -690,5 +746,7 @@ WORD merge_files()
 	comp_alerts(merge);
 	comp_str(merge);
 	comp_img(merge);
+	// fprintf(logfile, "Merge completed, return TRUE\n");
+	// fflush(logfile);
 	return (TRUE);
 	}

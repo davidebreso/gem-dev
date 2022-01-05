@@ -1,6 +1,6 @@
 INSTDIR=../GEMAPPS/GEMSYS
 
-all:	desktop.app desktopl.app desksm.app desklm.app \
+all:	desktop.app desktopl.app \
 	icn2xml xml2icn desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn

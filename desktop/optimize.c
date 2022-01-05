@@ -140,8 +140,8 @@ unfmt_str(instr, outstr)
 	BYTE		*instr, *outstr;
 {
 	BYTE		*pstr, temp;
-
 	pstr = instr;
+
 	while( (*pstr) && ((pstr - instr) < 8) )
 	{
 	  temp = *pstr++;

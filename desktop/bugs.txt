@@ -1,0 +1,9 @@
+GEM/3 Desktop: Open Watcom version (Release 3.2.5)
+===============================================================================
+
+This files list the known bugs and their status. Most recent bugs are on top.
+
+OPEN:  Installed applications must be in PATH or in GEMAPPS to open documents
+
+FIXED: Copy do not overwrite existing files
+ 
