@@ -71,7 +71,6 @@ GLOBAL WORD	gl_swtblks[3] =
 };
  */
 
-
 /* Forward declarations */
 MLOCAL VOID  cnx_put(VOID);
 
@@ -1253,6 +1252,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 #if DEBUG
 	remove("c:/gemapp.log");
 #endif
+    
 	memset(&gl_xbuf, 0, sizeof(gl_xbuf));
 	gl_xbuf.buf_len = sizeof(gl_xbuf);
 	gl_apid = appl_init(&gl_xbuf);

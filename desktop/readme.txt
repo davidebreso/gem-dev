@@ -20,6 +20,8 @@ DESKLM.APP   - large model, for GEM/XM.
 Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
 
+* Bugfix: fixed file name conflict resolution when copying files.
+
 * Multi-tasking GEM APPs compiles correctly. "Show Contents" is available in
   both the small and large model MULTIAPP desktop but fails to launch reporting
   a lack of memory. 

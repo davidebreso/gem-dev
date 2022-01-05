@@ -297,7 +297,6 @@ MLOCAL WORD  d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 #if MULTIAPP
 	LONG		lavail;
 #endif
-
 	copy = TRUE;
 						/* open the source file	*/
 	srcfh = dos_open(ADDR(psrc_file), 0);
@@ -356,7 +355,8 @@ MLOCAL WORD  d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 
 
 	      tree = G.a_trees[ADCPALER];
-	      ob = inf_gindex(G.a_trees[ADCPALER], CAOK, 3) + CAOK;
+	      ob = inf_gindex(G.a_trees[ADCPALER], CAOK, CASTOP);
+	      ob = ob + CAOK;
 	      tree[ob].ob_state = NORMAL;
 	      if (ob == CASTOP)
 	        copy = more = FALSE;
@@ -367,15 +367,15 @@ MLOCAL WORD  d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 	    }
 	    else
 	      copy = TRUE; 
-	      
+	    
 	    if (copy)
 	    {
 	      cont = FALSE;
-	      inf_sget(G.a_trees[ADCPALER], 3, &ml_fdst[0], sizeof(ml_fdst));
+	      inf_sget(G.a_trees[ADCPALER], CACOPYNA, &ml_fdst[0], sizeof(ml_fdst));
 	      unfmt_str(&ml_fdst[0], &ml_fstr[0]);
 	      if ( ml_fstr[0] == 0 )
 	      {
-		copy = FALSE;
+		    copy = FALSE;
 	        dos_close(srcfh);
 	      }
 	      else
