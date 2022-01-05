@@ -91,6 +91,52 @@ endfun: popf                // restore flags and return
 }
 #pragma aux get_floppy_type parm [ax] value [ax] modify exact [ax bx cx dx es di] nomemory
 
+/*
+ * adjust the formatting options, disabling options not available for `drive`
+ */
+VOID set_format_options(WORD drive)
+{
+    WORD drivetype;
+
+    drivetype = get_floppy_type(drive);
+    fprintf(logfile,"drive type %d\n", drivetype);
+    if (drivetype == 0) {
+      form_alert(1,"[3][Fatal Error !|Could not determine drive type!][ Ok ]");
+      gem_exit();
+      return;    
+    }
+    if (drivetype >= 3)   /* if drive type 3.5" */
+    {
+        fprintf(logfile, "3.5\" drive, disable SS\n");
+        if (tree[FMT_SS].ob_state & SELECTED)   /* if SS selected, select DS */
+        {
+            tree[FMT_DS].ob_state |= SELECTED;
+        }
+        /* disable SS */
+        tree[FMT_SS].ob_state &= ~SELECTED;
+        tree[FMT_SS].ob_state |= DISABLED;
+    } else {
+        fprintf(logfile, "5.25\" drive, enable SS\n");
+        /* enable SS */
+        tree[FMT_SS].ob_state &= ~DISABLED;        
+    }
+    if (drivetype == 1 || drivetype == 3)   /* if drive type 360k or 720k */
+    {
+        fprintf(logfile, "DD drive, disable HD\n");
+        if (tree[FMT_HD].ob_state & SELECTED)   /* if HD selected, select DS */
+        {
+            tree[FMT_DS].ob_state |= SELECTED;
+        }
+        /* disable HD */
+        tree[FMT_HD].ob_state &= ~SELECTED;
+        tree[FMT_HD].ob_state |= DISABLED;
+    } else {
+        fprintf(logfile, "HD drive, enable HD\n");
+        /* enable HD */
+        tree[FMT_HD].ob_state &= ~DISABLED;        
+    }
+}
+
 VOID  inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
 {
 	LPTEDI spec;
@@ -107,7 +153,17 @@ VOID  inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
     _fstrncpy(pstr, spec->te_ptext, maxlen);
 }
 
+/*
+*	Draw a single field of a dialog box
+*/
+VOID  draw_fld(LPTREE tree, WORD obj)
+{
+	GRECT		t;
 
+	LWCOPY((LPWORD)ADDR(&t), (LPWORD)(&tree[obj].ob_x), 4);
+	objc_offset(tree, obj, &t.g_x, &t.g_y);
+	objc_draw(tree, obj, MAX_DEPTH, t.g_x, t.g_y, t.g_w, t.g_h);
+} /* draw_fld */
 
 VOID gem_init()
 {
@@ -218,26 +274,10 @@ VOID main()
     tree[FMT_CNCL].ob_state &= ~SELECTED;
 
     /*
-     * adjust the initial default formatting option, disabling
-     * the high density option if not available
+     * adjust the formatting options for current drive
      */
-    drivetype = get_floppy_type(drive);
-    fprintf(logfile,"drive type %d\n", drivetype);
-    if (drivetype == 0) {
-      form_alert(1,"[3][Fatal Error !|Could not determine drive type!][ Ok ]");
-      gem_exit();
-      return;    
-    }
-    if (drivetype == 1 || drivetype == 3)   /* if drive type 360k or 720k */
-    {
-        if (tree[FMT_HD].ob_state & SELECTED)   /* first time */
-        {
-            tree[FMT_HD].ob_state &= ~SELECTED;
-            tree[FMT_HD].ob_flags |= DISABLED;
-            tree[FMT_DS].ob_state |= SELECTED;
-        }
-    }
-
+    set_format_options(drive);
+    
     /*
      * fix up the progress bar width, increment & fill pattern
      */
@@ -251,7 +291,26 @@ VOID main()
      */
     inf_sset(tree, FMTLABEL, "");
     ob_draw_dialog(tree, 0, 0, 0, 0);
-    exitobj = form_do(tree, FMTLABEL) & 0x7fff;
+    do {    
+        exitobj = form_do(tree, FMTLABEL) & 0x7fff;
+        switch(exitobj)
+        {
+            case FMT_DRVA:
+            case FMT_DRVB:
+                drive = exitobj - FMT_DRVA;
+                fprintf(logfile, "New drive is %d\n", drive);
+                done = FALSE;
+                /*
+                 * Update and redraw formatting options
+                 */
+                set_format_options(drive);
+                draw_fld(tree, FMTBOX);
+                break;
+            default:
+                done = TRUE;
+        }
+    } while(!done);
+    
     ob_undraw_dialog(tree, 0, 0, 0, 0);
     inf_sget(tree, FMTLABEL, disklabel, 15);
     fprintf(logfile, "form_do terminated with exit code %X and label %s\n", exitobj, disklabel);

@@ -355,8 +355,7 @@ MLOCAL WORD  d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 
 
 	      tree = G.a_trees[ADCPALER];
-	      ob = inf_gindex(G.a_trees[ADCPALER], CAOK, CASTOP);
-	      ob = ob + CAOK;
+	      ob = inf_gindex(G.a_trees[ADCPALER], CAOK, CASTOP) + CAOK;
 	      tree[ob].ob_state = NORMAL;
 	      if (ob == CASTOP)
 	        copy = more = FALSE;
