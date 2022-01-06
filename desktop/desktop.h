@@ -208,27 +208,42 @@
 #define APMEMSZ 36  	/* OBJECT in TREE #8 */
 #define STNOFSTP 50  	/* STRING */
 #define STACFMEM 51  	/* STRING */
-#define ADINSACC 14  	/* TREE */
-#define ACINST 2  	/* OBJECT in TREE #14 */
-#define ACCNCL 3  	/* OBJECT in TREE #14 */
-#define ACNAMBOX 7  	/* OBJECT in TREE #14 */
-#define ACFDNARO 30  	/* OBJECT in TREE #14 */
-#define ACFUPARO 31  	/* OBJECT in TREE #14 */
-#define ACFSVSLI 32  	/* OBJECT in TREE #14 */
-#define ACFSELEV 33  	/* OBJECT in TREE #14 */
-#define ACA1NAME 8  	/* OBJECT in TREE #14 */
-#define ACA2NAME 9  	/* OBJECT in TREE #14 */
-#define ACA3NAME 10  	/* OBJECT in TREE #14 */
-#define ACA4NAME 11  	/* OBJECT in TREE #14 */
-#define ACA5NAME 12  	/* OBJECT in TREE #14 */
-#define ACA6NAME 13  	/* OBJECT in TREE #14 */
-#define ACA7NAME 14  	/* OBJECT in TREE #14 */
-#define ACA8NAME 15  	/* OBJECT in TREE #14 */
-#define ACREMV 17  	/* OBJECT in TREE #14 */
-#define ACC1FMEM 18  	/* OBJECT in TREE #14 */
-#define ACC2FMEM 19  	/* OBJECT in TREE #14 */
-#define ACC3FMEM 20  	/* OBJECT in TREE #14 */
+#define ADINSACC 15  	/* TREE */
+#define ACINST 2  	/* OBJECT in TREE #15 */
+#define ACCNCL 3  	/* OBJECT in TREE #15 */
+#define ACNAMBOX 7  	/* OBJECT in TREE #15 */
+#define ACFDNARO 30  	/* OBJECT in TREE #15 */
+#define ACFUPARO 31  	/* OBJECT in TREE #15 */
+#define ACFSVSLI 32  	/* OBJECT in TREE #15 */
+#define ACFSELEV 33  	/* OBJECT in TREE #15 */
+#define ACA1NAME 8  	/* OBJECT in TREE #15 */
+#define ACA2NAME 9  	/* OBJECT in TREE #15 */
+#define ACA3NAME 10  	/* OBJECT in TREE #15 */
+#define ACA4NAME 11  	/* OBJECT in TREE #15 */
+#define ACA5NAME 12  	/* OBJECT in TREE #15 */
+#define ACA6NAME 13  	/* OBJECT in TREE #15 */
+#define ACA7NAME 14  	/* OBJECT in TREE #15 */
+#define ACA8NAME 15  	/* OBJECT in TREE #15 */
+#define ACREMV 17  	/* OBJECT in TREE #15 */
+#define ACC1FMEM 18  	/* OBJECT in TREE #15 */
+#define ACC2FMEM 19  	/* OBJECT in TREE #15 */
+#define ACC3FMEM 20  	/* OBJECT in TREE #15 */
 #define STACCMEM 52  	/* STRING */
-#define ACC1NAME 24  	/* OBJECT in TREE #14 */
-#define ACC2NAME 25  	/* OBJECT in TREE #14 */
-#define ACC3NAME 26  	/* OBJECT in TREE #14 */
+#define ACC1NAME 24  	/* OBJECT in TREE #15 */
+#define ACC2NAME 25  	/* OBJECT in TREE #15 */
+#define ACC3NAME 26  	/* OBJECT in TREE #15 */
+#define ADFORMAT 14  	/* TREE */
+#define FMT_DRVA 14  	/* OBJECT in TREE #14 */
+#define FMT_DRVB 15  	/* OBJECT in TREE #14 */
+#define FMTLABEL 12  	/* OBJECT in TREE #14 */
+#define FMT_5DD 6  	/* OBJECT in TREE #14 */
+#define FMT_5HD 7  	/* OBJECT in TREE #14 */
+#define FMT_3DD 8  	/* OBJECT in TREE #14 */
+#define FMT_BAR 10  	/* OBJECT in TREE #14 */
+#define FMT_OK 1  	/* OBJECT in TREE #14 */
+#define FMT_CNCL 2  	/* OBJECT in TREE #14 */
+#define STFMTERR 53  	/* STRING */
+#define STFMTINF 54  	/* STRING */
+#define STNODRIV 55  	/* STRING */
+#define FMTBOX 5  	/* OBJECT in TREE #14 */
+#define FMT_3HD 9  	/* OBJECT in TREE #14 */

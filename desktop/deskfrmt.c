@@ -1,18 +1,23 @@
-/***********************************************************************
-*
-*  GEM/3 Programmers Toolkit - Digital Research, Inc.
-*
-*  Modulename: USERDEF.C
-*  Date:       07-27-89
-*  Author:     Robert Schneider, DR GmbH
-*
-***********************************************************************/
+/*	DESKFRMT.C	06/01/21 - Davide Bresolin		*/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include "wccgem.h"
-#include "format.h"
+/*
+*       Copyright 1999, Caldera Thin Clients, Inc.                      
+*       This software is licenced under the GNU Public License.         
+*       Please see LICENSE.TXT for further information.                 
+*                                                                       
+*                  Historical Copyright                                 
+*	-------------------------------------------------------------
+*	GEM Desktop					  Version 3.0
+*	Serial No.  XXXX-0000-654321		  All Rights Reserved
+*	Copyright (C) 1987			Digital Research Inc.
+*	-------------------------------------------------------------
+*/
+#include "wccdesk.h"
+
+/*
+ *      declarations used by the do_format() code
+ */
+#define MAXTRACK        80
 
 typedef struct DISKBPB {
      UWORD  Bytessect;      /* bytes per sector */
@@ -60,13 +65,6 @@ typedef struct MIDSTRUCT {
      BYTE   Filesys[8];     /* filesystem type */
 } MIDSTRUCT;
 
-MLOCAL WORD     work_in[11];
-MLOCAL WORD     work_out[57];
-
-MLOCAL WORD     ap_id;
-MLOCAL WORD     vdi_handle;
-MLOCAL LPTREE   tree;
-MLOCAL WCCUBLK  cross;
 MLOCAL DISKPARM oldparmblk;
 MLOCAL DISKPARM newparmblk;
 MLOCAL FMTPARM  fmtparmblk;
@@ -76,16 +74,10 @@ MLOCAL ULONG    fat_dtime;
 MLOCAL ULONG    serialnum;
 MLOCAL BYTE disklabel[15];
 
-MLOCAL LPBYTE a_alert;
-MLOCAL BYTE g_1text[256];
-MLOCAL BYTE g_2text[256];
-
 extern BYTE * __based( __segname( "Bsect" ) ) Bootsector;
 extern BYTE * __based( __segname( "Bsect" ) ) Bootbpb;
 extern ULONG  __based( __segname( "Bsect" ) ) Bootserial;
 extern BYTE * __based( __segname( "Bsect" ) ) Bootlabel;
-
-MLOCAL UWORD numcyl_table[] = {40, 80, 80, 80};
 
 MLOCAL DISKBPB bpb_table[] = {
     {512, 2, 1, 2, 112, 40*9*2,  0xfd, 2, 9,  2, 0, 0},   /* 360K format */
@@ -95,91 +87,26 @@ MLOCAL DISKBPB bpb_table[] = {
 };
 
 /*
- *      declarations used by the do_format() code
- */
-#define MAXTRACK        80
-
-// FILE *logfile;
-
-VOID  inf_sset(LPTREE tree, WORD obj, BYTE *pstr)
-{
-	LPTEDI spec;
-	
-	spec = (LPTEDI)tree[obj].ob_spec;
-    _fstrcpy(spec->te_ptext, pstr);
-}
-
-VOID  inf_sget(LPTREE tree, WORD obj, BYTE *pstr, WORD maxlen)
-{
-	LPTEDI spec;
-	
-	spec = (LPTEDI)tree[obj].ob_spec;
-    _fstrncpy(pstr, spec->te_ptext, maxlen);
-}
-
-/*
-*	Draw a single field of a dialog box
+*	Put up dialog box & call form_do.
 */
-VOID  draw_fld(LPTREE tree, WORD obj)
+VOID  start_dialog(LPTREE tree)
 {
-	GRECT		t;
+	WORD		xd, yd, wd, hd;
 
-	LWCOPY((LPWORD)ADDR(&t), (LPWORD)(&tree[obj].ob_x), 4);
-	objc_offset(tree, obj, &t.g_x, &t.g_y);
-	objc_draw(tree, obj, MAX_DEPTH, t.g_x, t.g_y, t.g_w, t.g_h);
-} /* draw_fld */
-
-VOID gem_init()
-{
-    static WORD i;
-    static WORD dummy;
-
-    ap_id = appl_init(NULL);
-
-    vdi_handle = graf_handle(&dummy, &dummy, &dummy, &dummy);
-
-    for (i=0; i<10; work_in[i++] = 1)
-       ;
-    work_in[10] = 2;
-    v_opnvwk(work_in, &vdi_handle, work_out);
+	form_center(tree, &xd, &yd, &wd, &hd);
+	form_dial(FMD_START, 0, 0, 0, 0, xd, yd, wd, hd);
+/* ViewMAX here includes code to hide the help button on helpscreens */
+	objc_draw(tree, ROOT, MAX_DEPTH, xd, yd, wd, hd);
 }
 
-VOID gem_exit()
+VOID end_dialog(LPTREE tree)
 {
-    v_clsvwk(vdi_handle);
-    appl_exit();
+    WORD xd, yd, wd, hd;
+    UWORD junk;
+
+    form_center(tree, &xd, &yd, &wd, &hd);
+	form_dial(FMD_FINISH, 0, 0, 0, 0, xd, yd, wd, hd);
 }
-
-WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj)
-{
-	WORD		retobj;
-
-	for (retobj=0; retobj < numobj; retobj++)
-	{
-	  if (tree[baseobj+retobj].ob_state & SELECTED)
-	    return(retobj);
-	}
-	return(-1);
-}
-
-/*
-*	Routine to transfer a string that requires integrated variables
-*	that are merged in.  The resultant alert is then displayed;
-*/
-WORD  fun_alert(WORD defbut, WORD stnum, ...)
-{
-	va_list ap;
-	va_start(ap, stnum);
-
-	rsrc_gaddr(R_STRING, stnum, (LPVOID *)&a_alert);
-    _fstrncpy(g_2text, a_alert, 256);
-    vsprintf(g_1text, g_2text, ap);                    
-
-	va_end(ap);
-	return( form_alert(defbut, g_1text) );
-}
-
-
 
 /**************************************************************
  * Get all of the Floppy Disk Drives accessible by DOS. 
@@ -369,7 +296,6 @@ WORD set_floppy_parms(WORD drive, WORD formattype, DISKPARM *parblock)
 {
     WORD i, rc = 0;
     
-    // fprintf(logfile,"Devicetype: %d\n", parblock->Devicetype);
     if(parblock->Devicetype < 3 || parblock->Devicetype == 7)
     {
         if(formattype == 0)
@@ -385,10 +311,8 @@ WORD set_floppy_parms(WORD drive, WORD formattype, DISKPARM *parblock)
         /* set up BPB for selected format type */
         memcpy(&parblock->Devicebpb, &bpb_table[formattype], 25);
         /* copy BPB to bootsector */
-        // fprintf(logfile, "Copy BPB to bootsector at %lX\n", (LPVOID)&Bootbpb);
         _fmemcpy(&Bootbpb, &bpb_table[formattype], 25); 
         get_fatdtime();
-        // fprintf(logfile, "Serial number is %lX\n", serialnum);
         Bootserial = serialnum;
         /* Set Boot sector disk label */
         _fmemcpy(&Bootlabel, disklabel, 11);
@@ -406,29 +330,30 @@ WORD set_floppy_parms(WORD drive, WORD formattype, DISKPARM *parblock)
     } else {
         rc = 1;   
     }
-    for(i = 0; i < sizeof(DISKPARM); i++) 
-    {
-        // fprintf(logfile, "%02X ", ((BYTE *)parblock)[i]);
-    }
-    // fprintf(logfile, "\n");
-    
-    // fprintf(logfile, "set_floppy_parms returns %d\n", rc);
+
     return rc;
 }
 
 /*
  * adjust the formatting options, disabling options not available for `drive`
  */
-VOID set_format_options(WORD drive)
+VOID set_format_options(LPTREE tree, WORD drive)
 {
     WORD drivetype, i, last;
 
     drivetype = get_floppy_type(drive);
-    // fprintf(logfile,"drive type %d\n", drivetype);
     if (drivetype == 0) {
-      fun_alert(1,STNODRIV, drive+'A');
-      gem_exit();
-      return;    
+        /* Unknown drive type, disable everything */
+        tree[FMT_5DD].ob_state |= DISABLED;
+        tree[FMT_5DD].ob_state &= ~SELECTED;
+        tree[FMT_5HD].ob_state |= DISABLED;
+        tree[FMT_5HD].ob_state &= ~SELECTED;
+        tree[FMT_3DD].ob_state |= DISABLED;
+        tree[FMT_3DD].ob_state &= ~SELECTED;
+        tree[FMT_3HD].ob_state |= DISABLED;    
+        tree[FMT_3HD].ob_state &= ~SELECTED;
+        tree[FMT_OK].ob_state |= DISABLED;
+        return;    
     }
     /* Enable every option */
     tree[FMT_5DD].ob_state &= ~DISABLED;
@@ -470,17 +395,14 @@ VOID set_format_options(WORD drive)
     {
         if(tree[i].ob_state & SELECTED)
         {
-            // fprintf(logfile, "Option %d is currently selected.\n", i);
             last = i;
             break;
         }
         if(!(tree[i].ob_state & DISABLED))
         {
-            // fprintf(logfile, "Option %d is enabled.\n", i);
             last = i;
         }        
     }
-    // fprintf(logfile,"last option is %d, select it\n", last);
     tree[last].ob_state |= SELECTED;
 }
 
@@ -496,17 +418,14 @@ WORD init_start(WORD drive)
     diskio.Sectcount = 1;
     diskio.Buffstart = &Bootsector;
     
-    // fprintf(logfile, "Writing boot sector at %d from %lX\n", diskio.Sectcount, diskio.Buffstart);
     /* Write the boot sector */
     if((rc = write_sectors(drive)))
         return rc;
     /* Set the media ID */
     /* mincode 0x46 is Set media ID */
-    // fprintf(logfile, "Setting media ID\n");
     media_id.Serialnum = serialnum;
     _fmemcpy(media_id.Vollabel, disklabel, 11);
     rc = do_ioctl(drive, 0x0, 0x46, (LPBYTE)&media_id);
-    // fprintf(logfile, "return value %d\n", rc);
     /* Write the FAT */
     /* Allocate memory for a copy of the FAT */
     buffsize = newparmblk.Devicebpb.Sectfat * newparmblk.Devicebpb.Bytessect;
@@ -524,7 +443,6 @@ WORD init_start(WORD drive)
     /* write FATs to disk */
     for(i = 0; i < newparmblk.Devicebpb.Numfats; i++)
     {
-        // fprintf(logfile,"Writing FAT %d at sector %ld\n",i+1, diskio.Sectbegin);
         if((rc = write_sectors(drive)))
         {
             break;              /* rc will still be set */
@@ -544,6 +462,7 @@ WORD write_dir(WORD drive, BYTE *label)
 {
     WORD buffsize, i, rc = 0;
     LPBYTE buff;
+    ULONG FAR *dtimeptr;
     
     /* Write the Directory */
     /* Allocate memory for the directory. Its size can be calculated multiplying
@@ -556,14 +475,13 @@ WORD write_dir(WORD drive, BYTE *label)
     /* first 11 bytes of dir entry is the disk label */
     _fmemcpy(buff, label, 11);
     buff[0x0B] = 0x28;                /* attribute byte is Archive | Volume Label */
-    (ULONG)(buff[0x16]) = fat_dtime;
-    // fprintf(logfile,"Label time %04X date %04X\n", buff[0x16], buff[0x18]);
+    dtimeptr = (ULONG FAR *)&buff[0x16];
+    *dtimeptr = fat_dtime;
     /* Fill the diskio structure */
     diskio.Sectbegin = newparmblk.Devicebpb.Numfats * newparmblk.Devicebpb.Sectfat + 1;
     diskio.Sectcount = buffsize / newparmblk.Devicebpb.Bytessect;
     diskio.Buffstart = buff;
     /* write the directory to disk */
-    // fprintf(logfile,"Writing directory at sector %ld\n", diskio.Sectbegin);
     rc = write_sectors(drive);
     /* Free memory */
     dos_free(buff);    
@@ -594,7 +512,6 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
 
     /* special function 0 is Want for current bpb; mincode 0x60 is Get device parameters */
     rc = do_ioctl(drive, 00, 0x60, (BYTE *)&oldparmblk);
-    // fprintf(logfile, "get_floppy_parms returned %d\n", rc);
     if(rc != 0) 
     {
         fun_alert(1,STNODRIV, drive+'A');
@@ -606,7 +523,6 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
     
     formattype = inf_gindex(tree, FMT_5DD, 4);
     inf_sget(tree, FMTLABEL, disklabel, 12);
-    // fprintf(logfile, "Disklabel is %s\n", disklabel);
     /* find disklabel lenght */
     for(i = 0; (i < 11) && disklabel[i]; i++) {
         /* skip */
@@ -615,7 +531,6 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
     for(; i < 11; i++)
         disklabel[i] = ' ';
     rc = set_floppy_parms(drive, formattype, &newparmblk);
-    // fprintf(logfile, "set_floppy_parms(%d, %d, newparmblk) returned %d\n", drive, formattype, rc);
     if(rc != 0) 
     {
         fun_alert(1,STNODRIV, drive+'A');
@@ -637,7 +552,6 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
         {
             fmtparmblk.Head = side;
             fmtparmblk.Cylinder = track;
-            // fprintf(logfile, "Format side %d track %d\n", side, track);
             /* special function 0, mincode 0x42 is Format/verify track */
             while((rc = do_ioctl(drive, 00, 0x42, (BYTE *)&fmtparmblk)))
             {
@@ -657,7 +571,6 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
     {
         while((rc=init_start(drive)))
         {
-            // fprintf(logfile, "Error %d in init_start\n", rc);
             if (!retry_format())
                 break;                  /* rc will still be set */
         }
@@ -667,7 +580,6 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
     {
         while((rc=write_dir(drive, disklabel)))
         {
-            // fprintf(logfile, "Error %d in write_dir\n", rc);
             if (!retry_format())
                 break;                  /* rc will still be set */
         }
@@ -682,45 +594,64 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
     return rc;
 }
 
-VOID main()
+
+/*
+ * Function called after a format to redisplay any windows
+ * associated with the specified drive letter
+ */
+void refresh_drive(WORD drvletter)
 {
-    LPTREE obj;
+	WORD		ii;
+	WORD		drv;
+	BYTE		path[66], name[9], ext[4];
+	WNODE		*pw;
+	
+	for(ii = 0; ii < NUM_WNODES; ii++)
+	{
+	  pw = &G.g_wlist[ii];
+	  if (pw->w_id)
+	  {
+	    fpd_parse(&pw->w_path->p_spec[0], &drv, &path[0],
+	    	      &name[0], &ext[0]);
+	    if(drv == drvletter) {
+	        path[0] = '\0';     /* return to root of drive */
+	        do_fopen(pw, 0, drv, &path[0], &name[0], &ext[0], TRUE, TRUE);
+	    }
+	  }
+	}
+} /* refresh_drive */
+
+
+/*
+*	Format a floppy disk.
+*/
+	VOID 
+do_format(curr)
+	WORD		curr;
+{
+    LPTREE tree, obj;
     LONG total, avail;
     WORD i, drivebits, drive, drivetype;
     WORD exitobj, rc;
     WORD max_width, incr;
     BOOLEAN done = FALSE;
 
-    gem_init();
 
-    if (!rsrc_load("FORMAT.RSC"))
-    {
-      form_alert(1,"[3][Fatal Error !|FORMAT.RSC|File Not Found !][ Ok ]");
-      gem_exit();
-      return;
-    }
-
-    // logfile = fopen("format.log","w");
-    // fprintf(logfile, "Starting FORMAT.APP\n");
-    // fprintf(logfile, "sizeof(DISKPARM)=%d, sizeof(DISKBPB)=%d\n",sizeof(DISKPARM), sizeof(DISKBPB));
-    rsrc_gaddr(R_TREE, ADFORMAT, (LPVOID *)&tree);
+    tree = G.a_trees[ADFORMAT];
 
     /*
      * enable button(s) for existent drives, disable for non-existent
      */
     drivebits = get_drives();  /* floppy devices */
-    // fprintf(logfile, "drivebits=%X\n", drivebits);
     
     for (i = 0, obj = &tree[FMT_DRVA]; i < 2; i++, obj++, drivebits >>= 1)
     {
         if (drivebits & 0x0001)
         {
-            // fprintf(logfile, "Enable drive %c\n", i+'A');
             obj->ob_state &= ~DISABLED;
         }
         else
         {
-            // fprintf(logfile, "Disable drive %c\n", i+'A');
             obj->ob_state &= ~SELECTED;
             obj->ob_state |= DISABLED;
         }
@@ -734,7 +665,6 @@ VOID main()
     {
         if (obj->ob_state & SELECTED)
         {
-            // fprintf(logfile, "Drive %c is currently selected.\n", i+'A');
             drive = i;
             break;
         }
@@ -749,7 +679,6 @@ VOID main()
         {
             if (!(obj->ob_state & DISABLED))
             {
-                // fprintf(logfile, "Select drive %c.\n", i+'A');
                 drive = i;
                 break;
             }
@@ -758,8 +687,6 @@ VOID main()
             obj->ob_state |= SELECTED;
     }
     
-    // fprintf(logfile, "drive=%d\n", drive);
-
     /*
      * if there are no enabled drives, disallow OK
      */
@@ -770,7 +697,7 @@ VOID main()
         /*
          * adjust the formatting options for current drive
          */
-        set_format_options(drive);
+        set_format_options(tree, drive);
     }
     tree[FMT_CNCL].ob_state &= ~SELECTED;
     
@@ -786,7 +713,7 @@ VOID main()
      * do the actual work
      */
     inf_sset(tree, FMTLABEL, "");
-    ob_draw_dialog(tree, 0, 0, 0, 0);
+    start_dialog(tree);
     do {    
         exitobj = form_do(tree, FMTLABEL) & 0x7fff;
         switch(exitobj)
@@ -794,12 +721,11 @@ VOID main()
             case FMT_DRVA:
             case FMT_DRVB:
                 drive = exitobj - FMT_DRVA;
-                // fprintf(logfile, "New drive is %d\n", drive);
                 done = FALSE;
                 /*
                  * Update and redraw formatting options
                  */
-                set_format_options(drive);
+                set_format_options(tree, drive);
                 draw_fld(tree, FMTBOX);
                 break;
             case FMT_OK:
@@ -809,28 +735,25 @@ VOID main()
                 if (rc == 0)
                 {
                     dos_space(drive + 1, &total, &avail);
-                    // fprintf(logfile, "total: %ld, avail: %ld\n", total, avail);
                     if (fun_alert(2, STFMTINF, avail) == 2)
                         done = TRUE;
                 }                
-                /* reset to starting values */
+                refresh_drive('A' + drive);     /* update relevant windows */
+                /* reset to starting values and redraw the entire dialog */
                 tree[FMT_BAR].ob_width = max_width;     
                 tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1101L;
                 tree[FMT_OK].ob_state &= ~SELECTED;
-                draw_fld(tree, FMT_BAR);
-                draw_fld(tree, FMT_OK);
+                start_dialog(tree);
                 break;
             default:
                 done = TRUE;
         }
     } while(!done);
     
-    ob_undraw_dialog(tree, 0, 0, 0, 0);
-    inf_sget(tree, FMTLABEL, disklabel, 15);
-    // fprintf(logfile, "form_do terminated with exit code %X and label %s\n", exitobj, disklabel);
-    // fprintf(logfile, "Closing FORMAT.APP\n");
-    // fclose(logfile);
-    
-    gem_exit();
-}
+    end_dialog(tree);
+} /* do_format */
 
+
+/*
+ *	EOF:	deskfrmt.c
+ */

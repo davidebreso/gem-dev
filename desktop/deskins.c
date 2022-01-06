@@ -468,13 +468,13 @@ MLOCAL VOID  insa_stypes(LPTREE tree, BYTE *pdata)
 
 MLOCAL 	WORD 
 ins_latoi(st_ad)
-	LONG	st_ad;
+	LPBYTE	st_ad;
 {
 	WORD	retval;
 	BYTE	ch;
 
 	retval = 0;
-	while ((ch = LBGET(st_ad)) != '\0')
+	while ((ch = *st_ad) != '\0')
 	{
 	  retval = retval*10 + ch - '0';
 	  st_ad += 1;

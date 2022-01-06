@@ -18,9 +18,9 @@
 				/* leftovers from old deskdefn.h	*/
 
 #if MULTIAPP
-#define NUM_ADTREES 16
+#define NUM_ADTREES 17
 #else
-#define NUM_ADTREES 14
+#define NUM_ADTREES 15
 #endif
 
 #define	THESCREEN 0
