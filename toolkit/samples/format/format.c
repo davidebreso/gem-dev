@@ -212,7 +212,12 @@ OneDrv:    mov  dx,0x0050               // let us see which drive is active
            or   ax,0x0002               // set accordingly
            jmp  short NoFlops           //  .
 DrvAasA:   or   ax,0x0001               //  .
-NoFlops:   ret                          //
+NoFlops:   
+#ifdef  __SMALL__
+           ret
+#else
+           retf
+#endif
     };
 }
 #pragma aux get_drives value [ax] modify exact [ax bx dx cx es] nomemory;
@@ -238,17 +243,24 @@ __declspec( naked ) WORD get_floppy_type(WORD drive)
         jmp endfun         
 error:  xor ax, ax          // Return 0 if ERROR
 endfun: popf                // restore flags and return
+#ifdef  __SMALL__
         ret
+#else
+        retf
+#endif
     };
 }
 #pragma aux get_floppy_type parm [ax] value [ax] modify exact [ax bx cx dx es di] nomemory
 
 
 /* Call IOCTL Generic Block Device Request */
-__declspec( naked ) WORD do_ioctl(WORD drive, WORD specfunc, WORD mincode, BYTE *parblock)
+__declspec( naked ) WORD do_ioctl(WORD drive, WORD specfunc, WORD mincode, LPBYTE parblock)
 {
     _asm {
         pushf               /* Save flags */
+        push ds             /* Save DS since it may change */
+        push es
+        pop ds              /* set DS to parblock segment */
         mov byte ptr [bx], dl  /* First byte of parblock is special function */
         mov dx, bx          /* DS:DX points to the parameter block (small memory model) */
         mov bx, ax          /* BX is drive number */
@@ -259,11 +271,16 @@ __declspec( naked ) WORD do_ioctl(WORD drive, WORD specfunc, WORD mincode, BYTE 
         jc terminate        /* if carry is set, AX contains error code */
         xor ax, ax          /* clear ax if no error */
 terminate:
+        pop ds              /* restore DS */
         popf                /* restore flags */
+#ifdef  __SMALL__
         ret
+#else
+        retf
+#endif
     }
 }
-#pragma aux do_ioctl parm [ax] [dx] [cx] [bx] value [ax] modify exact [ax bx cx dx] nomemory;
+#pragma aux do_ioctl parm [ax] [dx] [cx] [es bx] value [ax] modify exact [ax bx cx dx] nomemory;
 
 
 /* Absolute write sectors to drive */
@@ -282,7 +299,11 @@ __declspec( naked ) WORD write_sectors(WORD drive)
 terminate:
         popf                        /* Get rid of flags */
         pop     ds                  /* restore DS */
+#ifdef  __SMALL__
         ret
+#else
+        retf
+#endif
     };
 }
 #pragma aux write_sectors parm [ax] value [ax] modify exact [ax bx cx] nomemory;
@@ -291,6 +312,9 @@ terminate:
 __declspec( naked ) VOID get_fatdtime()
 {
     _asm{
+        push    ds          /* save DS since it may change */
+        mov     ax, seg serialnum   
+        mov     ds, ax      /* set DS to the correct segment */
         mov     ah, 0x2C    /* INT 21, 2C is Get system Time */ 
         int     0x21        /* Return:  CH = hour
                              *          CL = minute
@@ -330,8 +354,13 @@ __declspec( naked ) VOID get_fatdtime()
         mov     cl, 5
         shl     dx, cl      /* bits 8-5 of DX are month */
         or      dx, bx      /* DX is FAT date */
-        mov     word ptr fat_dtime+2, dx /* Save FAT date */        
-        ret        
+        mov     word ptr fat_dtime+2, dx /* Save FAT date */  
+        pop     ds          /* restore DS */
+#ifdef  __SMALL__
+        ret
+#else
+        retf
+#endif
     }
 }
 #pragma aux get_fatdtime modify exact [ax bx cx dx] nomemory;
@@ -374,7 +403,7 @@ WORD set_floppy_parms(WORD drive, WORD formattype, DISKPARM *parblock)
         }
         
         /* Special function code 5, mincode 0x40 is Set device parameters */ 
-        rc = do_ioctl(drive, 05, 0x40, (BYTE *)parblock);
+        rc = do_ioctl(drive, 05, 0x40, (LPBYTE)parblock);
     } else {
         rc = 1;   
     }
@@ -477,7 +506,7 @@ WORD init_start(WORD drive)
     // fprintf(logfile, "Setting media ID\n");
     media_id.Serialnum = serialnum;
     _fmemcpy(media_id.Vollabel, disklabel, 11);
-    rc = do_ioctl(drive, 0x0, 0x46, (BYTE *)&media_id);
+    rc = do_ioctl(drive, 0x0, 0x46, (LPBYTE)&media_id);
     // fprintf(logfile, "return value %d\n", rc);
     /* Write the FAT */
     /* Allocate memory for a copy of the FAT */

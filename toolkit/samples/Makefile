@@ -15,7 +15,8 @@ TARGETS=demo-s.app   demo-l.app   \
 	fmem-s.acc   fmem-l.acc   \
 	mgraf-s.app  mgraf-l.app  \
 	mgraf-s.acc  mgraf-l.acc  \
-	format.app   rscr-s.exe
+	format.app   formatl.app  \
+	rscr-s.exe
 
 CC = wcc
 AS = wasm
@@ -80,7 +81,7 @@ rscr-s.exe: $(MAIN)
 xform-s.app xform-l.app: $(MAIN)
 	$(MAKE) -C xform
 
-format.app: $(MAIN)
+format.app formatl.app: $(MAIN)
 	$(MAKE) -C format
 
 tidy:

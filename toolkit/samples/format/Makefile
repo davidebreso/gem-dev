@@ -5,7 +5,7 @@ CC = wcl
 AS = wasm
 LD = wlink
 
-all:	../format.app ../format.rsc
+all:	../format.app ../formatl.app ../format.rsc
 
 ../%.app:	%.app
 	cp $< ..
@@ -18,6 +18,10 @@ format.app:	format.c format.h bootsect.o
 
 bootsect.o:	bootsect.asm
 	$(AS) -bt=dos -0 $<
+
+formatl.app:	format.c format.h bootsect.o
+	$(CC) -ml $(CFLAGS) -fe=$@ -fm=formatl.map $< bootsect.o ../../lib/wccgem-l.lib
+
 	
 getdrvs.com:	getdrvs.o
 	$(LD) sys dos com file $<
