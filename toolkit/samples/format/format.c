@@ -371,7 +371,7 @@ VOID set_format_options(WORD drive)
 }
 
 /*
- *  Initialise starting sectors of floppy disk (boot sector, FATs, root dir)
+ *  Initialise starting sectors of floppy disk (boot sector and FATs)
  */
 WORD init_start(WORD drive)
 {
@@ -411,15 +411,71 @@ WORD init_start(WORD drive)
         fprintf(logfile,"Writing FAT %d at sector %ld\n",i+1, diskio.Sectbegin);
         if((rc = write_sectors(drive)))
         {
-            /* Free memory */
-            dos_free(buff);
-            return rc;
+            break;              /* rc will still be set */
         }
         /* Advance Sectbegin to write next FAT */
         diskio.Sectbegin += newparmblk.Devicebpb.Sectfat;        
     }
-    /* Free memory */
+    /* Free memory and return */
     dos_free(buff);
+    return rc;
+}
+
+/* Set written date/time of the volume label */
+__declspec( naked ) VOID set_fattime(LPBYTE buff)
+{
+    _asm{
+        mov     ah, 0x2C    /* INT 21, 2C is Get system Time */ 
+        int     0x21        /* Return:  CH = hour
+                             *          CL = minute
+                             *          DH = second */
+        xor     bx, bx      /* BX will get FAT time: 
+                             * Bits:    15-11   Hours (0–23)
+                             *          10-5    Minutes (0–59)
+                             *          4-0     Seconds/2 (0–29) */
+        shr     dh, 1       /* DH = seconds/2 */
+        mov     bl, dh      /* Bits 4-0 are seconds/2 */
+        xchg    ax, cx      /* hour and minutes are in AX */
+        shl     al, 1
+        shl     al, 1       /* bits 7-2 of AX: minute */
+        mov     cl, 3
+        shl     ax, cl      /* AX: bits 15-11 hours, 10-5 minute, 4-0 zero */
+        or      bx, ax      /* BX is FAT time */
+        add     di, 0x16    /* Time is at offset 0x16 of the directory entry */
+        mov     es:[di], bx /* Save FAT time */
+        
+        mov     ah, 0x2A    /* INT 21, 2A is Get system Date */ 
+        int     0x21        /* Return:  CX = year (1980-2099)
+                             *          DH = month
+                             *          DL = day */
+        xor     bx, bx      /* BX will get FAT date: 
+                             * Bits:    15-9    Year (0 = 1980, 119 = 2099)
+                             *          8-5     Month (1–12)
+                             *          4-0     Day (1–31) */
+        sub     cx, 1980    /* Normalize year */
+        shl     cx, 1       
+        or      bh, cl      /* Bits 15-9 of BX are Year */
+        mov     bl, dl      /* Bits 4-0 of BX are day */
+        xchg    dl, dh      /* Bits 7-0 of DX are month */
+        xor     dh, dh      /* reset bits 15-8 of DX */
+        mov     cl, 5
+        shl     dx, cl      /* bits 8-5 of DX are month */
+        or      bx, dx      /* BX is FAT date */
+        inc     di          /* Date is at offset 0x18 of the directory entry */
+        inc     di
+        mov     es:[di], bx /* Save FAT date */
+        ret        
+    }
+}
+#pragma aux set_fattime parm [es di] modify exact [ax bx cx dx es di] nomemory;
+
+/*
+ *  Initialise the root dir and set volume label
+ */
+WORD write_dir(WORD drive, BYTE *label)
+{
+    WORD buffsize, i, rc = 0;
+    LPBYTE buff;
     
     /* Write the Directory */
     /* Allocate memory for the directory. Its size can be calculated multiplying
@@ -428,8 +484,18 @@ WORD init_start(WORD drive)
     buff = dos_alloc(buffsize);
     /* Clear memory area */
     _fmemset(buff, 0, buffsize);
+    /* Set disk label */
+    /* first 11 bytes of dir entry is the disk label */
+    for(i = 0; (i < 11) && label[i]; i++)
+        buff[i] = label[i];
+    /* pad with spaces */
+    for(; i < 11; i++)
+        buff[i] = ' ';
+    buff[0x0B] = 0x28;                /* attribute byte is Archive | Volume Label */
+    set_fattime(buff);                /* set creation date and time */
+    fprintf(logfile,"Label time %04X date %04X\n", buff[0x16], buff[0x18]);
     /* Fill the diskio structure */
-    /* diskio.Sectbegin should already point to the correct sector */
+    diskio.Sectbegin = newparmblk.Devicebpb.Numfats * newparmblk.Devicebpb.Sectfat + 1;
     diskio.Sectcount = buffsize / newparmblk.Devicebpb.Bytessect;
     diskio.Buffstart = buff;
     /* write the directory to disk */
@@ -446,8 +512,12 @@ WORD init_start(WORD drive)
  */
 static BOOLEAN retry_format(void)
 {
+    LPBYTE a_alert;
+    
+    rsrc_gaddr(R_STRING, STFMTERR, (LPVOID *)&a_alert);
+
     graf_mouse(ARROW,NULL);
-    if (form_alert(3, "[3][Formatting error. The target|disk may be write-protected|or unusable.][Retry|Abort]") == 2)
+    if (form_alert(3, a_alert) == 2)
         return FALSE;
     graf_mouse(HOURGLASS,NULL);    /* say we're busy again */
 
@@ -461,6 +531,7 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
 {
     WORD track, numtracks, side;
     WORD width, rc, i, formattype;
+    BYTE disklabel[15];
 
     /* special function 0 is Want for current bpb; mincode 0x60 is Get device parameters */
     rc = do_ioctl(drive, 00, 0x60, (BYTE *)&oldparmblk);
@@ -536,6 +607,17 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
         }
     }
 
+    inf_sget(tree, FMTLABEL, disklabel, 15);
+    if (rc == 0)
+    {
+        while((rc=write_dir(drive, &disklabel)))
+        {
+            fprintf(logfile, "Error %d in write_dir\n", rc);
+            if (!retry_format())
+                break;                  /* rc will still be set */
+        }
+    }
+
     /* Restore parms to their old condition */
     /* Special function code 4, mincode 0x40 is Set device parameters */ 
     do_ioctl(drive, 05, 0x40, (BYTE *)&oldparmblk);
@@ -554,6 +636,9 @@ VOID main()
     WORD max_width, incr;
     BOOLEAN done = FALSE;
     BYTE disklabel[15];
+    LPBYTE a_alert;
+    BYTE g_1text[256];
+    BYTE g_2text[256];
 
     gem_init();
 
@@ -668,7 +753,16 @@ VOID main()
             case FMT_OK:
                 /* format floppy */
                 rc = format_floppy(tree, drive, max_width, incr);
-                
+                /* If no error, show info dialog */
+                if (rc == 0)
+                {
+                    dos_space(drive + 1, &total, &avail);
+                    rsrc_gaddr(R_STRING, STFMTINF, (LPVOID *)&a_alert);
+                    _fstrncpy(g_2text, a_alert, 256);
+                    sprintf(g_1text, g_2text, avail);                    
+                    if (form_alert(2, g_1text) == 2)
+                        done = TRUE;
+                }                
                 /* reset to starting values */
                 tree[FMT_BAR].ob_width = max_width;     
                 tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1101L;
