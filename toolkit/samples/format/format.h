@@ -11,6 +11,5 @@
 #define STFMTERR 0  	/* STRING */
 #define STFMTINF 1  	/* STRING */
 #define STNODRIV 2  	/* STRING */
-#define STDRIVID 3  	/* STRING */
 #define FMTBOX 5  	/* OBJECT in TREE #0 */
 #define FMT_3HD 9  	/* OBJECT in TREE #0 */
