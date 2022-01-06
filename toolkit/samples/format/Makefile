@@ -13,8 +13,11 @@ all:	../format.app ../format.rsc
 ../format.rsc:	format.rsc
 	cp format.rsc ..
 
-format.app:	format.c format.h 
-	$(CC) -ms $(CFLAGS) -fe=$@ -fm=format.map $<  ../../lib/wccgem-s.lib
+format.app:	format.c format.h bootsect.o
+	$(CC) -ms $(CFLAGS) -fe=$@ -fm=format.map $< bootsect.o ../../lib/wccgem-s.lib
+
+bootsect.o:	bootsect.asm
+	$(AS) -bt=dos -0 $<
 	
 getdrvs.com:	getdrvs.o
 	$(LD) sys dos com file $<

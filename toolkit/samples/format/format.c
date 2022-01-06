@@ -13,6 +13,52 @@
 #include "wccgem.h"
 #include "format.h"
 
+typedef struct DISKBPB {
+     UWORD  Bytessect;      /* bytes per sector */
+     UBYTE  Sectclust;      /* sectors per cluster */
+     UWORD  Resvsect;       /* number of reserved sectors */
+     UBYTE  Numfats;        /* number of FATs */
+     UWORD  Rootdir;        /* number of root directory entries */
+     UWORD  Numsect;        /* total number of sectors */
+     UBYTE  Mediaid;        /* media descriptor */
+     UWORD  Sectfat;        /* number of sectors per FAT */
+     UWORD  Secttrack;      /* sectors per track */
+     UWORD  Numheads;       /* number of heads */
+     ULONG  Numhidden;      /* # of hidden sectors */
+     ULONG  Numhuge;        /* # of sectors if bpbSectors == 0 */ 
+     UBYTE  Unused[6];      /* unused data */
+} DISKBPB;
+
+typedef struct DISKPARM {
+    UBYTE   Specfunc;           /* Special function */
+    UBYTE   Devicetype;         /* Device type */
+    UWORD   Deviceattr;         /* Device attributes */
+    UWORD   Cylinders;          /* Number of cylinders */
+    UBYTE   Mediatype;          /* Media type */
+    DISKBPB Devicebpb;          /* Device BPB */
+    UWORD  Numcyls;             /* number of cylinders */
+    UWORD  Tracklayout[18*2];   /* track layout */
+} DISKPARM;
+
+typedef struct FMTPARM {
+    UBYTE   Specfunc;       /* Special function */
+    UWORD   Head;           /* number of disk Head */
+    UWORD   Cylinder;       /* number of disk cylinder */
+} FMTPARM;
+
+typedef struct WRITEPKT {
+    ULONG   Sectbegin;  /* start sector number */
+    UWORD   Sectcount;  /* number of sectors to write */
+    LPVOID  Buffstart;  /* transfer address */
+} WRITEPKT;
+
+typedef struct MIDSTRUCT {
+     UWORD  Infolevel;      /* (call) info level (should be 0000h) */
+     ULONG  Serialnum;      /* disk serial number */
+     BYTE   Vollabel[11];   /* volume label */
+     BYTE   Filesys[8];     /* filesystem type */
+} MIDSTRUCT;
+
 MLOCAL WORD     work_in[11];
 MLOCAL WORD     work_out[57];
 
@@ -20,6 +66,22 @@ MLOCAL WORD     ap_id;
 MLOCAL WORD     vdi_handle;
 MLOCAL LPTREE   tree;
 MLOCAL WCCUBLK  cross;
+MLOCAL DISKPARM oldparmblk;
+MLOCAL DISKPARM newparmblk;
+MLOCAL FMTPARM  fmtparmblk;
+MLOCAL WRITEPKT diskio;
+MLOCAL MIDSTRUCT media_id = {0, 19780928L, "           ", "FAT12   "};
+
+extern BYTE * __based( __segname( "Bsect" ) ) Bootsector;
+
+MLOCAL UWORD numcyl_table[] = {40, 80, 80, 80};
+
+MLOCAL DISKBPB bpb_table[] = {
+    {512, 2, 1, 2, 112, 40*9*2,  0xfd, 2, 9,  2, 0, 0},   /* 360K format */
+    {512, 1, 1, 2, 224, 80*15*2, 0xf9, 7, 15, 2, 0, 0},   /* 1.2M format */
+    {512, 2, 1, 2, 112, 80*9*2,  0xf9, 3, 9,  2, 0, 0},   /* 720K format */
+    {512, 1, 1, 2, 224, 80*18*2, 0xf0, 9, 18, 2, 0, 0}    /* 1.44M format */
+};
 
 /*
  *      declarations used by the do_format() code
@@ -153,6 +215,93 @@ endfun: popf                // restore flags and return
 }
 #pragma aux get_floppy_type parm [ax] value [ax] modify exact [ax bx cx dx es di] nomemory
 
+
+/* Call IOCTL Generic Block Device Request */
+__declspec( naked ) WORD do_ioctl(WORD drive, WORD specfunc, WORD mincode, BYTE *parblock)
+{
+    _asm {
+        pushf               /* Save flags */
+        mov byte ptr [bx], dl  /* First byte of parblock is special function */
+        mov dx, bx          /* DS:DX points to the parameter block (small memory model) */
+        mov bx, ax          /* BX is drive number */
+        inc bx              /* increment BX, since IOCTL expects 00h=default,01h=A:,etc */
+        mov ax, 0x440D      /* IOCTL - Generic block I/O */
+        mov ch, 0x08        /* Disk drive category code - CL is minor code */
+        int 0x21
+        jc terminate        /* if carry is set, AX contains error code */
+        xor ax, ax          /* clear ax if no error */
+terminate:
+        popf                /* restore flags */
+        ret
+    }
+}
+#pragma aux do_ioctl parm [ax] [dx] [cx] [bx] value [ax] modify exact [ax bx cx dx] nomemory;
+
+
+/* Absolute write sectors to drive */
+__declspec( naked ) WORD write_sectors(WORD drive)
+{
+    _asm{
+        push    ds                   /* save DS since it may be changed */
+        mov     bx, seg diskio
+        mov     ds, bx
+        mov     bx, offset diskio   /* DS:DX points to the disk write packet */
+        /* drive is already in AX */
+        mov     cx,-1
+        int     0x26
+        jc terminate                /* if carry is set, AX contains error code */
+        xor ax, ax                  /* clear ax if no error */
+terminate:
+        popf                        /* Get rid of flags */
+        pop     ds                  /* restore DS */
+        ret
+    };
+}
+#pragma aux write_sectors parm [ax] value [ax] modify exact [ax bx cx] nomemory;
+
+WORD set_floppy_parms(WORD drive, WORD formattype, DISKPARM *parblock)
+{
+    WORD i, rc = 0;
+    
+    fprintf(logfile,"Devicetype: %d\n", parblock->Devicetype);
+    if(parblock->Devicetype < 3 || parblock->Devicetype == 7)
+    {
+        if(formattype == 0)
+        {
+            /* if format type is 360K, set cylinders to 40 and mediatype to 1 */
+            parblock->Cylinders = 40;
+            parblock->Mediatype = 1;
+        } else {
+            /* all other types have 80 cylinders and mediatype 0 */
+            parblock->Cylinders = 80;
+            parblock->Mediatype = 0;
+        }
+        /* set up BPB for selected format type */
+        memcpy(&parblock->Devicebpb, &bpb_table[formattype], 25);
+        parblock->Numcyls = parblock->Devicebpb.Secttrack;
+        for(i = 0; i < parblock->Numcyls; i++ )
+        {
+            /* Sector number */
+            parblock->Tracklayout[2*i] = i + 1;
+            /* Bytes per sector */
+            parblock->Tracklayout[2*i + 1] = parblock->Devicebpb.Bytessect;
+        }
+        
+        /* Special function code 5, mincode 0x40 is Set device parameters */ 
+        rc = do_ioctl(drive, 05, 0x40, (BYTE *)parblock);
+    } else {
+        rc = 1;   
+    }
+    for(i = 0; i < sizeof(DISKPARM); i++) 
+    {
+        fprintf(logfile, "%02X ", ((BYTE *)parblock)[i]);
+    }
+    fprintf(logfile, "\n");
+    
+    fprintf(logfile, "set_floppy_parms returns %d\n", rc);
+    return rc;
+}
+
 /*
  * adjust the formatting options, disabling options not available for `drive`
  */
@@ -222,20 +371,153 @@ VOID set_format_options(WORD drive)
 }
 
 /*
+ *  Initialise starting sectors of floppy disk (boot sector, FATs, root dir)
+ */
+WORD init_start(WORD drive)
+{
+    WORD i, buffsize, rc = 0;
+    LPBYTE buff;
+    /* Fill the diskio structure */
+    diskio.Sectbegin = 0;
+    diskio.Sectcount = 1;
+    diskio.Buffstart = &Bootsector;
+    
+    fprintf(logfile, "Writing boot sector at %d from %lX\n", diskio.Sectcount, diskio.Buffstart);
+    /* Write the boot sector */
+    if((rc = write_sectors(drive)))
+        return rc;
+    /* Set the media ID */
+    /* mincode 0x46 is Set media ID */
+    fprintf(logfile, "Setting media ID\n");
+    rc = do_ioctl(drive, 0x0, 0x46, (BYTE *)&media_id);
+    fprintf(logfile, "return value %d\n", rc);
+    /* Write the FAT */
+    /* Allocate memory for a copy of the FAT */
+    buffsize = newparmblk.Devicebpb.Sectfat * newparmblk.Devicebpb.Bytessect;
+    buff = dos_alloc(buffsize);
+    /* Clear memory area */
+    _fmemset(buff, 0, buffsize);
+    /* store FAT ID followed by 0xFFFF filler */
+    buff[0] = newparmblk.Devicebpb.Mediaid;
+    buff[1] = 0xFF;
+    buff[2] = 0xFF;
+    /* Fill the diskio structure */
+    diskio.Sectbegin = 1;
+    diskio.Sectcount = newparmblk.Devicebpb.Sectfat;
+    diskio.Buffstart = buff;
+    /* write FATs to disk */
+    for(i = 0; i < newparmblk.Devicebpb.Numfats; i++)
+    {
+        fprintf(logfile,"Writing FAT %d at sector %ld\n",i+1, diskio.Sectbegin);
+        if((rc = write_sectors(drive)))
+        {
+            /* Free memory */
+            dos_free(buff);
+            return rc;
+        }
+        /* Advance Sectbegin to write next FAT */
+        diskio.Sectbegin += newparmblk.Devicebpb.Sectfat;        
+    }
+    /* Free memory */
+    dos_free(buff);
+    
+    /* Write the Directory */
+    /* Allocate memory for the directory. Its size can be calculated multiplying
+     * the max number of directory entries by 32 (bytes per directory entry). */
+    buffsize = newparmblk.Devicebpb.Rootdir * 32;
+    buff = dos_alloc(buffsize);
+    /* Clear memory area */
+    _fmemset(buff, 0, buffsize);
+    /* Fill the diskio structure */
+    /* diskio.Sectbegin should already point to the correct sector */
+    diskio.Sectcount = buffsize / newparmblk.Devicebpb.Bytessect;
+    diskio.Buffstart = buff;
+    /* write the directory to disk */
+    fprintf(logfile,"Writing directory at sector %ld\n", diskio.Sectbegin);
+    rc = write_sectors(drive);
+    /* Free memory */
+    dos_free(buff);    
+    
+    return rc;
+}
+
+/*
+ *  Issue alert & return TRUE iff user wants to retry
+ */
+static BOOLEAN retry_format(void)
+{
+    graf_mouse(ARROW,NULL);
+    if (form_alert(3, "[3][Formatting error. The target|disk may be write-protected|or unusable.][Retry|Abort]") == 2)
+        return FALSE;
+    graf_mouse(HOURGLASS,NULL);    /* say we're busy again */
+
+    return TRUE;
+}
+
+/*
  *  Do the real formatting work
  */
 static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
 {
-    WORD track;
-    WORD width, rc;
+    WORD track, numtracks, side;
+    WORD width, rc, i, formattype;
+
+    /* special function 0 is Want for current bpb; mincode 0x60 is Get device parameters */
+    rc = do_ioctl(drive, 00, 0x60, (BYTE *)&oldparmblk);
+    fprintf(logfile, "get_floppy_parms returned %d\n", rc);
+    for(i = 0; i < sizeof(DISKPARM); i++) 
+    {
+        fprintf(logfile, "%02X ", ((BYTE *)&oldparmblk)[i]);
+    }
+    fprintf(logfile, "\n");
+    if(rc != 0) 
+    {
+        form_alert(1,"[3][Format Error!|Could not determine drive parameters.][ Ok ]");
+        return rc;
+    }
+    
+    /* copy parmblock to work area */
+    memcpy(&newparmblk, &oldparmblk, sizeof(DISKPARM));
+    
+    formattype = inf_gindex(tree, FMT_5DD, 4);
+    rc = set_floppy_parms(drive, formattype, &newparmblk);
+    fprintf(logfile, "set_floppy_parms(%d, %d, newparmblk) returned %d\n", drive, formattype, rc);
+    for(i = 0; i < sizeof(DISKPARM); i++) 
+    {
+        fprintf(logfile, "%02X ", ((BYTE *)&newparmblk)[i]);
+    }
+    fprintf(logfile, "\n");
+    fflush(logfile);
+    if(rc != 0) 
+    {
+        form_alert(1,"[3][Format Error!|Could not set drive parameters.][ Ok ]");
+        return rc;
+    }
 
     tree[FMT_BAR].ob_width = 0;
     tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1121L;
+    numtracks = newparmblk.Cylinders;
+    /* For 40 tracks format progress bar increment is doubled */
+    if(numtracks == 40)
+        incr *= 2;
 
     graf_mouse(HOURGLASS,NULL);    /* say we're busy */
 
-    for (track = 0; track < MAXTRACK ; track++)
+    for (track = 0, rc = 0; (track < numtracks) && !rc ; track++)
     {
+        for (side = 0; (side < 2) && !rc; side++)
+        {
+            fmtparmblk.Head = side;
+            fmtparmblk.Cylinder = track;
+            // fprintf(logfile, "Format side %d track %d\n", side, track);
+            fflush(logfile);
+            /* special function 0, mincode 0x42 is Format/verify track */
+            while((rc = do_ioctl(drive, 00, 0x42, (BYTE *)&fmtparmblk)))
+            {
+                if (!retry_format())
+                    break;              /* rc will still be set */
+            }
+        }
         /* update progress bar */
         width = tree[FMT_BAR].ob_width + incr;
         if (width > max_width)
@@ -244,9 +526,23 @@ static WORD format_floppy(LPTREE tree, WORD drive, WORD max_width, WORD incr)
         draw_fld(tree,FMT_BAR);
     }
 
+    if (rc == 0)
+    {
+        while((rc=init_start(drive)))
+        {
+            fprintf(logfile, "Error %d in init_start\n", rc);
+            if (!retry_format())
+                break;                  /* rc will still be set */
+        }
+    }
+
+    /* Restore parms to their old condition */
+    /* Special function code 4, mincode 0x40 is Set device parameters */ 
+    do_ioctl(drive, 05, 0x40, (BYTE *)&oldparmblk);
+    
     graf_mouse(ARROW,NULL);     /* no longer busy */
 
-    return 0;
+    return rc;
 }
 
 VOID main()
@@ -270,7 +566,7 @@ VOID main()
 
     logfile = fopen("format.log","w");
     fprintf(logfile, "Starting FORMAT.APP\n");
-    
+    fprintf(logfile, "sizeof(DISKPARM)=%d, sizeof(DISKBPB)=%d\n",sizeof(DISKPARM), sizeof(DISKBPB));
     rsrc_gaddr(R_TREE, ADFORMAT, (LPVOID *)&tree);
 
     /*
@@ -372,6 +668,7 @@ VOID main()
             case FMT_OK:
                 /* format floppy */
                 rc = format_floppy(tree, drive, max_width, incr);
+                
                 /* reset to starting values */
                 tree[FMT_BAR].ob_width = max_width;     
                 tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1101L;
