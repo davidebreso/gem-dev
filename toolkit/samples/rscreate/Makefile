@@ -7,13 +7,14 @@ include ../../makedefs.i
 CFLAGS = -0 -ox -os -s -bcl=dos -w=0 -i=../../include
 CC = wcl
 
-all:	../rscr-s.exe
+all:	../rscr-s.exe 
 
 ../%.exe:	%.exe
 	cp $< ..
 
 rscr-s.exe:	rscreate.c
-	$(CC) -ms $(CFLAGS) -fe=$@ $< ../../lib/wccgem-s.lib
+	$(CC) -ms $(CFLAGS) -fe=$@ -fm=rscr-s.map $< ../../lib/wccgem-s.lib
+
 
 tidy:
 	rm -f rscr-?.exe

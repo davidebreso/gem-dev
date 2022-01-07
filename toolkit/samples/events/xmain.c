@@ -22,15 +22,6 @@
 #include  "types.h"
 #include  "proto.h"
 
-#if MSDOS
-/*-------------------- Global GEM-Data ---------------------------------*/
-GLOBAL WORD    contrl[11];       /* control inputs          */
-GLOBAL WORD    intin[80];        /* max string length       */
-GLOBAL WORD    ptsin[256];       /* polygon fill points     */
-GLOBAL WORD    intout[45];       /* open workstation output */
-GLOBAL WORD    ptsout[12];       /* points output           */
-#endif
-
 /*-------------------- Variables for init ------------------------------*/
 GLOBAL WORD    gl_wchar;         /* character width      */
 GLOBAL WORD    gl_hchar;         /* character height     */

@@ -69,18 +69,6 @@ Page*/
 /************************************************************************/
 /************************************************************************/
 
-
-/*------------------------------*/
-/*	Global			*/
-/*------------------------------*/
-/*
-GLOBAL WORD	contrl[11];		// control inputs		  
-GLOBAL WORD	intin[80];		// max string length		  
-GLOBAL WORD	ptsin[256];		// polygon fill points		  
-GLOBAL WORD	intout[45];		// open workstation output	  
-GLOBAL WORD	ptsout[12];
-*/
-
 /*------------------------------*/
 /*	Local			*/
 /*------------------------------*/

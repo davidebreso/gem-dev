@@ -38,11 +38,22 @@ pragma On (Pointers_compatible_with_ints);
 
 #include "wccgem.h"
 #include <dos.h>
+#include <stdio.h>
 
-MLOCAL LONG sub_pointer(VOID FAR *p1, VOID FAR *p2);
-MLOCAL LPVOID vsub_pointer(VOID FAR *p1, VOID FAR *p2);
+MLOCAL WORD sub_pointer(VOID *p1, VOID *p2);
+MLOCAL VOID *vsub_pointer(BYTE *p1, BYTE *p2);
+VOID fix_trindex(VOID);
+VOID fix_objects(VOID);
+VOID fix_tedinfo(VOID);
+VOID fix_frstr(VOID);
+VOID fix_str( LONG FAR *where );
+VOID fix_iconblk(VOID);
+VOID fix_bitblk(VOID);
+VOID fix_frimg(VOID);
+VOID fix_bb(LONG FAR *where);
+VOID fix_img(LONG FAR *where);
 
-
+#pragma data_seg ( "CONST" )
 
 RSHDR starthdr = 
 {
@@ -66,72 +77,85 @@ RSHDR starthdr =
    0       /* rsh_rssize  */
 };
 
-VOID fix_trindex(VOID);
-VOID fix_objects(VOID);
-VOID fix_tedinfo(VOID);
-VOID fix_frstr(VOID);
-VOID fix_str( LONG FAR *where );
-VOID fix_iconblk(VOID);
-VOID fix_bitblk(VOID);
-VOID fix_frimg(VOID);
-VOID fix_bb(LONG FAR *where);
-VOID fix_img(LONG FAR *where);
 
 
 #include "example.rsh"
 
-WORD  endfile;
+WORD  endfile = 0;
+
+#pragma data_seg ( )
+
+
+FILE *logfile;
 
 main()   
 {
-   WORD /*jnk1,*/ handle;
-   LONG cnt;                        /* in bytes   */
-   
-   starthdr.rsh_vrsn = 0;
+    WORD /*jnk1,*/ handle;
+    LONG cnt;                        /* in bytes   */
 
-   starthdr.rsh_object = sub_pointer(rs_object,&starthdr);
+    _asm{ int 3 };
+    starthdr.rsh_vrsn = 0;
+    printf("starthdr.rsh_vrsn=%04X\n", starthdr.rsh_vrsn);
+    
+    starthdr.rsh_object = sub_pointer(rs_object,&starthdr);
+    printf("starthdr.rsh_object=%04X\n", starthdr.rsh_object);
+    starthdr.rsh_tedinfo = sub_pointer(rs_tedinfo,&starthdr);
+    printf("starthdr.rsh_tedinfo=%04X\n", starthdr.rsh_tedinfo);
 
-   starthdr.rsh_tedinfo = sub_pointer(rs_tedinfo,&starthdr);
+    starthdr.rsh_iconblk = sub_pointer(rs_iconblk,&starthdr);
+    printf("starthdr.rsh_iconblk=%04X\n", starthdr.rsh_iconblk);
 
-   starthdr.rsh_iconblk = sub_pointer(rs_iconblk,&starthdr);
+    starthdr.rsh_bitblk = sub_pointer(rs_bitblk,&starthdr);
+    printf("starthdr.rsh_bitblk=%04X\n", starthdr.rsh_bitblk);
 
-   starthdr.rsh_bitblk = sub_pointer(rs_bitblk,&starthdr);
+    starthdr.rsh_frstr = sub_pointer(rs_frstr,&starthdr);
+    printf("starthdr.rsh_frstr=%04X\n", starthdr.rsh_frstr);
 
-   starthdr.rsh_frstr = sub_pointer(rs_frstr,&starthdr);
+    starthdr.rsh_string = sub_pointer(rs_strings[0],&starthdr);
+    printf("starthdr.rsh_string=%04X\n", starthdr.rsh_string);
 
-   starthdr.rsh_string = sub_pointer(rs_strings,&starthdr);
+    starthdr.rsh_imdata = sub_pointer(rs_imdope[0].image,&starthdr);
+    printf("starthdr.rsh_imdata=%04X\n", starthdr.rsh_imdata);
 
-   starthdr.rsh_imdata = sub_pointer(rs_imdope[0].image,&starthdr);
+    starthdr.rsh_frimg = sub_pointer(rs_frimg,&starthdr);
+    printf("starthdr.rsh_frimg=%04X\n", starthdr.rsh_frimg);
 
-   starthdr.rsh_frimg = sub_pointer(rs_frimg,&starthdr);
+    starthdr.rsh_trindex = sub_pointer(rs_trindex,&starthdr);
+    printf("starthdr.rsh_trindex=%04X\n", starthdr.rsh_trindex);
 
-   starthdr.rsh_trindex = sub_pointer(rs_trindex,&starthdr);
+    starthdr.rsh_nobs    = NUM_OBS;
+    printf("starthdr.rsh_nobs=%04X\n", starthdr.rsh_nobs);
+    starthdr.rsh_ntree   = NUM_TREE;
+    printf("starthdr.rsh_ntree=%04X\n", starthdr.rsh_ntree);
+    starthdr.rsh_nted    = NUM_TI;
+    printf("starthdr.rsh_nted=%04X\n", starthdr.rsh_nted);
+    starthdr.rsh_nib     = NUM_IB;
+    printf("starthdr.rsh_nib=%04X\n", starthdr.rsh_nib);
+    starthdr.rsh_nbb     = NUM_BB;
+    printf("starthdr.rsh_nbb=%04X\n", starthdr.rsh_nbb);
+    starthdr.rsh_nimages = NUM_FRIMG;
+    printf("starthdr.rsh_nimages=%04X\n", starthdr.rsh_nimages);
+    starthdr.rsh_nstring = NUM_FRSTR;
+    printf("starthdr.rsh_nstring=%04X\n", starthdr.rsh_nstring);
 
-   starthdr.rsh_nobs    = NUM_OBS;
-   starthdr.rsh_ntree   = NUM_TREE;
-   starthdr.rsh_nted    = NUM_TI;
-   starthdr.rsh_nib     = NUM_IB;
-   starthdr.rsh_nbb     = NUM_BB;
-   starthdr.rsh_nimages = NUM_FRIMG;
-   starthdr.rsh_nstring = NUM_FRSTR;
+//     fix_trindex();
+//     fix_objects();
+//     fix_tedinfo();
+//     fix_iconblk();
+//     fix_bitblk();
+//     fix_frstr();
+//     fix_frimg();
 
-   fix_trindex();
-   fix_objects();
-   fix_tedinfo();
-   fix_iconblk();
-   fix_bitblk();
-   fix_frstr();
-   fix_frimg();
+    handle = dos_create(pname, 0); 
 
-   handle = dos_create(pname, 0); 
+    cnt = sub_pointer(&endfile,&starthdr);
+    starthdr.rsh_rssize = (UWORD)cnt;
+    dos_write(handle, cnt, (LPBYTE)(&starthdr)); 
 
-   cnt = sub_pointer(&endfile,&starthdr);
-   starthdr.rsh_rssize = (UWORD)cnt;
-   dos_write(handle, cnt, ADDR(&starthdr)); 
-
-   dos_close( handle );
+    dos_close( handle );
 }
 
+/* 
 VOID fix_trindex(VOID)
 {
    WORD test, ii;
@@ -248,21 +272,22 @@ VOID fix_img(LPLONG where)
    if (*where != NIL)
       *where = sub_pointer(rs_imdope[(WORD)*where].image, &starthdr);
 }
+ */
 
-MLOCAL LONG sub_pointer(VOID FAR *p1, VOID FAR *p2)
+MLOCAL WORD sub_pointer(VOID *p1, VOID *p2)
 {
-   LONG l1,l2;
+//    LONG l1,l2;
+// 
+//    l1 = FPSEG(p1) * 16l;
+//    l1 += FPOFF(p1);
+//    l2 = FPSEG(p2) * 16l;
+//    l2 += FPOFF(p2);
 
-   l1 = FPSEG(p1) * 16l;
-   l1 += FPOFF(p1);
-   l2 = FPSEG(p2) * 16l;
-   l2 += FPOFF(p2);
-
-   return (l1 - l2);
+   return ((BYTE *)p1 - (BYTE *)p2);
 }
 
-MLOCAL LPVOID vsub_pointer(VOID FAR *p1, VOID FAR *p2)
+MLOCAL VOID *vsub_pointer(BYTE *p1, BYTE *p2)
 {
-   return (LPVOID)(sub_pointer(p1, p2));
+   return (LPVOID *)(sub_pointer(p1, p2));
 }
 

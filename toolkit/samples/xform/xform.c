@@ -50,11 +50,6 @@
 
 Page*/
 /*----------------------------------------------------------------------*/
-//GLOBAL WORD	contrl[11];		/* control inputs		*/
-//GLOBAL WORD	intin[80];		/* max string length		*/
-//GLOBAL WORD	ptsin[MX_COORDS];	/* polygon fill points		*/
-//GLOBAL WORD	intout[45];		/* open workstation output	*/
-//GLOBAL WORD	ptsout[12];
 
 GLOBAL WORD	wtype = 0x002d ;	/* window type.			*/
 GLOBAL WORD	gl_wchar;		/* character width		*/
