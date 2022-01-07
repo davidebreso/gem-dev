@@ -90,23 +90,6 @@ WORD al;
 
 #endif /* HIGH_C */
 
-/*
- * strmcmp for small memory model
- */
-
-MLOCAL WORD ems_strncmp(p1, p2, len)
-BYTE FAR *p1;
-BYTE *p2;
-WORD len;
-{
-   while (len--)
-   {
-      if (*p1 != *p2)
-         return(TRUE);
-   }
-   return(FALSE);
-}
-
 /***********************************************************************
  *    ems_inst();
  * 
@@ -127,7 +110,7 @@ GLOBAL WORD ems_inst()
    calldos();                       /* Call DOS                            */
    p = MKFP(Registers.ES.R, 10);         /* Create pointer                      */
 
-   return((!ems_strncmp(p,emm_name,strlen(emm_name))) ? TRUE : FALSE);
+   return((!_fstrncmp(p,emm_name,strlen(emm_name))) ? TRUE : FALSE);
  }
 
 #else /* HIGH_C */
@@ -140,7 +123,7 @@ GLOBAL WORD ems_inst()
    intdosx(&regs, &regs, &sregs);   /* Call DOS                            */
    p = MKFP(sregs.es, 10);         /* Create pointer                      */
 
-   return((!ems_strncmp(p,emm_name,strlen(emm_name))) ? TRUE : FALSE);
+   return((!_fstrncmp(p,emm_name,strlen(emm_name))) ? TRUE : FALSE);
  }
 
 #endif /* HIGH_C */
