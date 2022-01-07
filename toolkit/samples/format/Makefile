@@ -45,6 +45,7 @@ tidy:
 	rm -f *.map
 	rm -f *.o
 	rm -f format.app
+	rm -f formatl.app
 	rm -f getdrvs.com
 	rm -f frmtdemo.exe
 	rm -f *.err
