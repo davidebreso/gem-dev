@@ -1,9 +1,10 @@
+include ../makedefs.i
 
 CC=wcc
 LD=wlink
 AS=wasm
-CFLAGS=-bt=dos -os -s -0 -I../../toolkit/include
-LIBDIR=../../toolkit/lib
+CFLAGS=-bt=dos -os -s -0 -I$(GDKDIR)/include
+LIBDIR=$(GDKDIR)/lib
 
 OBJECTS0=desktop.obj  
 OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj 

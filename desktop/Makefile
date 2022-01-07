@@ -56,9 +56,16 @@ release:	desktop.app desktopl.app desksm.app desklm.app \
 	rm -f wccdesk$(RELEASE).zip
 	zip -9 wccdesk$(RELEASE).zip $^
 	
+sourcerel:	*.c *.h *.asm *.rsc *.dfn *.txt *.inf *.xml \
+			makedefs.i Makefile */Makefile
+	rm -f wccdesk$(RELEASE)_src.zip
+	zip -9 wccdesk$(RELEASE)_src.zip $^
+
 clean:
 	$(MAKE) -C small clean
 	$(MAKE) -C large clean
+	$(MAKE) -C smallm clean
+	$(MAKE) -C largem clean
 	rm -f desktop.app 
 	rm -f desktopl.app 
 	rm -f icn2xml 
@@ -68,4 +75,5 @@ clean:
 	rm -f desklo.icn 
 	rm -f deskhi.icn
 	rm -f *.err
+	rm -f wccdesk*.zip
 	

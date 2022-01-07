@@ -17,9 +17,9 @@ DESKTOPL.APP - large model, for single-tasking GEM.
 DESKSM.APP   - small model, for GEM/XM.
 DESKLM.APP   - large model, for GEM/XM.
 
-  To the package unzip wccdesk3.2.5.zip in GEMAPPS\GEMSYS. If GEMSYS does not 
-contain a DESKTOP.INF file, or if the file is from an older GEM Desktop, rename 
-SKELETON.INF into DESKTOP.INF to have a minimal configuration file.
+  To install the package unzip wccdesk3.2.5.zip in GEMAPPS\GEMSYS. If GEMSYS does 
+not contain a DESKTOP.INF, or if the file is from an old version of GEM Desktop, 
+rename SKELETON.INF into DESKTOP.INF to have a minimal configuration file.
 
 Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
