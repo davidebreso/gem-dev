@@ -1,6 +1,7 @@
 INSTDIR=../GEMAPPS/GEMSYS
+RELEASE=3.2.5
 
-all:	desktop.app desktopl.app \
+all:	desktop.app desktopl.app desksm.app desklm.app \
 	icn2xml xml2icn desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn
@@ -49,9 +50,11 @@ install:	desktop.app deskhi.icn desklo.icn desktop.rsc
 	cp deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
 	cp desktop.app $(INSTDIR)/desktop.app
 
-zipfile:	desktop.app desktopl.app deskhi.icn desklo.icn desktop.rsc desktop.inf
-	rm -f wccdesk.zip
-	zip -9 wccdesk.zip $^
+release:	desktop.app desktopl.app desksm.app desklm.app \
+			deskhi.icn desklo.icn desktop.rsc \
+			skeleton.inf readme.txt copying.txt
+	rm -f wccdesk$(RELEASE).zip
+	zip -9 wccdesk$(RELEASE).zip $^
 	
 clean:
 	$(MAKE) -C small clean

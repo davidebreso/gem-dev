@@ -321,6 +321,8 @@ BOOLEAN open_window()
       d_count = MAX_D_VALS;
 
    graf_mouse(M_ON, 0l);
+   
+   return TRUE;
 }
 
 BOOLEAN initialize_app()
@@ -361,7 +363,7 @@ VOID exit_app()
 /*
  * main application entry point
  */
-main()
+int main()
 {
     WORD   ret, msg[8], done;
     MEVENT   e;
@@ -450,4 +452,6 @@ main()
       exit_app();
 #endif
    } /* if initialize_app */
+   
+   return 0;
 }

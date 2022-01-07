@@ -43,7 +43,7 @@ BOOLEAN	hndl_mesag()
 
 /* A particularly minimalist event handler. */
 
-growbox()
+VOID growbox()
 {
 	BOOLEAN	done;
 

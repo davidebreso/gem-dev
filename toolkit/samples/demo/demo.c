@@ -59,7 +59,7 @@ VOID do_penselect(VOID);
 VOID do_erase(VOID);
 VOID do_redraw(WORD wh, GRECT *area);
 VOID do_full(WORD wh);
-WORD draw_pencil(UWORD x, UWORD y);
+VOID draw_pencil(UWORD x, UWORD y);
 VOID eraser(WORD x, WORD y);
 
 /**/						/*   file offsets	*/
@@ -372,7 +372,7 @@ vdi_fix(pfd, theaddr, wb, h)  	/* set up MFDB for transform		*/
 /*------------------------------*/
 /*	vdi_trans		*/
 /*------------------------------*/
-WORD
+VOID
 vdi_trans(saddr, swb, daddr, dwb, h) 	/* 'on the fly' transform 	*/
 	LPVOID		saddr;
 	WORD		swb;
@@ -1909,7 +1909,7 @@ hndl_button()
 /*------------------------------*/
 /*	draw_pencil		*/
 /*------------------------------*/
-WORD
+VOID
 draw_pencil(x, y)
 UWORD	x, y;
 {
@@ -2043,7 +2043,7 @@ Page*/
 /*------------------------------*/
 /*	demo			*/
 /*------------------------------*/
-demo()				/* main event multi loop		*/
+VOID demo()				/* main event multi loop		*/
 {
 	BOOLEAN	done;
 
@@ -2115,7 +2115,7 @@ Page*/
 /*------------------------------*/
 /*	demo_term		*/
 /*------------------------------*/
-demo_term(term_type)
+VOID demo_term(term_type)
 WORD	term_type;
 {
 	switch (term_type)	/* NOTE: all cases fall through		*/
@@ -2374,7 +2374,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 		}
 	demo_term(term_type);
 	
-
+    return 0;
 }
 
 

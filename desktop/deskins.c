@@ -468,7 +468,7 @@ MLOCAL VOID  insa_stypes(LPTREE tree, BYTE *pdata)
 
 MLOCAL 	WORD 
 ins_latoi(st_ad)
-	LONG	st_ad;
+	LPBYTE	st_ad;
 {
 	WORD	retval;
 	BYTE	ch;

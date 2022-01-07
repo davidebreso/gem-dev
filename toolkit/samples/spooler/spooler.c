@@ -46,7 +46,7 @@ MLOCAL BYTE name[20];            /* buffer for file name                      */
 MLOCAL BYTE fullname[100];       /* buffer for complete file name             */
 
 WORD file_select(BYTE *path, BYTE *file);
-WORD call_spooler(BYTE *pname);
+VOID call_spooler(BYTE *pname);
 
 VOID main()
 {
@@ -159,7 +159,7 @@ VOID main()
    exit(0);
 }
 
-WORD call_spooler(pname)
+VOID call_spooler(pname)
 BYTE *pname;
 {
    WORD id;

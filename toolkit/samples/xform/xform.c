@@ -811,7 +811,7 @@ Page*/
 
 
 /*----------------------------------------------------------------------*/
-xf()
+VOID xf()
 {
 	BOOLEAN	done;
 
@@ -845,7 +845,7 @@ Page*/
 
 
 /*----------------------------------------------------------------------*/
-xf_term(term_type)
+VOID xf_term(term_type)
     WORD	term_type;
 {
 	switch (term_type)	/* NOTE: all cases fall through		*/
@@ -974,5 +974,7 @@ WORD GEMAIN(WORD argc, BYTE *argv[])
 		xf();
 	}
 	xf_term(term_type);
+	
+	return 0;
 }
 

@@ -703,6 +703,8 @@ main()
       v_clsvwk(gl_vh);
       appl_exit();
    } /* if initialize_app */
+   
+   return 0;
 }
 
 #if FLEXOS
