@@ -56,19 +56,19 @@
 #define CLSWITEM 23  	/* OBJECT in TREE #0 */
 #define L2ITEM 20  	/* OBJECT in TREE #0 */
 #define L3ITEM 24  	/* OBJECT in TREE #0 */
-#define IDSKITEM 30  	/* OBJECT in TREE #0 */
-#define IAPPITEM 31  	/* OBJECT in TREE #0 */
-#define L5ITEM 32  	/* OBJECT in TREE #0 */
-#define PREFITEM 33  	/* OBJECT in TREE #0 */
-#define SAVEITEM 34  	/* OBJECT in TREE #0 */
-#define DOSITEM 35  	/* OBJECT in TREE #0 */
-#define ICONITEM 38  	/* OBJECT in TREE #0 */
-#define TEXTITEM 39  	/* OBJECT in TREE #0 */
-#define L4ITEM 40  	/* OBJECT in TREE #0 */
-#define NAMEITEM 41  	/* OBJECT in TREE #0 */
-#define DATEITEM 42  	/* OBJECT in TREE #0 */
-#define SIZEITEM 43  	/* OBJECT in TREE #0 */
-#define TYPEITEM 44  	/* OBJECT in TREE #0 */
+#define IDSKITEM 31  	/* OBJECT in TREE #0 */
+#define IAPPITEM 32  	/* OBJECT in TREE #0 */
+#define L5ITEM 33  	/* OBJECT in TREE #0 */
+#define PREFITEM 34  	/* OBJECT in TREE #0 */
+#define SAVEITEM 35  	/* OBJECT in TREE #0 */
+#define DOSITEM 36  	/* OBJECT in TREE #0 */
+#define ICONITEM 39  	/* OBJECT in TREE #0 */
+#define TEXTITEM 40  	/* OBJECT in TREE #0 */
+#define L4ITEM 41  	/* OBJECT in TREE #0 */
+#define NAMEITEM 42  	/* OBJECT in TREE #0 */
+#define DATEITEM 43  	/* OBJECT in TREE #0 */
+#define SIZEITEM 44  	/* OBJECT in TREE #0 */
+#define TYPEITEM 45  	/* OBJECT in TREE #0 */
 #define FIOK 2  	/* OBJECT in TREE #1 */
 #define FICNCL 3  	/* OBJECT in TREE #1 */
 #define FITIME 6  	/* OBJECT in TREE #1 */
@@ -201,7 +201,7 @@
 #define DEMEMSIZ 19  	/* OBJECT in TREE #4 */
 #define DEMEMCAP 20  	/* OBJECT in TREE #4 */
 #define STEXTDSK 47  	/* STRING */
-#define IACCITEM 36  	/* OBJECT in TREE #0 */
+#define IACCITEM 37  	/* OBJECT in TREE #0 */
 #define STNOROOM 48  	/* STRING */
 #define APMEMSZ 36  	/* OBJECT in TREE #8 */
 #define STNOFSTP 49  	/* STRING */
@@ -245,3 +245,4 @@
 #define STNODRIV 53  	/* STRING */
 #define FMTBOX 5  	/* OBJECT in TREE #14 */
 #define FMT_3HD 9  	/* OBJECT in TREE #14 */
+#define REFWITEM 29  	/* OBJECT in TREE #0 */

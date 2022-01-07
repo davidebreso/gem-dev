@@ -45,11 +45,11 @@ largem/desktop.app:	*.c *.h
 smallm/desktop.app:	*.c *.h
 	$(MAKE) -C smallm
 
-install:	desktop.app deskhi.icn desklo.icn desktop.rsc
-	cp deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
+install:	desktop.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
+	cp deskhi.icn desklo.icn desktop.rsc skeleton.inf $(INSTDIR)
 	cp desktop.app $(INSTDIR)/desktop.app
 
-zipfile:	desktop.app desktopl.app deskhi.icn desklo.icn desktop.rsc desktop.inf
+zipfile:	desktop.app desktopl.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
 	rm -f wccdesk.zip
 	zip -9 wccdesk.zip $^
 	

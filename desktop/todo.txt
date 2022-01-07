@@ -1,0 +1,13 @@
+GEM/3 Desktop: Open Watcom version (Release 3.2.6)
+===============================================================================
+
+This files lists known bugs, todos and desired new functionalities.
+Open items are on top.
+
+
+OPEN: Installed applications must be in PATH or in GEMAPPS to open documents
+
+DONE: "Install disk" enabled even when a disk is not selected
+DONE: Add "Refresh Window" in File menu to force refresh of a window content
+FIXED: Copy do not overwrite existing files
+ 

@@ -29,22 +29,22 @@
 #else
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,IACCITEM, 0};
 #endif
-GLOBAL BYTE	ILL_FILE[] = {FORMITEM,IDSKITEM,0};
-GLOBAL BYTE	ILL_DOCU[] = {FORMITEM,IDSKITEM,IAPPITEM,0};
-GLOBAL BYTE	ILL_FOLD[] = {OUTPITEM,FORMITEM,TYPITEM,IDSKITEM,IAPPITEM,0};
+GLOBAL BYTE	ILL_FILE[] = {0};
+GLOBAL BYTE	ILL_DOCU[] = {IAPPITEM,0};
+GLOBAL BYTE	ILL_FOLD[] = {OUTPITEM,TYPITEM,IAPPITEM,0};
 GLOBAL BYTE	ILL_FDSK[] = {OUTPITEM,IAPPITEM,TYPITEM,0};
-GLOBAL BYTE	ILL_HDSK[] = {FORMITEM,OUTPITEM,TYPITEM,IAPPITEM,0};
-GLOBAL BYTE	ILL_TRASH[] = {OPENITEM,OUTPITEM,TYPITEM,FORMITEM,
-	                       IDSKITEM,IAPPITEM,0};
-GLOBAL BYTE ILL_NOTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,0};
-GLOBAL BYTE	ILL_DESKTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,ICONITEM,TEXTITEM,
+GLOBAL BYTE	ILL_HDSK[] = {OUTPITEM,TYPITEM,IAPPITEM,0};
+GLOBAL BYTE	ILL_TRASH[] = {OPENITEM,OUTPITEM,TYPITEM,
+	                       IAPPITEM,0};
+GLOBAL BYTE ILL_NOTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,REFWITEM,0};
+GLOBAL BYTE	ILL_DESKTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,REFWITEM,ICONITEM,TEXTITEM,
 						NAMEITEM,DATEITEM,SIZEITEM,TYPEITEM,0};
-GLOBAL BYTE 	ILL_NOSEL[]={OPENITEM,SHOWITEM,FORMITEM,
-				IDSKITEM,IAPPITEM,TYPITEM,0};
-GLOBAL BYTE	ILL_YSEL[] = {OPENITEM, IDSKITEM, FORMITEM, 
+GLOBAL BYTE 	ILL_NOSEL[]={OPENITEM,SHOWITEM,
+				IAPPITEM,TYPITEM,0};
+GLOBAL BYTE	ILL_YSEL[] = {OPENITEM, 
 				TYPITEM, SHOWITEM, 0};
-GLOBAL BYTE	ILL_TYPE[] = {OPENITEM,SHOWITEM,FORMITEM,TYPITEM,
-				IAPPITEM, IDSKITEM,
+GLOBAL BYTE	ILL_TYPE[] = {OPENITEM,SHOWITEM,TYPITEM,
+				IAPPITEM,
 				NAMEITEM, TYPEITEM, SIZEITEM, DATEITEM,
 				0 };
 
@@ -390,7 +390,7 @@ MLOCAL WORD  do_filemenu(WORD item)
 		if (pw)			/* instead */
 		  fun_mkdir(pw);/* [JCE 19-7-2002] Do correct check: for window */
 		break;			/* open rather than item highlighted */
-	/* These next two only in DESKTOP v1.2 */
+	/* These next trhee only in DESKTOP v1.2 */
           case CLOSITEM:
 		if (pw)
 		  fun_close(pw, 0);
@@ -399,9 +399,12 @@ MLOCAL WORD  do_filemenu(WORD item)
 		if (pw)
 		  fun_close(pw, 1);
 		break;
+	  case REFWITEM:
+		if (pw)
+		  fun_rebld(pw);
+		break;
 	  case FORMITEM:
-		if (curr)
-		  do_format(curr);
+		do_format(curr);
 		break;   
 	  case OUTPITEM:
 
@@ -547,6 +550,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 
 	done = FALSE;
 	rebld = FALSE;
+	pa = NULL;
 
 	curr = win_isel(G.g_screen, G.g_croot, 0);
 	if (curr)
@@ -555,7 +559,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 	switch( item )
 	{
 	  case IDSKITEM:
-		if (pa)		rebld = ins_disk(pa);
+		rebld = ins_disk(pa);
 		if (rebld)
 		{
 /* DESKTOP v2.x...

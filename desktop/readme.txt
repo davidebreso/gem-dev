@@ -1,21 +1,40 @@
-GEM/3 Desktop: Open Watcom version (Release 3.2.5)
+GEM/3 Desktop: Open Watcom version (Release 3.2.6)
 ===============================================================================
 
   This is a GEM desktop, based on John Elliott's GEM Desktop 3.2.4 downloadable
 from <http://www.seasip.info/Gem/desktops.html>. Features that have been added
 to the original Digital Research's GEM Desktop 3.0 include:
 
+* 'Floppy disk format' utility (inspired by EmuTOS)
 * Auto-arrange of icons to match the window size
 * Four windows and desktop icons (like GEM/1)
 * ViewMAX look and feel
 * 'Show contents' function (from ViewMAX)
 
-  There are two APPs in this package:
+  There are four APPs in this package:
 
 DESKTOP.APP  - small model, for single-tasking GEM.
 DESKTOPL.APP - large model, for single-tasking GEM.
 DESKSM.APP   - small model, for GEM/XM.
 DESKLM.APP   - large model, for GEM/XM.
+
+Release 3.2.6 Changes (most recent at the top) -- Davide Bresolin
+===============================================================================
+
+* "Install disk" enabled even when a disk is not selected
+
+* Added "Refresh window" in File menu.
+
+* Removed keyboard shortcuts from buttons, to make dialogs look better with 
+  the stock GEM/3 AES.
+
+* Most of the string manipulation functions have been replaced with equivalent
+  functions of the Open Watcom library.
+  
+* Added a small utility to format floppy disks. "Format Floppy..." pops up a 
+  dialog box to select drive, disk label and capacity. The actual formatting
+  is executed by the Desktop itself, with no need to call FORMAT.COM.
+  The utility is available as a standalone APP in toolkit/samples/format.
 
 Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
@@ -94,5 +113,5 @@ and Davide Bresolin's GEM bindings for it:
 <https://github.com/davidebreso/gem-dev>
 
 John Elliott, 26 March 2006
-Davide Bresolin, 26 December 2021
+Davide Bresolin, January 2022
 

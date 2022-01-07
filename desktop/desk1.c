@@ -98,7 +98,6 @@ WORD  fun_close(WNODE *pw, WORD trueclose)
 	return rv;
 }	
 
-
 WNODE *  win_ontop()
 {
 	WORD tail    = G.g_screen->ob_tail;

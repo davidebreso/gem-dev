@@ -339,6 +339,7 @@ VOID set_format_options(LPTREE tree, WORD drive)
     tree[FMT_5HD].ob_state &= ~DISABLED;
     tree[FMT_3DD].ob_state &= ~DISABLED;
     tree[FMT_3HD].ob_state &= ~DISABLED;    
+    tree[FMT_OK].ob_state  &= ~DISABLED;
     switch(drivetype)
     {
         case 1:     /* 5.25" 360K drive */
@@ -611,10 +612,11 @@ do_format(curr)
     LPTREE tree, obj;
     LONG total, avail;
     WORD i, drivebits, drive, drivetype;
-    WORD exitobj, rc;
+    WORD exitobj, rc, junk;
     WORD max_width, incr;
     BOOLEAN done = FALSE;
-
+    ANODE   *pa;
+    FNODE   *pf;
 
     tree = G.a_trees[ADFORMAT];
 
@@ -628,6 +630,7 @@ do_format(curr)
         if (drivebits & 0x0001)
         {
             obj->ob_state &= ~DISABLED;
+            obj->ob_state &= ~SELECTED;
         }
         else
         {
@@ -637,15 +640,21 @@ do_format(curr)
     }
 
     /*
-     * if a drive is currently selected, don't change it
+     * If 'curr' is a floppy drive, select it
      */
     drive = -1;
-    for (i = 0, obj = &tree[FMT_DRVA]; i < 2; i++, obj++)
+    pa = i_find(G.g_cwin, curr, &pf, &junk);
+    if ( (pa) && (pa->a_type == AT_ISDISK) )
     {
-        if (obj->ob_state & SELECTED)
+        // DESKTOP v2.x+ version pf->f_junk;
+        drive = (get_spec(G.g_screen, curr)->ib_char) & 0xFF;
+        drive = drive - 'A';
+        /* If drive is A: or B: and enabled, select it */
+        if(drive < 2 && !(tree[FMT_DRVA + drive].ob_state & DISABLED))
         {
-            drive = i;
-            break;
+            tree[FMT_DRVA + drive].ob_state |= SELECTED;
+        } else {
+            drive = -1;
         }
     }
 
@@ -667,17 +676,9 @@ do_format(curr)
     }
     
     /*
-     * if there are no enabled drives, disallow OK
+     * adjust the formatting options for current drive
      */
-    if (drive < 0) 
-    {
-        tree[FMT_OK].ob_state |= DISABLED;
-    } else {
-        /*
-         * adjust the formatting options for current drive
-         */
-        set_format_options(tree, drive);
-    }
+    set_format_options(tree, drive);
     tree[FMT_CNCL].ob_state &= ~SELECTED;
     
     /*
