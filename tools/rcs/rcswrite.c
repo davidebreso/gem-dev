@@ -148,7 +148,7 @@ VOID c_comma(WORD yesno)
 	{
 	if (yesno)
 		{
-		strcpy(hline, ",\r\n");
+		strcpy(hline, ",\n");
 		c_wrlin();
 		}
 	}
@@ -158,8 +158,8 @@ VOID c_comma(WORD yesno)
 VOID c_tail(WORD used)
 	{
 	if (!rcs_cflag) return;
-	if (!used)      strcpy(hline, "0};\r\n");
-	else 		    strcpy(hline, "};\r\n");
+	if (!used)      strcpy(hline, "0};\n");
+	else 		    strcpy(hline, "};\n");
 	c_wrlin();
 	}
 
@@ -184,7 +184,7 @@ VOID wr_header()
 	
 VOID c_defline(BYTE *name, WORD val)
 	{
-	merge_str(hline, "#define %S %W\r\n", name, val);
+	merge_str(hline, "#define %S %W\n", name, val);
 	c_wrlin();
 	}
 
@@ -223,7 +223,7 @@ VOID c_bases(VOID)
 VOID c_strhead()
 	{
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\nBYTE *rs_strings[] = {\r\n");
+	strcpy(hline, "\nBYTE *rs_strings[] = {\n");
 	c_wrlin();
 	c_nstring = 0;
 	}
@@ -253,7 +253,7 @@ VOID c_string(LPBYTE addr)
 		if (hchar && hsub == 70)
 			{
 			hline[hsub] = '\0';
-			strcat(hline, "\\\r\n");
+			strcat(hline, "\\\n");
 			c_wrlin();
 			hsub = 0;
 			}
@@ -325,7 +325,7 @@ VOID map_frstr(VOID)
 VOID c_frshead()
 	{
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\nLONG rs_frstr[] = {\r\n");
+	strcpy(hline, "\nLONG rs_frstr[] = {\n");
 	c_wrlin();
 	c_nfrstr = 0;
 	}
@@ -366,7 +366,7 @@ VOID c_imdata(addr, size)
 
 	if (!rcs_cflag)
 		return;
-	merge_str(hline, "\r\nWORD IMAG%W[] = {", c_nimage);
+	merge_str(hline, "\nWORD IMAG%W[] = {", c_nimage);
 	c_wrlin();
 
 	for (iwd = 0; iwd < size; iwd += 2)
@@ -378,7 +378,7 @@ VOID c_imdata(addr, size)
 			}
 		if (iwd % 8 == 0)
 			{
-			strcpy(hline, "\r\n");
+			strcpy(hline, "\n");
 			c_wrlin();
 			}
 		vwd = *(addr + iwd);
@@ -459,9 +459,9 @@ VOID c_foobar()
 
 	if (!rcs_cflag)
 		return;
-	strcpy(hline, "\r\nstruct foobar {\r\n\tWORD\tdummy;");
+	strcpy(hline, "\nstruct foobar {\n\tWORD\tdummy;");
 	c_wrlin();
-	strcpy(hline, "\r\n\tWORD\t*image;\r\n\t} rs_imdope[] = {\r\n");
+	strcpy(hline, "\n\tWORD\t*image;\n\t} rs_imdope[] = {\n");
 	c_wrlin();
 
 	for (img = 0; img < c_nimage; img++)
@@ -479,7 +479,7 @@ VOID c_foobar()
 VOID c_iconhead()
 	{
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\nICONBLK rs_iconblk[] = {\r\n");
+	strcpy(hline, "\nICONBLK rs_iconblk[] = {\n");
 	c_wrlin();
 	c_nib = 0;
 	}
@@ -524,7 +524,7 @@ WORD wr_iconblk(LPTREE tree, WORD which)
 VOID c_bithead(VOID )
 	{
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\nBITBLK rs_bitblk[] = {\r\n");
+	strcpy(hline, "\nBITBLK rs_bitblk[] = {\n");
 	c_wrlin();
 	c_nbb = 0;
 	}
@@ -589,7 +589,7 @@ VOID map_frbit(VOID)
 VOID c_frbhead(VOID)
 	{
 	if (!rcs_cflag)return;
-	strcpy(hline, "\r\nLONG rs_frimg[] = {\r\n");
+	strcpy(hline, "\nLONG rs_frimg[] = {\n");
 	c_wrlin();
 	c_nfrbit = 0;
 	}
@@ -626,7 +626,7 @@ VOID wr_frbit()
 VOID c_tedhead()
 	{
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\nTEDINFO rs_tedinfo[] = {\r\n");
+	strcpy(hline, "\nTEDINFO rs_tedinfo[] = {\n");
 	c_wrlin();
 	c_nted = 0;
 	}
@@ -674,7 +674,7 @@ WORD wr_tedinfo(LPTREE tree, WORD which)
 VOID c_objhead()
 	{
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\nOBJECT rs_object[] = {\r\n");
+	strcpy(hline, "\nOBJECT rs_object[] = {\n");
 	c_wrlin();
 	c_nobs = 0;
 	}
@@ -788,7 +788,7 @@ VOID wr_trees()
 VOID c_treehead()
 	{
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\nLONG rs_trindex[] = {\r\n");
+	strcpy(hline, "\nLONG rs_trindex[] = {\n");
 	c_wrlin();
 	c_ntree = 0; 
 	}
@@ -829,7 +829,7 @@ VOID c_defs()
 	BYTE	*rptr, *sptr;
 
 	if (!rcs_cflag) return;
-	strcpy(hline, "\r\n");
+	strcpy(hline, "\n");
 	c_wrlin();
 	c_defline("NUM_STRINGS", c_nstring);
 	c_defline("NUM_FRSTR",   head->rsh_nstring);
@@ -843,16 +843,16 @@ VOID c_defs()
 	for (sptr = rptr = &rcs_rfile[0]; *sptr; sptr++)
 		if (*sptr == '\\' || *sptr == '\:')
 			rptr = sptr + 1;
-	merge_str(hline, "\r\nBYTE pname[] = \"%S\";", rptr);
+	merge_str(hline, "\nBYTE pname[] = \"%S\";\n", rptr);
 	c_wrlin();
-	hline[0] = '\032';
-	hline[1] = '\0';
-	c_wrlin();
+	// hline[0] = '\032';
+	// hline[1] = '\0';
+	// c_wrlin();
 	}
 
 VOID ctrl_z(FILE *fp)
 	{
-	fputc('\032', fp);
+	// fputc('\032', fp);
 	}
 	   
 
