@@ -2,7 +2,7 @@ Development tools for GEM                                Davide Bresolin, 2021
 ==============================================================================
 
 This repository contains the source code of various parts of FreeGEM that I
-ported to Open Watcom, plus some patched and improvements.
+ported to Open Watcom, plus some patches, bugfixes and improvements.
 
 This is based on John Elliott's GDK and GEM Desktop 3.2.4 for Pacific C
 downloadable from <http://www.seasip.info/Gem/gengem.html>.
