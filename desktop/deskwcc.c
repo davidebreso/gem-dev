@@ -29,6 +29,7 @@ char *scasb(char *s, char b)
 
 
 
+/**** replaced with WCC library functions ***
 WORD  wmax(WORD a, WORD b)
 {
 	return (a > b) ? a : b;
@@ -38,6 +39,7 @@ MLOCAL WORD  wmin(WORD a, WORD b)
 {
 	return (a < b) ? a : b;
 }
+ */
 
 extern VOID dos_lpvoid(UWORD, LPVOID);
 
@@ -67,6 +69,7 @@ VOID  dos_label(BYTE drive, BYTE *plabel)
 }
 
 
+/**** replaced with WCC library function ***
 WORD LSTCPY(LPBYTE d, LPBYTE s)
 {
 	while (*s) 
@@ -76,6 +79,7 @@ WORD LSTCPY(LPBYTE d, LPBYTE s)
 	*d = 0;
 	return 1;
 }
+ */
 
 
 VOID lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
@@ -88,6 +92,7 @@ VOID lstlcpy(LPBYTE d, LPBYTE s, WORD maxlen)
 	}
 	*d = 0;
 }
+
 
 
 
@@ -126,10 +131,10 @@ VOID  rc_union(LPGRECT p1, LPGRECT p2)
 	{
 	WORD		tx, ty, tw, th;
 
-	tw = wmax(p1->g_x + p1->g_w, p2->g_x + p2->g_w);
-	th = wmax(p1->g_y + p1->g_h, p2->g_y + p2->g_h);
-	tx = wmin(p1->g_x, p2->g_x);
-	ty = wmin(p1->g_y, p2->g_y);
+	tw = max(p1->g_x + p1->g_w, p2->g_x + p2->g_w);
+	th = max(p1->g_y + p1->g_h, p2->g_y + p2->g_h);
+	tx = min(p1->g_x, p2->g_x);
+	ty = min(p1->g_y, p2->g_y);
 	p2->g_x = tx;
 	p2->g_y = ty;
 	p2->g_w = tw - tx;

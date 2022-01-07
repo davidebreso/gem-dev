@@ -86,27 +86,6 @@ MLOCAL DISKBPB bpb_table[] = {
     {512, 1, 1, 2, 224, 80*18*2, 0xf0, 9, 18, 2, 0, 0}    /* 1.44M format */
 };
 
-/*
-*	Put up dialog box & call form_do.
-*/
-VOID  start_dialog(LPTREE tree)
-{
-	WORD		xd, yd, wd, hd;
-
-	form_center(tree, &xd, &yd, &wd, &hd);
-	form_dial(FMD_START, 0, 0, 0, 0, xd, yd, wd, hd);
-/* ViewMAX here includes code to hide the help button on helpscreens */
-	objc_draw(tree, ROOT, MAX_DEPTH, xd, yd, wd, hd);
-}
-
-VOID end_dialog(LPTREE tree)
-{
-    WORD xd, yd, wd, hd;
-    UWORD junk;
-
-    form_center(tree, &xd, &yd, &wd, &hd);
-	form_dial(FMD_FINISH, 0, 0, 0, 0, xd, yd, wd, hd);
-}
 
 /**************************************************************
  * Get all of the Floppy Disk Drives accessible by DOS. 
@@ -713,7 +692,7 @@ do_format(curr)
      * do the actual work
      */
     inf_sset(tree, FMTLABEL, "");
-    start_dialog(tree);
+    inf_start(tree);
     do {    
         exitobj = form_do(tree, FMTLABEL) & 0x7fff;
         switch(exitobj)
@@ -743,14 +722,14 @@ do_format(curr)
                 tree[FMT_BAR].ob_width = max_width;     
                 tree[FMT_BAR].ob_spec = (LPVOID)0x00FF1101L;
                 tree[FMT_OK].ob_state &= ~SELECTED;
-                start_dialog(tree);
+                inf_start(tree);
                 break;
             default:
                 done = TRUE;
         }
     } while(!done);
     
-    end_dialog(tree);
+    inf_end(tree);
 } /* do_format */
 
 

@@ -552,9 +552,9 @@ app_rdicon()
 	while ( (last_icon < NUM_IBLKS) &&
 		((ULONG)(G.g_idlist[last_icon].ib_pmask) != -1L) )
 	{
-	  tmp = wmax( LLOWD(G.g_idlist[last_icon].ib_pmask),
+	  tmp = max( LLOWD(G.g_idlist[last_icon].ib_pmask),
 		     LLOWD(G.g_idlist[last_icon].ib_pdata) );
-	  num_icons = wmax(num_icons, tmp);
+	  num_icons = max(num_icons, tmp);
 	  last_icon++;
 	}
 	num_icons++;

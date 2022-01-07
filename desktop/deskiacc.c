@@ -102,7 +102,7 @@ VOID  iac_strcop(LPTREE tree, WORD obj, LPBYTE src)
 	    dst = tedi->te_ptext;
 	    break;
 	}
-	LSTCPY(dst, src);
+	_fstrcpy(dst, src);
 }
 
 
@@ -174,7 +174,7 @@ VOID  iac_mvnames(LPTREE tree, WORD start, WORD num)
 
 	for (i=0; i<num; i++)
 	{
-	  LSTCPY(ad_tmp1, (LPBYTE)ADDR(g_fslist[i+start]));
+	  _fstrcpy(ad_tmp1, (LPBYTE)ADDR(g_fslist[i+start]));
 	  len = 0;
 	  while (gl_tmp1[len] != '.')
 	    len++;
@@ -210,7 +210,7 @@ WORD  iac_names(LPTREE tree)
 	ret = dos_sfirst(G.a_cmd, 0x16);
 	while ( ret )
 	{
-	  len = LSTCPY(ADDR(g_fslist[thefile] = ptr), G.a_wdta+30);
+	  len = _fstrcpy(ADDR(g_fslist[thefile] = ptr), G.a_wdta+30);
 	  ptr += len+1;
 
 	  ret = dos_snext();
@@ -228,8 +228,8 @@ WORD  iac_names(LPTREE tree)
 	  {
 	    for (j = i-gap; j >= 0; j -= gap)
 	    {
-	      LSTCPY(ad_tmp1, ADDR(g_fslist[j]));
-	      LSTCPY(ad_tmp2, ADDR(g_fslist[j+gap]));
+	      _fstrcpy(ad_tmp1, ADDR(g_fslist[j]));
+	      _fstrcpy(ad_tmp2, ADDR(g_fslist[j+gap]));
 	      if ( iac_comp() <= 0 )
 		break;
 	      temp = g_fslist[j];
@@ -274,7 +274,7 @@ VOID  iac_save(LPTREE tree)
 	  lst = tedi->te_ptext;
 	  if (iac_isnam(lst))
 	  {
-            LSTCPY(ADDR(&(gl_caccs[i].acc_name[0])), lst);
+            _fstrcpy(ADDR(&(gl_caccs[i].acc_name[0])), lst);
 
 	    junk = (LONG)(tree[ACC1FMEM+i].ob_spec);
 	    gl_caccs[i].acc_swap = LHIBT(LHIWD(junk));

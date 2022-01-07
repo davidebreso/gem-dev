@@ -23,6 +23,7 @@ EXTERN UWORD	intout[];
 EXTERN UWORD	contrl[];
 
 
+/* 
 MLOCAL 	WORD 
 bit_num(flag)
 	UWORD		flag;
@@ -35,6 +36,7 @@ bit_num(flag)
 	for (i=0,test=1; !(flag & test); test <<= 1,i++);
 	return(i);
 }
+ */
 
 VOID  rc_constrain(LPGRECT pc, LPGRECT pt)
 {
@@ -82,6 +84,7 @@ rc_intersect(p1, p2)
 }
 */
 
+/* 
 MLOCAL 	WORD 
 mid(lo, val, hi)
 	WORD		lo, val, hi;
@@ -92,7 +95,9 @@ mid(lo, val, hi)
 	  return(hi);
 	return(val);
 }
+ */
 
+/* 
 MLOCAL 	BYTE
 *   strscn(ps, pd, stop)
 	BYTE		*ps, *pd, stop;
@@ -102,6 +107,7 @@ MLOCAL 	BYTE
 	  *pd++ = *ps++;
 	return(pd);
 }
+ */
 
 
 
@@ -177,7 +183,7 @@ MLOCAL VOID  fs_sset(LPTREE tree, WORD obj, LPBYTE pstr, LPBYTE *ptext, WORD *pt
 */	
 	
 	*ptext = spec->te_ptext;
-	LSTCPY(*ptext, pstr);
+	_fstrcpy(*ptext, pstr);
 	*ptxtlen = spec->te_txtlen;
 
 /*	lstlcpy(ADDR(buf), spec->te_ptext, sizeof(buf)); */
@@ -263,6 +269,7 @@ WORD  inf_what(LPTREE tree, WORD ok, WORD cncl)
 	return(field);
 }
 
+/******* replaced with WCC sprintf and vsprintf *********** 
 VOID  merge_str(BYTE *pdst, BYTE *ptmp, ...)
 {
 	va_list		ap;
@@ -325,6 +332,7 @@ VOID   merge_v(BYTE *pdst, BYTE *ptmp, va_list ap)
 	}
 	*pdst = 0;
 }
+ */
 
 /*
 *	Routine to see if the test filename matches one of a set of 

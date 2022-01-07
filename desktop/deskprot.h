@@ -112,6 +112,8 @@ VOID  gsx_moff(VOID);
 VOID  gsx_mon(VOID);
 
 /* deskinf.c */
+VOID  inf_start(LPTREE tree);
+VOID  inf_end(LPTREE tree);
 WORD  inf_show(LPTREE tree, WORD start);
 WORD  inf_file(BYTE *ppath, FNODE *pfnode);
 WORD  inf_folder(BYTE *ppath, FNODE *pf);
@@ -217,8 +219,8 @@ VOID  inf_fldset(LPTREE tree, WORD obj,
 		UWORD testfld, UWORD testbit, UWORD truestate, UWORD falsestate);
 WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj);
 WORD  inf_what(LPTREE tree, WORD ok, WORD cncl);
-VOID  merge_v(BYTE *pdst, BYTE *ptmp, va_list ap);
-VOID  merge_str(BYTE *pdst, BYTE *ptmp, ...);
+// VOID  merge_v(BYTE *pdst, BYTE *ptmp, va_list ap);
+// VOID  merge_str(BYTE *pdst, BYTE *ptmp, ...);
 WORD  wildcmp(BYTE *pwld, BYTE *ptst);
 // VOID  ins_char(BYTE *str, WORD pos, BYTE chr, WORD tot_len);
 // 
@@ -244,7 +246,7 @@ VOID  r_set(GRECT *r, WORD x, WORD y, WORD w, WORD h);
 VOID  r_get(GRECT *r, WORD *x, WORD *y, WORD *w, WORD *h);
 VOID  lstlcpy(LPBYTE dest, LPBYTE src, int maxlen);
 UWORD  inside(WORD x, WORD y, GRECT *pt);
-WORD  wmax(WORD a, WORD b);
+// WORD  wmax(WORD a, WORD b);
 // WORD  wmin(WORD a, WORD b);
 VOID  rc_union    (LPGRECT p1, LPGRECT p2);
 

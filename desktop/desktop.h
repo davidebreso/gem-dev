@@ -1,18 +1,17 @@
-#define STNOAPPL 29  	/* STRING */
-#define STNOWIND 30  	/* STRING */
-#define STNOOPEN 31  	/* STRING */
-#define STFORMAT 32  	/* STRING */
-#define STBADCOP 33  	/* STRING */
-#define STNOSTAK 34  	/* STRING */
-#define STDELDIS 35  	/* STRING */
-#define STAPGONE 37  	/* STRING */
-#define STNODRA1 38  	/* STRING */
-#define STNODRA2 39  	/* STRING */
-#define STFOEXIS 40  	/* STRING */
-#define STDISKFU 41  	/* STRING */
-#define STNOFILE 42  	/* STRING */
-#define STNOINF 43  	/* STRING */
-#define STFO8DEE 44  	/* STRING */
+#define STNOAPPL 28  	/* STRING */
+#define STNOWIND 29  	/* STRING */
+#define STNOOPEN 30  	/* STRING */
+#define STBADCOP 31  	/* STRING */
+#define STNOSTAK 32  	/* STRING */
+#define STDELDIS 33  	/* STRING */
+#define STAPGONE 35  	/* STRING */
+#define STNODRA1 36  	/* STRING */
+#define STNODRA2 37  	/* STRING */
+#define STFOEXIS 38  	/* STRING */
+#define STDISKFU 39  	/* STRING */
+#define STNOFILE 40  	/* STRING */
+#define STNOINF 42  	/* STRING */
+#define STFO8DEE 43  	/* STRING */
 #define ADMENU 0  	/* TREE */
 #define ADFILEIN 1  	/* TREE */
 #define ADDISKIN 2  	/* TREE */
@@ -30,18 +29,17 @@
 #define STINFOST 0		/* FREE STRING */
 #define STAPPL 2		/* FREE STRING */
 #define STDOCU 3		/* FREE STRING */
-#define STDKFRM1 4		/* FREE STRING */
-#define STGEMHIC 6		/* FREE STRING */
-#define STGEMAPP 7		/* FREE STRING */
-#define STGEMLOI 8		/* FREE STRING */
-#define STGEMOUT 9		/* FREE STRING */
-#define STGEMBAT 10		/* FREE STRING */
-#define ST1STD 11		/* FREE STRING */
-#define ST2STD 12		/* FREE STRING */
-#define ST3STD 13		/* FREE STRING */
-#define ST4STD 14		/* FREE STRING */
-#define ST5STD 15		/* FREE STRING */
-#define ST6STD 16		/* FREE STRING */
+#define STGEMHIC 5		/* FREE STRING */
+#define STGEMAPP 6		/* FREE STRING */
+#define STGEMLOI 7		/* FREE STRING */
+#define STGEMOUT 8		/* FREE STRING */
+#define STGEMBAT 9		/* FREE STRING */
+#define ST1STD 10		/* FREE STRING */
+#define ST2STD 11		/* FREE STRING */
+#define ST3STD 12		/* FREE STRING */
+#define ST4STD 13		/* FREE STRING */
+#define ST5STD 14		/* FREE STRING */
+#define ST6STD 15		/* FREE STRING */
 #define STASICON 1		/* FREE STRING */
 #define FILEMENU 4  	/* OBJECT in TREE #0 */
 #define VIEWMENU 6  	/* OBJECT in TREE #0 */
@@ -163,8 +161,8 @@
 #define SPDFDDMM 21  	/* OBJECT in TREE #13 */
 #define SPTF24HR 24  	/* OBJECT in TREE #13 */
 #define SPTF12HR 25  	/* OBJECT in TREE #13 */
-#define STAM 17		/* FREE STRING */
-#define STPM 18		/* FREE STRING */
+#define STAM 16		/* FREE STRING */
+#define STPM 17		/* FREE STRING */
 #define CASTOP 4  	/* OBJECT in TREE #11 */
 #define APYMEM 35  	/* OBJECT in TREE #8 */
 #define FIRO 10  	/* OBJECT in TREE #1 */
@@ -181,33 +179,33 @@
 #define AUTHOR7 15  	/* OBJECT in TREE #4 */
 #define AUTHOR8 16  	/* OBJECT in TREE #4 */
 #define TYPITEM 28  	/* OBJECT in TREE #0 */
-#define STFSCAN 19		/* FREE STRING */
-#define STFBYTES 20		/* FREE STRING */
-#define STFWORDS 21		/* FREE STRING */
-#define STBADOPN 36  	/* STRING */
-#define STEMPTY 45  	/* STRING */
-#define STNOMEM 46  	/* STRING */
+#define STFSCAN 18		/* FREE STRING */
+#define STFBYTES 19		/* FREE STRING */
+#define STFWORDS 20		/* FREE STRING */
+#define STBADOPN 34  	/* STRING */
+#define STEMPTY 44  	/* STRING */
+#define STNOMEM 45  	/* STRING */
 #define DRCD 10  	/* OBJECT in TREE #7 */
 #define DRNET 11  	/* OBJECT in TREE #7 */
 #define DR5QRTR 12  	/* OBJECT in TREE #7 */
-#define DRVTFLOP 22		/* FREE STRING */
-#define DRVTHARD 23		/* FREE STRING */
-#define DRVTNET 24		/* FREE STRING */
-#define DRVTCD 25		/* FREE STRING */
-#define DRVTREM 26		/* FREE STRING */
-#define DRVTUNKN 27		/* FREE STRING */
-#define DRVCLINE 28		/* FREE STRING */
+#define DRVTFLOP 21		/* FREE STRING */
+#define DRVTHARD 22		/* FREE STRING */
+#define DRVTNET 23		/* FREE STRING */
+#define DRVTCD 24		/* FREE STRING */
+#define DRVTREM 25		/* FREE STRING */
+#define DRVTUNKN 26		/* FREE STRING */
+#define DRVCLINE 27		/* FREE STRING */
 #define SPNOSCAN 36  	/* OBJECT in TREE #13 */
 #define SPNONET 38  	/* OBJECT in TREE #13 */
-#define STDEEPPA 47  	/* STRING */
+#define STDEEPPA 46  	/* STRING */
 #define DEMEMSIZ 19  	/* OBJECT in TREE #4 */
 #define DEMEMCAP 20  	/* OBJECT in TREE #4 */
-#define STEXTDSK 48  	/* STRING */
+#define STEXTDSK 47  	/* STRING */
 #define IACCITEM 36  	/* OBJECT in TREE #0 */
-#define STNOROOM 49  	/* STRING */
+#define STNOROOM 48  	/* STRING */
 #define APMEMSZ 36  	/* OBJECT in TREE #8 */
-#define STNOFSTP 50  	/* STRING */
-#define STACFMEM 51  	/* STRING */
+#define STNOFSTP 49  	/* STRING */
+#define STACFMEM 50  	/* STRING */
 #define ADINSACC 15  	/* TREE */
 #define ACINST 2  	/* OBJECT in TREE #15 */
 #define ACCNCL 3  	/* OBJECT in TREE #15 */
@@ -228,7 +226,7 @@
 #define ACC1FMEM 18  	/* OBJECT in TREE #15 */
 #define ACC2FMEM 19  	/* OBJECT in TREE #15 */
 #define ACC3FMEM 20  	/* OBJECT in TREE #15 */
-#define STACCMEM 52  	/* STRING */
+#define STACCMEM 41  	/* STRING */
 #define ACC1NAME 24  	/* OBJECT in TREE #15 */
 #define ACC2NAME 25  	/* OBJECT in TREE #15 */
 #define ACC3NAME 26  	/* OBJECT in TREE #15 */
@@ -242,8 +240,8 @@
 #define FMT_BAR 10  	/* OBJECT in TREE #14 */
 #define FMT_OK 1  	/* OBJECT in TREE #14 */
 #define FMT_CNCL 2  	/* OBJECT in TREE #14 */
-#define STFMTERR 53  	/* STRING */
-#define STFMTINF 54  	/* STRING */
-#define STNODRIV 55  	/* STRING */
+#define STFMTERR 51  	/* STRING */
+#define STFMTINF 52  	/* STRING */
+#define STNODRIV 53  	/* STRING */
 #define FMTBOX 5  	/* OBJECT in TREE #14 */
 #define FMT_3HD 9  	/* OBJECT in TREE #14 */
