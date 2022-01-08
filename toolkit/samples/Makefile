@@ -15,9 +15,7 @@ TARGETS=demo-s.app   demo-l.app   \
 	fmem-s.acc   fmem-l.acc   \
 	mgraf-s.app  mgraf-l.app  \
 	mgraf-s.acc  mgraf-l.acc  \
-	format.app   formatl.app  \
-	rscr-s.exe
-
+	format.app   formatl.app  
 CC = wcc
 AS = wasm
 CFLAGS = -bt=dos -os -s -0 -i../include
@@ -74,9 +72,6 @@ growbx-s.acc growbx-l.acc: $(MAIN) $(STARTUP)
 
 fmem-s.acc fmem-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C freemem
-
-rscr-s.exe: $(MAIN)
-	$(MAKE) -C rscreate
 
 xform-s.app xform-l.app: $(MAIN)
 	$(MAKE) -C xform
