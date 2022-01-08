@@ -499,10 +499,12 @@ WORD read_files()
 
 	fclose(rcs_fdhndl);
 			/* convert stored values to addresses */
+	// fprintf(logfile, "Convert stored values to addresses for %d objects\n", rcs_ndxno);
 	for (ii = 0; ii < rcs_ndxno; ii++)
 		{
-		// fprintf(logfile, "rcs_index[%d].val = %lX\n", ii, rcs_index[ii].val);
+		// fprintf(logfile, "rcs_index[%d].val = %ld\n", ii, rcs_index[ii].val);
 		// fprintf(logfile, "rcs_index[%d].kind = %d\n", ii, rcs_index[ii].kind);
+		// fprintf(logfile, "rcs_index[%d].name = %s\n", ii, rcs_index[ii].name);
 		switch ( get_kind(ii) ) {
 			case UNKN:
 			case PANL:
@@ -528,8 +530,7 @@ WORD read_files()
 			default:
 				break;
 			}
-		// fprintf(logfile, "rcs_index[%d].val = %lX\n", ii, rcs_index[ii].val);
-		// fprintf(logfile, "rcs_index[%d].kind = %d\n", ii, rcs_index[ii].kind);
+		// fprintf(logfile, "NEW rcs_index[%d].val = %lX\n\n", ii, rcs_index[ii].val);
 		}
 
 	comp_alerts(head);	/* convert freestrs into alert trees */
