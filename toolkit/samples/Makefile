@@ -94,7 +94,6 @@ tidy:
 	$(MAKE) -C fdtest tidy
 	$(MAKE) -C spooler tidy
 	$(MAKE) -C userdef tidy
-	$(MAKE) -C rscreate tidy
 	$(MAKE) -C format tidy
 
 clean:
@@ -117,7 +116,6 @@ clean:
 	$(MAKE) -C fdtest clean
 	$(MAKE) -C spooler clean
 	$(MAKE) -C userdef clean
-	$(MAKE) -C rscreate clean
 	$(MAKE) -C format clean
 
 # Disable built-in rules	
