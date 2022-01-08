@@ -116,9 +116,9 @@ GLOBAL	WORD	rcs_menusel;		/* only used in MENU_STATE */
 GLOBAL  WORD	rcs_rmsg[8];
 GLOBAL  LPWORD	ad_rmsg;
 
-GLOBAL  WORD    viewsize;                   /* maximum icons on workbench view	*/
-GLOBAL	LPTREE	rcs_work = NULL;           	/* Space for workbench objects	*/
-GLOBAL	LPICON	rcs_icons = NULL;	        /* Space for workbench iconblks */
+GLOBAL WORD     viewsize;
+GLOBAL LPTREE   rcs_work;   /* Space for workbench objects  */
+GLOBAL LPICON   rcs_icons;    /* Space for workbench iconblks */
 GLOBAL	WORD	rcs_typ2icn[NUM_TYP] = {
 	UNKNICON, PANLICON, MENUICON, DIALICON, ALRTICON, FREEICON};
 					/* Variables used in write_file */

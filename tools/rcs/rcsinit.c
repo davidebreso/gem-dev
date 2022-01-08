@@ -288,7 +288,7 @@ rcs_init()
     // fprintf(logfile, "Working area is %d x %d\n", work_w, work_h);
 	viewsize = (work_w / (ICON_W + MIN_WINT)) * (work_h / (ICON_H + MIN_HINT));
 	// fprintf(logfile, "viewsize=%d\n", viewsize);
-	rcs_work = dos_alloc(sizeof(OBJECT)*viewsize+1);
+	rcs_work = dos_alloc(sizeof(OBJECT)*(viewsize+1));
     if(rcs_work == NULL) {
 	    // fprintf(logfile, "Cannot allocate memory for rcs_work\n");
 		hndl_alert(1, string_addr(STNMEM));
@@ -351,32 +351,20 @@ cont_rcsinit(flag)
 rcs_exit(term_type)
 	WORD	term_type;
 	{
-	fprintf(logfile, "rcs_exit\n");
-	fflush(logfile);
 	switch (term_type) {
 		case 0:
-	fprintf(logfile, "case 0\n");
-	fflush(logfile);
 			dos_free(head);
-//			dos_free(rcs_work);
-//			dos_free(rcs_icons);
+			dos_free(rcs_work);
+			dos_free(rcs_icons);
 		case 1:
-	fprintf(logfile, "case 1\n");
-	fflush(logfile);
 			wind_close( rcs_view );
 			wind_delete( rcs_view );
 		case 2:
-	fprintf(logfile, "case 2\n");
-	fflush(logfile);
 			menu_bar(ad_menu, FALSE);
 			rsrc_free();
 		case 3:
-	fprintf(logfile, "case 4\n");
-	fflush(logfile);
 			gsx_vclose();
 		case 4:
-	fprintf(logfile, "case 5\n");
-	fflush(logfile);
 			appl_exit();
 		case 5:
 			break;
