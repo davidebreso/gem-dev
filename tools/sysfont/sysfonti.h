@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
-#include "ppdgem.h"
+#include "wccgem.h"
 
 #define MAXW 8	/* Allow at most 8 views open */
 

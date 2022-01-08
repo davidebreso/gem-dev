@@ -20,7 +20,8 @@
 
 *************************************************************************/
 
-#include "sysfonti.h"	/* [JCE] prototypes to stop PPD moaning */
+#include <stdarg.h>
+#include "sysfonti.h"	/* [JCE] prototypes to stop WCC moaning */
 
 VOID TRACE (char *fmt, ...)
 {
@@ -375,13 +376,14 @@ WORD lstrncmp(LPBYTE s1, LPBYTE s2, WORD count)
 }
 
 
-/*
+
 void *lpfix(LPVOID addr)
 {
 	return addr;
 }
-*/
 
+
+/* 
 void *lpfix(LPVOID addr);
 
 #asm
@@ -395,6 +397,7 @@ _lpfix:
 	pop	bp
 	retf	#4	;returns 4 bytes
 #endasm
+ */
 	
 WORD lfwrite(LPVOID addr, size_t size, int count, FILE *fp)
 {

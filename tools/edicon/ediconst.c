@@ -21,7 +21,7 @@
 *************************************************************************/
 
 
-#include "ppdgem.h"	/* [JCE] prototypes to stop PPD moaning */
+#include "wccgem.h"	/* [JCE] prototypes to stop WCC moaning */
 #include "edicon.h" /* demo  apl  resource  */
 
 #include "ediconf.h"
@@ -194,7 +194,7 @@ WORD buftoi(char *buf)
 
 	if (!s) return 0;
 
-	return xtoi(s+2);
+	return strtol(s+2, NULL, 16);
 }
 
 

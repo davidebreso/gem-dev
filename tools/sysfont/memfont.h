@@ -34,7 +34,7 @@ typedef struct fontset
 {
 	char format;	/* P=PSF R=Raw Z=ZX E=EXE A=Atari ROM W=Windows */
 	word nfonts;
-	FONT font[0];
+	FONT font[];
 } FONTSET;
 
 FONTSET *alloc_fontset(word nfonts, byte *height);

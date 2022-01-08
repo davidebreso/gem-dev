@@ -23,7 +23,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "popmenu.h"
 #include "ediconf.h"
 #include "farmem.h"

@@ -20,7 +20,7 @@
 
 *************************************************************************/
 
-#include "ppdgem.h"	/* [JCE] prototypes to stop PPD moaning */
+#include "wccgem.h"	/* [JCE] prototypes to stop WCC moaning */
 #include "edicon.h" /* demo  apl  resource  */
 #include "ediconf.h"
 #include <dos.h>
@@ -151,7 +151,7 @@ void dump_mfdb(LPMFDB src, char *s)
 }
 
 
-WORD vdi_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
+VOID vdi_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
 {
 	MFDB		src, dst;	/* local MFDB			*/
 
@@ -172,7 +172,7 @@ WORD vdi_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
 }
 
 
-WORD vdi_untrans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
+VOID vdi_untrans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h)
 {
 	MFDB		src, dst;	/* local MFDB			*/
 
@@ -465,13 +465,14 @@ WORD lstrncmp(LPBYTE s1, LPBYTE s2, WORD count)
 }
 
 
-/*
+
 void *lpfix(LPVOID addr)
 {
 	return addr;
 }
-*/
 
+
+/* 
 void *lpfix(LPVOID addr);
 
 #asm
@@ -485,8 +486,9 @@ _lpfix:
 	pop	bp
 	retf	#4	;returns 4 bytes
 #endasm
+ */
 	
-WORD lfwrite(LPVOID addr, size_t size, int count, FILE *fp)
+VOID lfwrite(LPVOID addr, size_t size, int count, FILE *fp)
 {
 	void *a2;
 

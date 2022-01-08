@@ -82,4 +82,3 @@
 #define TRANSCNC 11  	/* OBJECT in TREE #5 */
 #define TRANSOK 10  	/* OBJECT in TREE #5 */
 #define MENUTRCD 36  	/* OBJECT in TREE #0 */
-

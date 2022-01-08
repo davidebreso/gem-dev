@@ -22,7 +22,7 @@
 
 
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "edicon.h"
 #include "ediconf.h"
 #include "iconfile.h"
@@ -80,7 +80,7 @@ find_obj(tree, start_obj, which)       /* routine to find the next editable */
 
 	WORD
 fm_inifld(tree, start_fld)
-	LONG		tree;
+	LPTREE		tree;
 	WORD		start_fld;
 {
 						/* position cursor on	*/

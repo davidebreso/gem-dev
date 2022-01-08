@@ -21,7 +21,7 @@
 *************************************************************************/
 
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "ediconf.h"
 #include "farmem.h"
 #include "clipbd.h"

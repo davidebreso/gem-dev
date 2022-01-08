@@ -20,7 +20,7 @@
 
 *************************************************************************/
 
-#include "ppdgem.h"	/* [JCE] prototypes to stop PPD moaning */
+#include "wccgem.h"	/* [JCE] prototypes to stop WCC moaning */
 #include "edicon.h" /* demo  apl  resource  */
 
 #define MAINMODULE
@@ -657,7 +657,8 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 		edicon();
 		}
 	edicon_term(term_type);
-
+	
+	return 0;
 }
 
 

@@ -57,7 +57,7 @@ VOID do_aboutbox(VOID);
 
 /* In utils.c */
 
-WORD lfwrite(LPVOID addr, size_t size, int count, FILE *fp);
+VOID lfwrite(LPVOID addr, size_t size, int count, FILE *fp);
 
 VOID TRACE(char *fmt, ...);
 
@@ -67,8 +67,8 @@ VOID grect_to_array(GRECT *area, WORD *array);
 VOID rast_op(WORD mode, GRECT *s_area, MFDB *s_mfdb, 
 					    GRECT *d_area, MFDB *d_mfdb);
 VOID vdi_fix(LPMFDB pfd, LPVOID theaddr, WORD wb, WORD h);
-WORD vdi_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h);
-WORD vdi_untrans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h);
+VOID vdi_trans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h);
+VOID vdi_untrans(LPVOID saddr, UWORD swb, LPVOID daddr, UWORD dwb, UWORD h);
 VOID objc_xywh(LPTREE tree, WORD obj, GRECT *p);
 VOID wind_setl(WORD whndl, WORD what, LPVOID lptr);
 WORD align_x(WORD x);

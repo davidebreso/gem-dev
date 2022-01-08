@@ -22,7 +22,7 @@
 
 
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "edicon.h"
 #include "ediconf.h"
 #include "iconfile.h"
@@ -37,7 +37,7 @@
 #include <dos.h>
 
 
-PPDUBLK edit_control;
+WCCUBLK edit_control;
 
 #define COL_CBLACK (edit_colour[0])
 #define COL_CWHITE (edit_colour[1])
@@ -622,11 +622,11 @@ VOID select_editwnd(WORD nw)
 	trEdit[CLR2]    .ob_spec = pEd->brush_spec[1];
 	trEdit[CLR3]    .ob_spec = pEd->brush_spec[2];
 	trEdit[CLR4]    .ob_spec = pEd->brush_spec[3];
-	ppd_userdef(trEdit, GRIDBOX, &edit_control);
-	edit_control.ub_parm = (LONG)(pEd);
+	wcc_userdef(trEdit, GRIDBOX, &edit_control);
+	edit_control.ub_parm = (LPVOID)(pEd);
 	edit_control.ub_code = draw_ectl;
 
-//	ppd_userdef(tree, EDITOR, &edit_control);
+//	wcc_userdef(tree, EDITOR, &edit_control);
 
 	show_drawmode(pEd);
 	measure_editwnd(nw);

@@ -24,11 +24,11 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "popmenu.h"
 #include "popcolou.h"
 
-static PPDUBLK col_ublk[16];
+static WCCUBLK col_ublk[16];
 
 static WORD vdi_handle = 0;
 
@@ -150,9 +150,9 @@ WORD colour_popup(WORD vh, WORD x, WORD y)
 		tr[n + 1].ob_state &= ~SELECTED;
 		tr[n + 1].ob_flags |= SELECTABLE | TOUCHEXIT; 
 
-		col_ublk[n].ub_parm = 0x10000L | n;
+		col_ublk[n].ub_parm = (LPVOID)(0x10000L | n);
 		col_ublk[n].ub_code = paint_colour;
-		ppd_userdef(tr, n+1, &col_ublk[n]);
+		wcc_userdef(tr, n+1, &col_ublk[n]);
 	}
 	return menu_popup(x, y, tr);
 }

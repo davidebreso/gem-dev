@@ -21,7 +21,7 @@
 *************************************************************************/
 
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "edicon.h"
 #include "ediconf.h"
 

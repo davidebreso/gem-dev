@@ -21,7 +21,7 @@
 *************************************************************************/
 
 
-#include "ppdgem.h"
+#include "wccgem.h"
 #include "edicon.h"
 #include "ediconf.h"
 #include "iconfile.h"
@@ -1799,15 +1799,15 @@ WORD load_rcs_icn(WORD ndoc, FILE *fp)
 	{
 		if (!fgets(strbuf, 50, fp)) return -1;
 		if (strncmp(strbuf, "#define ICON_W ", 15)) return -1;
-		w = xtoi(strbuf + 18);
+		w = strtol(strbuf + 18, NULL, 16);
 
 		if (!fgets(strbuf, 50, fp)) return -1;
 		if (strncmp(strbuf, "#define ICON_H ", 15)) return -1;
-		h = xtoi(strbuf + 18);
+		h = strtol(strbuf + 18, NULL, 16);
 		
 		if (!fgets(strbuf, 50, fp)) return -1;
 		if (strncmp(strbuf, "#define DATASIZE ", 17)) return -1;
-		sz = xtoi(strbuf + 20);
+		sz = strtol(strbuf + 20, NULL, 16);
 
 		if (!fgets(strbuf, 50, fp)) return -1;
 		sdata = strchr(strbuf, '[');

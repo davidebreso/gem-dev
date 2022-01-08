@@ -261,7 +261,7 @@ MLOCAL WORD buftoi(char *buf)
 
         if (!s) return 0;
 
-        return xtoi(s+2);
+        return strtol(s+2, NULL, 16);
 }
 
 static char cfgfile[160];
