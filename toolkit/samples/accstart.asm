@@ -43,7 +43,7 @@
         assume  nothing
 
 
- DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,_BSS,STACK
+ DGROUP group _NULL,_AFTERNULL,_DATA,DATA,_BSS,STACK
 
 BEGTEXT  segment word public 'CODE'
 BEGTEXT  ends
