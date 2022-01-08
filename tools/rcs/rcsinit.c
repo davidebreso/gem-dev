@@ -192,7 +192,7 @@ rd_inf(flag)
 rcs_init()
 	{
 	BYTE	cmd[128], tail[128];	   
-	WORD	path, i;
+	WORD	path, i, work_w, work_h, foo;
 
 #if I8086
 	memset(&gl_xbuf, 0, sizeof(gl_xbuf));
@@ -229,11 +229,7 @@ rcs_init()
 	ini_tree(&ad_menu, 0);		/* find tree addresses */
 	menu_bar(ad_menu, TRUE);	/* enable menus */
 	ini_tree(&ad_tools, TOOLBOX);	/* initialize toolbox */
-	ad_view = ADDR(&rcs_work[0]);	/* set up on-the-fly tree */
-
-	
 	new_state(NOFILE_STATE);	/* sets up menu states & pbx */
-
 
 	if (tail[0] && tail[1])
 		{
@@ -281,11 +277,32 @@ rcs_init()
 		}
 	if (!ini_windows(0x0fc3))
 		return (2); 
+	
 	rcs_nsel = 0;			/* nothing selected	*/
 	wait_tools();
 	rcs_hot = NIL;			/* no tools active	*/
 
-
+    /* Allocate memory for RCS head buffer and workbench views */
+    work_w = view.g_w + tools.g_w;
+    work_h = view.g_h + pbx.g_h;
+    // fprintf(logfile, "Working area is %d x %d\n", work_w, work_h);
+	viewsize = (work_w / (ICON_W + MIN_WINT)) * (work_h / (ICON_H + MIN_HINT));
+	// fprintf(logfile, "viewsize=%d\n", viewsize);
+	rcs_work = dos_alloc(sizeof(OBJECT)*viewsize+1);
+    if(rcs_work == NULL) {
+	    // fprintf(logfile, "Cannot allocate memory for rcs_work\n");
+		hndl_alert(1, string_addr(STNMEM));
+		return (1);
+    }	
+	rcs_icons = dos_alloc(sizeof(ICONBLK)*viewsize);
+    if(rcs_icons == NULL) {
+	    // fprintf(logfile, "Cannot allocate memory for rcs_icons\n");
+        dos_free(rcs_work);
+		hndl_alert(1, string_addr(STNMEM));
+		return (1);
+    }	
+	ad_view = ADDR(&rcs_work[0]);	/* set up on-the-fly tree */
+    // fprintf(logfile, "ad_view is %lX\n", (LONG)ad_view);	
 	buff_size = dos_avail();
 	if ( buff_size < 0x10700L )
 		head = dos_alloc( buff_size -= 0x700L);
@@ -294,11 +311,13 @@ rcs_init()
 	buff_size -= 2500L;		/* Reserve a panic buffer */ 
 	if (buff_size < 1000L)
 		{
+        dos_free(rcs_work);
+        dos_free(rcs_icons);
+	    // fprintf(logfile, "Cannot allocate memory for head\n");
 		hndl_alert(1, string_addr(STNMEM));
 		return (1);
 		}
 	ini_buff();  
-
 
 	if (tail[0] && tail[1]) /*a bug in 3.0: a null string have 0D len*/
 		{
@@ -332,18 +351,32 @@ cont_rcsinit(flag)
 rcs_exit(term_type)
 	WORD	term_type;
 	{
+	fprintf(logfile, "rcs_exit\n");
+	fflush(logfile);
 	switch (term_type) {
 		case 0:
+	fprintf(logfile, "case 0\n");
+	fflush(logfile);
 			dos_free(head);
+//			dos_free(rcs_work);
+//			dos_free(rcs_icons);
 		case 1:
+	fprintf(logfile, "case 1\n");
+	fflush(logfile);
 			wind_close( rcs_view );
 			wind_delete( rcs_view );
 		case 2:
+	fprintf(logfile, "case 2\n");
+	fflush(logfile);
 			menu_bar(ad_menu, FALSE);
 			rsrc_free();
 		case 3:
+	fprintf(logfile, "case 4\n");
+	fflush(logfile);
 			gsx_vclose();
 		case 4:
+	fprintf(logfile, "case 5\n");
+	fflush(logfile);
 			appl_exit();
 		case 5:
 			break;

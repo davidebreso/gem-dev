@@ -15,6 +15,7 @@
 #define DIALPBX 4  	/* TREE */
 #define NOBJTREE 6  	/* TREE */
 #define MENUPBX 7  	/* TREE */
+#define NEWMENU 8  	/* TREE */
 #define ABOUTREE 9  	/* TREE */
 #define SORTTREE 10  	/* TREE */
 #define NEWALRT 11  	/* TREE */
@@ -50,66 +51,65 @@
 #define MENUICON 2  	/* OBJECT in TREE #2 */
 #define DIALICON 3  	/* OBJECT in TREE #2 */
 #define ALRTICON 5  	/* OBJECT in TREE #2 */
-#define OKITEM 6  	/* OBJECT in TREE #3 */
-#define CANCITEM 7  	/* OBJECT in TREE #3 */
-#define UNKNITEM 9  	/* OBJECT in TREE #3 */
-#define PANLITEM 10  	/* OBJECT in TREE #3 */
-#define MENUITEM 11  	/* OBJECT in TREE #3 */
-#define DIALITEM 12  	/* OBJECT in TREE #3 */
-#define ALRTITEM 13  	/* OBJECT in TREE #3 */
-#define NOOKITEM 2  	/* OBJECT in TREE #6 */
-#define NOCNITEM 3  	/* OBJECT in TREE #6 */
-#define STRTYPES 4  	/* OBJECT in TREE #6 */
-#define STRTYPE0 5  	/* OBJECT in TREE #6 */
-#define BOXTYPES 7  	/* OBJECT in TREE #6 */
-#define BOXTYPE0 8  	/* OBJECT in TREE #6 */
-#define TXTTYPES 11  	/* OBJECT in TREE #6 */
-#define TXTTYPE0 12  	/* OBJECT in TREE #6 */
-#define AOKITEM 5  	/* OBJECT in TREE #9 */
-#define STCNITEM 8  	/* OBJECT in TREE #10 */
-#define STOKITEM 14  	/* OBJECT in TREE #10 */
+#define OKITEM 1  	/* OBJECT in TREE #3 */
+#define CANCITEM 2  	/* OBJECT in TREE #3 */
+#define UNKNITEM 6  	/* OBJECT in TREE #3 */
+#define PANLITEM 7  	/* OBJECT in TREE #3 */
+#define MENUITEM 10  	/* OBJECT in TREE #3 */
+#define DIALITEM 9  	/* OBJECT in TREE #3 */
+#define ALRTITEM 8  	/* OBJECT in TREE #3 */
+#define NOOKITEM 1  	/* OBJECT in TREE #6 */
+#define NOCNITEM 2  	/* OBJECT in TREE #6 */
+#define STRTYPES 14  	/* OBJECT in TREE #6 */
+#define STRTYPE0 15  	/* OBJECT in TREE #6 */
+#define BOXTYPES 10  	/* OBJECT in TREE #6 */
+#define BOXTYPE0 11  	/* OBJECT in TREE #6 */
+#define TXTTYPES 5  	/* OBJECT in TREE #6 */
+#define TXTTYPE0 6  	/* OBJECT in TREE #6 */
+#define AOKITEM 1  	/* OBJECT in TREE #9 */
+#define STCNITEM 2  	/* OBJECT in TREE #10 */
+#define STOKITEM 1  	/* OBJECT in TREE #10 */
 #define ALRTIMG 1  	/* OBJECT in TREE #11 */
 #define ALRTSTR0 2  	/* OBJECT in TREE #11 */
 #define ALRTBTN0 7  	/* OBJECT in TREE #11 */
 #define APBXBTN 1  	/* OBJECT in TREE #12 */
 #define APBXSTR 2  	/* OBJECT in TREE #12 */
 #define APBXIMG0 3  	/* OBJECT in TREE #12 */
-#define OUTPOK 2  	/* OBJECT in TREE #15 */
-#define OUTPCANC 3  	/* OBJECT in TREE #15 */
-#define CITEM 5  	/* OBJECT in TREE #15 */
-#define PASCITEM 6  	/* OBJECT in TREE #15 */
-#define CBITEM 7  	/* OBJECT in TREE #15 */
-#define F77ITEM 8  	/* OBJECT in TREE #15 */
-#define SRCITEM 18  	/* OBJECT in TREE #15 */
+#define OUTPOK 1  	/* OBJECT in TREE #15 */
+#define OUTPCANC 2  	/* OBJECT in TREE #15 */
+#define CITEM 12  	/* OBJECT in TREE #15 */
+#define PASCITEM 15  	/* OBJECT in TREE #15 */
+#define CBITEM 18  	/* OBJECT in TREE #15 */
+#define F77ITEM 21  	/* OBJECT in TREE #15 */
+#define SRCITEM 8  	/* OBJECT in TREE #15 */
 #define OOKITEM 1  	/* OBJECT in TREE #16 */
 #define OCNCITEM 2  	/* OBJECT in TREE #16 */
-#define OSTRITEM 4  	/* OBJECT in TREE #16 */
-#define IBTEXT 2  	/* OBJECT in TREE #18 */
-#define IBTPOS0 5  	/* OBJECT in TREE #18 */
-#define IBCHAR 3  	/* OBJECT in TREE #18 */
-#define IBCPOS0 9  	/* OBJECT in TREE #18 */
-#define OCHRITEM 2  	/* OBJECT in TREE #19 */
-#define OTMPITEM 5  	/* OBJECT in TREE #20 */
-#define OVALITEM 7  	/* OBJECT in TREE #20 */
-#define OTEXITEM 9  	/* OBJECT in TREE #20 */
-#define LOADCANC 2  	/* OBJECT in TREE #21 */
-#define LOADOK 3  	/* OBJECT in TREE #21 */
-#define LOADDATA 4  	/* OBJECT in TREE #21 */
-#define LOADMASK 5  	/* OBJECT in TREE #21 */
-#define INFONAME 10  	/* OBJECT in TREE #23 */
-#define INFOOBJ 5  	/* OBJECT in TREE #23 */
-#define INFOIB 6  	/* OBJECT in TREE #23 */
-#define INFOBB 7  	/* OBJECT in TREE #23 */
-#define INFOTI 14  	/* OBJECT in TREE #23 */
-#define INFOIMG 15  	/* OBJECT in TREE #23 */
-#define INFOSTR 16  	/* OBJECT in TREE #23 */
-#define INFOTOT 17  	/* OBJECT in TREE #23 */
-#define INFOLEFT 18  	/* OBJECT in TREE #23 */
-#define INFOPANL 19  	/* OBJECT in TREE #23 */
-#define INFOTREE 21  	/* OBJECT in TREE #23 */
-#define INFOOK 22  	/* OBJECT in TREE #23 */
+#define OSTRITEM 6  	/* OBJECT in TREE #16 */
+#define IBTEXT 5  	/* OBJECT in TREE #18 */
+#define IBTPOS0 8  	/* OBJECT in TREE #18 */
+#define IBCHAR 6  	/* OBJECT in TREE #18 */
+#define IBCPOS0 12  	/* OBJECT in TREE #18 */
+#define OCHRITEM 5  	/* OBJECT in TREE #19 */
+#define OTMPITEM 7  	/* OBJECT in TREE #20 */
+#define OVALITEM 9  	/* OBJECT in TREE #20 */
+#define OTEXITEM 11  	/* OBJECT in TREE #20 */
+#define LOADCANC 1  	/* OBJECT in TREE #21 */
+#define LOADOK 2  	/* OBJECT in TREE #21 */
+#define LOADDATA 8  	/* OBJECT in TREE #21 */
+#define LOADMASK 9  	/* OBJECT in TREE #21 */
+#define INFOOBJ 6  	/* OBJECT in TREE #23 */
+#define INFOIB 11  	/* OBJECT in TREE #23 */
+#define INFOBB 16  	/* OBJECT in TREE #23 */
+#define INFOTI 8  	/* OBJECT in TREE #23 */
+#define INFOIMG 14  	/* OBJECT in TREE #23 */
+#define INFOSTR 18  	/* OBJECT in TREE #23 */
+#define INFOTOT 20  	/* OBJECT in TREE #23 */
+#define INFOLEFT 22  	/* OBJECT in TREE #23 */
+#define INFOPANL 1  	/* OBJECT in TREE #23 */
+#define INFOTREE 10  	/* OBJECT in TREE #23 */
+#define INFOOK 2  	/* OBJECT in TREE #23 */
 #define FREEICON 6  	/* OBJECT in TREE #2 */
-#define FREEITEM 14  	/* OBJECT in TREE #3 */
+#define FREEITEM 11  	/* OBJECT in TREE #3 */
 #define FREEPBX 25  	/* TREE */
 #define PBXSTR 1  	/* OBJECT in TREE #25 */
 #define PBXIMG 2  	/* OBJECT in TREE #25 */
@@ -122,12 +122,7 @@
 #define SHOWTOOL 4		/* FREE STRING */
 #define CLIPBORD 9  	/* OBJECT in TREE #1 */
 #define TRASHCAN 10  	/* OBJECT in TREE #1 */
-#define SRTXITEM 12  	/* OBJECT in TREE #10 */
-#define SRTYITEM 15  	/* OBJECT in TREE #10 */
-#define STXYITEM 13  	/* OBJECT in TREE #10 */
-#define STYXITEM 16  	/* OBJECT in TREE #10 */
-#define CLIPMPTY 0		/* FREE IMAGE */
-#define CLIPFULL 1		/* FREE IMAGE */
+#define CLIPFULL 0		/* FREE IMAGE */
 #define POPSWTCH 26  	/* TREE */
 #define SBLEPOP 1  	/* OBJECT in TREE #26 */
 #define EXITPOP 2  	/* OBJECT in TREE #26 */
@@ -135,11 +130,18 @@
 #define RDIOPOP 4  	/* OBJECT in TREE #26 */
 #define TCHXPOP 5  	/* OBJECT in TREE #26 */
 #define EDBLPOP 6  	/* OBJECT in TREE #26 */
-#define SHADPOP 9  	/* OBJECT in TREE #26 */
-#define CHEKPOP 10  	/* OBJECT in TREE #26 */
-#define OUTLPOP 11  	/* OBJECT in TREE #26 */
-#define CROSPOP 12  	/* OBJECT in TREE #26 */
-#define DSBLPOP 13  	/* OBJECT in TREE #26 */
+#define SHADPOP 8  	/* OBJECT in TREE #26 */
+#define CHEKPOP 9  	/* OBJECT in TREE #26 */
+#define OUTLPOP 10  	/* OBJECT in TREE #26 */
+#define CROSPOP 11  	/* OBJECT in TREE #26 */
+#define DSBLPOP 12  	/* OBJECT in TREE #26 */
+#define D3DPOP 14  	/* OBJECT in TREE #26 */
+#define CCATPOP 15  	/* OBJECT in TREE #26 */
+#define HILIPOP 17  	/* OBJECT in TREE #26 */
+#define UNHIPOP 18  	/* OBJECT in TREE #26 */
+#define SCRCPOP 16  	/* OBJECT in TREE #26 */
+#define ESCCPOP 19  	/* OBJECT in TREE #26 */
+#define BTBNPOP 20  	/* OBJECT in TREE #26 */
 #define HOTBGCOL 1  	/* OBJECT in TREE #1 */
 #define HOTPATRN 2  	/* OBJECT in TREE #1 */
 #define HOTBDCOL 7  	/* OBJECT in TREE #1 */
@@ -173,13 +175,13 @@
 #define PAT0POP 1  	/* OBJECT in TREE #30 */
 #define POPCOLOR 31  	/* TREE */
 #define COL0POP 1  	/* OBJECT in TREE #31 */
-#define STRNAME 6  	/* OBJECT in TREE #16 */
-#define BITNAME 2  	/* OBJECT in TREE #17 */
-#define ICONNAME 19  	/* OBJECT in TREE #18 */
-#define BOXNAME 3  	/* OBJECT in TREE #19 */
-#define TEXTNAME 11  	/* OBJECT in TREE #20 */
+#define STRNAME 9  	/* OBJECT in TREE #16 */
+#define BITNAME 5  	/* OBJECT in TREE #17 */
+#define ICONNAME 22  	/* OBJECT in TREE #18 */
+#define BOXNAME 6  	/* OBJECT in TREE #19 */
+#define TEXTNAME 12  	/* OBJECT in TREE #20 */
 #define NAMETREE 32  	/* TREE */
-#define NAMEITEM 3  	/* OBJECT in TREE #32 */
+#define NAMEITEM 5  	/* OBJECT in TREE #32 */
 #define ARRMENU 8  	/* OBJECT in TREE #0 */
 #define SORTITEM 53  	/* OBJECT in TREE #0 */
 #define FLATITEM 56  	/* OBJECT in TREE #0 */
@@ -187,7 +189,7 @@
 #define STNWNDW 27  	/* STRING */
 #define STNMEM 28  	/* STRING */
 #define HDDNPOP 7  	/* OBJECT in TREE #26 */
-#define SLCTPOP 14  	/* OBJECT in TREE #26 */
+#define SLCTPOP 13  	/* OBJECT in TREE #26 */
 #define LARGEPOP 4  	/* OBJECT in TREE #27 */
 #define SMALLPOP 5  	/* OBJECT in TREE #27 */
 #define LEFTPOP 7  	/* OBJECT in TREE #27 */
@@ -205,20 +207,20 @@
 #define STOBJ 13		/* FREE STRING */
 #define STTRIND 14		/* FREE STRING */
 #define STHDR 15		/* FREE STRING */
-#define XTYPE 16  	/* OBJECT in TREE #6 */
+#define XTYPE 17  	/* OBJECT in TREE #6 */
 #define STNAME 16		/* FREE STRING */
 #define SNDSPACE 29  	/* STRING */
 #define STOOLONG 30  	/* STRING */
-#define FSRTITEM 21  	/* OBJECT in TREE #15 */
+#define FSRTITEM 11  	/* OBJECT in TREE #15 */
 #define NOFNAME 31  	/* STRING */
 #define SAFEDIAL 22  	/* TREE */
-#define SAFELOCK 17  	/* OBJECT in TREE #22 */
-#define SAFENORM 16  	/* OBJECT in TREE #22 */
+#define SAFELOCK 6  	/* OBJECT in TREE #22 */
+#define SAFENORM 13  	/* OBJECT in TREE #22 */
 #define SAFEXPRT 15  	/* OBJECT in TREE #22 */
-#define SAFEOK 12  	/* OBJECT in TREE #22 */
-#define SAFECANC 14  	/* OBJECT in TREE #22 */
-#define TMPLTTAG 4  	/* OBJECT in TREE #20 */
-#define VALIDTAG 6  	/* OBJECT in TREE #20 */
+#define SAFEOK 2  	/* OBJECT in TREE #22 */
+#define SAFECANC 3  	/* OBJECT in TREE #22 */
+#define TMPLTTAG 6  	/* OBJECT in TREE #20 */
+#define VALIDTAG 8  	/* OBJECT in TREE #20 */
 #define SVOSITEM 33  	/* OBJECT in TREE #0 */
 #define EDITMENU 6  	/* OBJECT in TREE #0 */
 #define PASTITEM 40  	/* OBJECT in TREE #0 */
@@ -246,11 +248,11 @@
 #define SOLIDIMG 45  	/* OBJECT in TREE #0 */
 #define SIZEITEM 46  	/* OBJECT in TREE #0 */
 #define NEWICNSZ 35  	/* TREE */
-#define BEGWDSZ 4  	/* OBJECT in TREE #35 */
-#define LASTWDSZ 7  	/* OBJECT in TREE #35 */
-#define LASTHTSZ 25  	/* OBJECT in TREE #35 */
-#define OKCHNGSZ 34  	/* OBJECT in TREE #35 */
-#define CNCLCHGS 35  	/* OBJECT in TREE #35 */
+#define BEGWDSZ 33  	/* OBJECT in TREE #35 */
+#define LASTWDSZ 36  	/* OBJECT in TREE #35 */
+#define LASTHTSZ 31  	/* OBJECT in TREE #35 */
+#define OKCHNGSZ 1  	/* OBJECT in TREE #35 */
+#define CNCLCHGS 2  	/* OBJECT in TREE #35 */
 #define NOEDMEM 34  	/* STRING */
 #define ICONTOOL 24  	/* TREE */
 #define HRCTGBOX 2  	/* OBJECT in TREE #24 */
@@ -271,11 +273,20 @@
 #define RUBERBOX 19  	/* OBJECT in TREE #24 */
 #define MASKSTRG 3  	/* OBJECT in TREE #5 */
 #define MASKWIND 6  	/* OBJECT in TREE #5 */
-#define SCALESZ 29  	/* OBJECT in TREE #35 */
-#define KEEPSZ 31  	/* OBJECT in TREE #35 */
-#define CLEARSZ 33  	/* OBJECT in TREE #35 */
-#define BEGHTSZ 10  	/* OBJECT in TREE #35 */
+#define SCALESZ 10  	/* OBJECT in TREE #35 */
+#define KEEPSZ 12  	/* OBJECT in TREE #35 */
+#define CLEARSZ 14  	/* OBJECT in TREE #35 */
+#define BEGHTSZ 16  	/* OBJECT in TREE #35 */
 #define CLIPBOX 21  	/* OBJECT in TREE #24 */
 #define CLIPSHOW 22  	/* OBJECT in TREE #24 */
-#define NEWMENU 8  	/* TREE */
-
+#define INFOTTL 3  	/* OBJECT in TREE #23 */
+#define B3DPOP 23  	/* OBJECT in TREE #26 */
+#define SBMPOP 24  	/* OBJECT in TREE #26 */
+#define WBGPOP 25  	/* OBJECT in TREE #26 */
+#define DR3DPOP 26  	/* OBJECT in TREE #26 */
+#define CLIPMPTY 1		/* FREE IMAGE */
+#define SRTXITEM 18  	/* OBJECT in TREE #10 */
+#define SRTYITEM 19  	/* OBJECT in TREE #10 */
+#define STXYITEM 20  	/* OBJECT in TREE #10 */
+#define STYXITEM 21  	/* OBJECT in TREE #10 */
+#define EOFITEM 24  	/* OBJECT in TREE #15 */

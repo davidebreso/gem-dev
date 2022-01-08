@@ -289,3 +289,4 @@
 #define SRTYITEM 19  	/* OBJECT in TREE #10 */
 #define STXYITEM 20  	/* OBJECT in TREE #10 */
 #define STYXITEM 21  	/* OBJECT in TREE #10 */
+#define EOFITEM 24  	/* OBJECT in TREE #15 */

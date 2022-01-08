@@ -105,6 +105,7 @@ GLOBAL	WORD	rcs_hflag = TRUE;	/* emit .h file or not?	   */
 GLOBAL	WORD	rcs_oflag = FALSE;	/* emit .o file or not?	   */
 GLOBAL	WORD	rcs_cbflag = FALSE;	/* emit C-BASIC binding?   */
 GLOBAL	WORD	rcs_f77flag = FALSE;	/* emit FORTRAN binding?   */
+GLOBAL	WORD	rcs_eofflag = TRUE;	/* emit ^Z at end of file?   */
 GLOBAL	WORD	rcs_fsrtflag = FALSE;   /* sort the binding file?  */
 GLOBAL	WORD	rcs_lock = FALSE;	/* no tree changes? */
 GLOBAL	WORD	rcs_xpert = FALSE;	/* omit warnings? */
@@ -115,8 +116,9 @@ GLOBAL	WORD	rcs_menusel;		/* only used in MENU_STATE */
 GLOBAL  WORD	rcs_rmsg[8];
 GLOBAL  LPWORD	ad_rmsg;
 
-GLOBAL	OBJECT	rcs_work[VIEWSIZE+1];	/* Space for workbench objects	*/
-GLOBAL	ICONBLK	rcs_icons[VIEWSIZE];	/* Space for workbench iconblks */
+GLOBAL  WORD    viewsize;                   /* maximum icons on workbench view	*/
+GLOBAL	LPTREE	rcs_work = NULL;           	/* Space for workbench objects	*/
+GLOBAL	LPICON	rcs_icons = NULL;	        /* Space for workbench iconblks */
 GLOBAL	WORD	rcs_typ2icn[NUM_TYP] = {
 	UNKNICON, PANLICON, MENUICON, DIALICON, ALRTICON, FREEICON};
 					/* Variables used in write_file */
@@ -758,7 +760,6 @@ LPLTREE mak_trindex(WORD nentry)
 
 	trindex = (LPLTREE)get_mem(sizeof(LONG) * (nobj + nentry));
 	indoff = (UWORD) ((LPBYTE)trindex - (LPBYTE)head);
-
 	for (iobj = 0; iobj < nobj; iobj++)
 		{
 		*(trindex++) = tree_addr(iobj);

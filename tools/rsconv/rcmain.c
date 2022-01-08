@@ -80,6 +80,28 @@ MLOCAL	UWORD	img_offset, addr;	/* for image fixup		*/
 MLOCAL	WORD	img_odd;		/* image fixup needed?		*/
 MLOCAL	GRECT	prog_rect;		/* rectangle for prog indicator */
 
+/*
+ *  convert the type from a .DEF entry to the standard .DFN type
+ */
+WORD convert_def_type(WORD deftype)
+{
+WORD new;
+
+    switch(deftype)
+    {
+    case 5:
+        new = 0x101;    /* type FREE STRING */
+        break;
+    case 6:
+        new = 0x102;    /* type FREE IMAGE */
+        break;
+    default:            /* type is the same for other cases */
+        new = deftype;
+        break;
+    }
+    return new;
+}
+
 /*------------------------------*/
 /*	swap_bytes 		*/
 /*------------------------------*/
@@ -295,12 +317,12 @@ close_files()
 /*------------------------------*/
 /*	do_conv 		*/
 /*------------------------------*/
-	WORD
+	VOID
 do_conv()
 	{
 	LPBYTE	str; 
 	LONG	size;
-	WORD	reply, nsym;
+	WORD	reply, nsym, *newtype;
 	int	fwret;
 
 	r_file[0] = '\0';
@@ -482,7 +504,7 @@ do_conv()
 			}
 
 		if (!new_dfn)			/* Just copy for new fmt */
-			swap_bytes(buff, 2);
+			swap_bytes(buff, 2);	
 
 		fwret = fwrite(buff, 1, sizeof(WORD), d2_fp);
 		if (fwret < (int)sizeof(WORD))
@@ -500,7 +522,11 @@ do_conv()
 			}
 
 		if (!new_dfn)
-			swap_bytes(buff, 2);	/* only swap value */
+		{
+			swap_bytes(buff, 2); /* only swap type */
+		    newtype = (WORD *)&buff[0];
+		    *newtype = convert_def_type(*newtype);	
+		}
 
 		fwret = fwrite(buff, 1, 10 + sizeof(WORD), d2_fp);
 		if (fwret < (10 + (int)sizeof(WORD)))
@@ -606,7 +632,7 @@ do_mode()
 /*------------------------------*/
 /*	rscv_run		*/
 /*------------------------------*/
-	WORD
+	VOID
 rscv_run()
 	{
 	WORD	obj;
@@ -711,5 +737,7 @@ WORD GEMAIN(WORD argc, BYTE *argv[])
 	if ( !(rscv_code = rscv_init()) )	/* initialization	*/
 		rscv_run();
 	rscv_term(rscv_code);			/* termination		*/
+	
+	return 0;
 	}
 

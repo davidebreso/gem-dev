@@ -78,6 +78,8 @@ view_trees()
 	LPTREE	tree;
 	LPICON  iconad;
 
+    // fprintf(logfile, "view_trees\n");
+
 	tree = ad_pbx;
 	rcs_work[0].ob_next = NIL;	/* construct tree root */
 	rcs_work[0].ob_type = G_BOX;
@@ -96,14 +98,18 @@ view_trees()
 		return;
 		}
 
-	nobj = min(VIEWSIZE, head->rsh_ntree - rcs_trpan); 
+    // fprintf(logfile, "viewsize=%d, head->rsh_ntree - rcs_trpan=%d, fit_vtrees() * (nh = fit_htrees()) = %d)\n",
+    //         viewsize, head->rsh_ntree - rcs_trpan, fit_vtrees() * (nh = fit_htrees()));
+	nobj = min(viewsize, head->rsh_ntree - rcs_trpan); 
 	nobj = min(nobj, fit_vtrees() * (nh = fit_htrees()));
 
 	rcs_work[0].ob_head = 1;	/* root pointers */
 	rcs_work[0].ob_tail = nobj;
 
+    // fprintf(logfile, "scanning %d objects\n", nobj);
 	for (iobj = 0; iobj++ < nobj; )
 		{
+		// fprintf(logfile, "object %d\n", iobj);
 		if (iobj < nobj)
 			rcs_work[iobj].ob_next = iobj + 1;
 		else

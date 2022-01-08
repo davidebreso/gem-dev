@@ -511,13 +511,15 @@ WORD wr_iconblk(LPTREE tree, WORD which)
 	{
 	LPICON	iconblk;
 
-	if ((tree[which].ob_type & 0xFF) != G_ICON)      return;
-	if ( (iconblk = (LPICON)tree[which].ob_spec) ==  (LPICON)-1L) return;
+	if ((tree[which].ob_type & 0xFF) != G_ICON)      return 1;
+	if ( (iconblk = (LPICON)tree[which].ob_spec) ==  (LPICON)-1L) return 1;
 	tree[which].ob_spec = (LPVOID)((LONG)rcs_wraddr & 0xffff);
 	lfwrite(iconblk, 1, sizeof(ICONBLK), rcs_frhndl);
 	rcs_wraddr += sizeof(ICONBLK);
 	++head->rsh_nib;
 	c_iconblk(iconblk);
+	
+	return 1;
 	}
 
 	
@@ -845,14 +847,11 @@ VOID c_defs()
 			rptr = sptr + 1;
 	merge_str(hline, "\nBYTE pname[] = \"%S\";\n", rptr);
 	c_wrlin();
-	// hline[0] = '\032';
-	// hline[1] = '\0';
-	// c_wrlin();
 	}
 
 VOID ctrl_z(FILE *fp)
 	{
-	// fputc('\032', fp);
+	    if(rcs_eofflag) fputc('\032', fp);
 	}
 	   
 
@@ -861,6 +860,7 @@ VOID wr_include(WORD deftype, WORD ndx, WORD ndef, BYTE *ptns[], WORD trflag)
 	WORD	idx, ii;
 	HOUT	h;
 
+    // fprintf(logfile, "wr_include\n");
 	for ( idx = 0; idx < ndx; idx++ )
 		for ( ii = 0; ii < rcs_ndxno; ii++)
 			if((trflag && get_kind(ii) < 4)	|| ( get_kind(ii) == deftype ))
@@ -879,7 +879,8 @@ VOID obj_include( WORD ntree, WORD nobs, BYTE *ptns[] )
 	{
 	WORD	itree,  iobs, ii;
 	HOUT	h;
-	
+
+    // fprintf(logfile, "obj_include\n");	
 	for ( itree = 0; itree < ntree; itree++ )
             for ( iobs = 0; iobs < nobs; iobs++)
 	    	for ( ii = 0; ii < rcs_ndxno; ii++ )
@@ -924,6 +925,8 @@ VOID write_inclfile(BYTE *ext, BYTE *ptns[])
 	{
 	WORD	ii;
 	HOUT	h;
+
+    // fprintf(logfile, "write_inclfile\n");
 
 	r_to_xfile(rcs_hfile, ext);
 

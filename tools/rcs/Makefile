@@ -4,7 +4,6 @@ LD=wlink
 AS=wasm
 CFLAGS=-bt=dos -os -s -0 -I../../toolkit/include
 LIBDIR=../../toolkit/lib
-
 INSTDIR=../../toolkit/tools
 
 OBJECTS=main.obj rcsmain.obj rcsdata.obj rcslib.obj wccerror.obj rcsvdi.obj \

@@ -857,6 +857,7 @@ VOID read_inf(WORD flag)
 		rcs_oflag = FALSE;
 		rcs_cbflag = FALSE;
 		rcs_f77flag = FALSE;
+		rcs_eofflag = TRUE;
 		rcs_lock = FALSE;
 		rcs_xpert = FALSE;
 		rsc_path[0] = '\0';
@@ -871,6 +872,7 @@ VOID read_inf(WORD flag)
 		rcs_oflag = get_opstate( find_opt( PASCITEM));
 		rcs_cbflag = get_opstate( find_opt( CBITEM));
 		rcs_f77flag = get_opstate( find_opt(F77ITEM));
+		rcs_eofflag = get_opstate( find_opt(EOFITEM));
 		rcs_lock = get_opstate( find_opt( SAFELOCK ));	 
 		rcs_xpert = get_opstate( find_opt( SAFEXPRT ));
 		if(flag)
@@ -894,9 +896,9 @@ init_deflts()
 	deflt_options[3].option =  PASCITEM;
 	deflt_options[4].option =  CBITEM;
 	deflt_options[5].option =  F77ITEM;
-	deflt_options[6].option =  SAFELOCK;	 
-	deflt_options[7].option =  SAFEXPRT;
-	rsc_path[0] = '\0';
+	deflt_options[6].option =  EOFITEM;
+	deflt_options[7].option =  SAFELOCK;	 
+	deflt_options[8].option =  SAFEXPRT;
 	}
 	
 
@@ -918,6 +920,7 @@ VOID wrte_inf()
 	if (rcs_oflag ) set_opstate(find_opt(PASCITEM));
 	if (rcs_cbflag) set_opstate(find_opt(CBITEM));
 	if (rcs_f77flag) set_opstate(find_opt(F77ITEM));
+	if (rcs_eofflag) set_opstate(find_opt(EOFITEM));
 	if (rcs_lock) set_opstate(find_opt(SAFELOCK));
 	if (rcs_xpert) set_opstate(find_opt(SAFEXPRT));
 
@@ -950,6 +953,8 @@ VOID outp_dial()
 		sel_obj(tree, F77ITEM);
 	if (rcs_fsrtflag) 
 		sel_obj(tree, FSRTITEM );
+	if (rcs_eofflag) 
+		sel_obj(tree, EOFITEM );
 	objc_xywh(ad_menu, GLOBMENU, &p);
 	exitobj = hndl_dial(tree, 0, &p);
 	if (exitobj == OUTPOK)
@@ -960,6 +965,7 @@ VOID outp_dial()
 		rcs_oflag    = tree[PASCITEM].ob_state & SELECTED;
 		rcs_cbflag   = tree[CBITEM  ].ob_state & SELECTED;
 		rcs_f77flag  = tree[F77ITEM ].ob_state & SELECTED;
+		rcs_eofflag  = tree[EOFITEM ].ob_state & SELECTED;
 		}
 	map_tree(tree, ROOT, NIL, desel_obj);
 	}

@@ -129,6 +129,7 @@ WORD make_cbox(LPTREE tr, WORD obj)
 		}
 	}
 	
+	return 1;
 }
 	
 
@@ -519,6 +520,8 @@ WORD rs_obfix(LPTREE tree, WORD curob)
 	  fix_chpos(&p[i], val);
 	  val = !val;
 	}
+	
+	return 1;
 }
 
 

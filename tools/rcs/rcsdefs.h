@@ -39,7 +39,7 @@ EXTERN  WORD    fgcolor, bgcolor;
 #define HAND 4
 #define MAXSEL 100		/* Max objects selected at once		*/
 #define NDXSIZE 1000		/* indices for tree/object names	*/
-#define VIEWSIZE 60		/* maximum icons on workbench view	*/
+// #define VIEWSIZE 255		/* maximum icons on workbench view	*/
 #define TRACESIZE 1000		/* entries in the tree trace array	*/
 #define MAPSIZE 3000		/* entries in the string/image map	*/
 #define MAX_ICON_W 0x0040	/* largest icon to be displayed		*/
@@ -146,7 +146,7 @@ EXTERN  WORD    fgcolor, bgcolor;
 
 /*	end of RSRCLIB.H stuff 		*/
 
-#define	NOPTS	8
+#define	NOPTS	9
 
 /*
 #define	RSH_VRSN(x)	(x)
@@ -237,6 +237,7 @@ EXTERN	WORD	rcs_hflag;
 EXTERN	WORD	rcs_oflag;
 EXTERN	WORD	rcs_cbflag;
 EXTERN	WORD	rcs_f77flag;
+EXTERN	WORD	rcs_eofflag;
 EXTERN	WORD	rcs_lock;
 EXTERN	WORD	rcs_xpert;
 EXTERN	WORD	rcs_low;		/* in memory trouble ? */
@@ -245,8 +246,9 @@ EXTERN	WORD	rcs_menusel;		/* only used in MENU_STATE */
 EXTERN  WORD	rcs_rmsg[];
 EXTERN  LPWORD	ad_rmsg;
 
-EXTERN	OBJECT	rcs_work[];	/* Space for workbench objects	*/
-EXTERN	ICONBLK	rcs_icons[];	/* Space for workbench iconblks */
+EXTERN  WORD    viewsize;      /* maximum icons on workbench view	*/
+EXTERN	LPTREE	rcs_work;	/* Space for workbench objects	*/
+EXTERN	LPICON	rcs_icons;	/* Space for workbench iconblks */
 EXTERN	WORD	rcs_typ2icn[];
 					/* Variables used in write_file */
 EXTERN	UWORD	rcs_wraddr;		/* Current offset in output file */
@@ -371,5 +373,5 @@ EXTERN	RSHDR 	FAR *rs_hdr;
 EXTERN	LONG	buff_size;
 EXTERN	LPBYTE	rcs_free;
 
-// EXTERN FILE *logfile;
+EXTERN FILE *logfile;
 

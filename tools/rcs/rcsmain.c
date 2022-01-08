@@ -7,7 +7,6 @@
 
 #include "wccrcs.h"
 
-// FILE *logfile;
 
 VOID set_filemenu(VOID)
 {
@@ -1128,21 +1127,21 @@ VOID rcs_main(VOID)
 	while (!done) ;
 	}
 
-
+FILE *logfile;
 	
 WORD GEMAIN(WORD argc, BYTE **ARGV)
 	{
 	WORD	rcs_term;
 	
-	// logfile = fopen("rcs.log", "w");
-	// fprintf(logfile, "Starting RCS.APP\n");
-	// fflush(logfile);
+	logfile = fopen("rcs.log", "w");
+	fprintf(logfile, "Starting RCS.APP\n");
+	fflush(logfile);
 
 	if ( !(rcs_term = rcs_init()) )
 		rcs_main();
-	// fprintf(logfile, "Closing RCS.APP\n");
-	// fclose(logfile);	
+	fprintf(logfile, "rcs_term=%d, closing RCS.APP\n", rcs_term);
 	rcs_exit(rcs_term);
+	fclose(logfile);	
 
 	return 0;
 	}

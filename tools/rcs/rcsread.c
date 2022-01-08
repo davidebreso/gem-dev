@@ -348,30 +348,44 @@ VOID comp_str(LPRSHDR hdr)
 	LPLSTR  frstr;
 	LPBYTE	where;
 	LPTREE	tree, maddr;
-	WORD	istr, nstr, lstr, w, h, obj, ndex;
+	WORD	istr, nstr, lstr, w, h, obj, ndex, rc;
 	BYTE	name[9];
 
-	if ( !(nstr = hdr->rsh_nstring)) 
+    // fprintf(logfile, "comp_str with nstr=%d\n", hdr->rsh_nstring);
+	if ( !(nstr = hdr->rsh_nstring)) { 
+	    // fprintf(logfile, "return immediately\n");
 		return;
+	}
 	frstr = (LPLSTR)(((LPBYTE)hdr) + hdr->rsh_frstr);
-
-	ini_tree(&maddr, NEWPANEL);
+    
+    // fprintf(logfile, "free string index at %04X\n", (LONG)frstr);
+	rc = ini_tree(&maddr, NEWPANEL);
+	// fprintf(logfile, "ini_tree(&maddr, NEWPANEL) = %d\n", rc);
 	tree = copy_tree(maddr, ROOT, TRUE);
+	// fprintf(logfile, "copy_tree(maddr, ROOT, TRUE) = %lX\n", tree);
 	add_trindex(tree);
-	ini_tree(&maddr, FREEPBX);
+	rc = ini_tree(&maddr, FREEPBX);
+	// fprintf(logfile, "ini_tree(&maddr, FREEPBX) = %d\n", rc);
 
+    // fprintf(logfile, "Scan free strings\n");
 	for (istr = 0; istr < nstr; istr++)
 		{
 		where = frstr[istr];
+		// fprintf(logfile, "string number %d\n", istr);
 		if (where != (LPBYTE)-1)
 			{
+			// fprintf(logfile, "detected as %s\n", where);
 			lstr = LSTRLEN(where);
 			obj = copy_objs(maddr, PBXSTR, tree, FALSE);
+			// fprintf(logfile, "copy_objs(maddr, PBXSTR, tree, FALSE)=%d\n", obj);
 			objc_add(tree, ROOT, obj);
 			tree[obj].ob_spec = where;
 			tree[obj].ob_width = gl_wchar * lstr;
-			if ((ndex = find_value(where)) != NIL)
+			ndex = find_value(where);
+			// fprintf(logfile, "find_value(where)=%d\n", ndex);			
+			if (ndex != NIL)
 				{
+				// fprintf(logfile, "ndex != NIL, set value and kind\n");
 				set_value(ndex, (LPBYTE)(&tree[obj]));
 				set_kind(ndex, OBJKIND);
 				}
@@ -382,8 +396,13 @@ VOID comp_str(LPRSHDR hdr)
 	tree[ROOT].ob_height = h;	/* each on a different line */
 	tree[ROOT].ob_width  = max (w, 20 * gl_wchar);
 	unique_name(&name[0], "FRSTR%W", 1);	/* make up a name */
-	new_index((LPBYTE)tree, FREE, name);
+	// fprintf(logfile, "unique_name(&name[0], \"FRSTR\%W\", 1) = %s\n", name);
+	// fprintf(logfile, "OLD rcs_ndxno=%d\n", rcs_ndxno);
+	rc = new_index((LPBYTE)tree, FREE, name);
+	// fprintf(logfile, "new_index((LPBYTE)tree, FREE, name) = %d\n", rc);	
+	// fprintf(logfile, "NEW rcs_ndxno=%d\n", rcs_ndxno);
 	hdr->rsh_nstring = 0;
+	// fprintf(logfile, "end comp_str()\n");
 	}
 
 
@@ -499,7 +518,7 @@ WORD read_files()
 
 	fclose(rcs_fdhndl);
 			/* convert stored values to addresses */
-	// fprintf(logfile, "Convert stored values to addresses for %d objects\n", rcs_ndxno);
+	// // fprintf(logfile, "Convert stored values to addresses for %d objects\n", rcs_ndxno);
 	for (ii = 0; ii < rcs_ndxno; ii++)
 		{
 		// fprintf(logfile, "rcs_index[%d].val = %ld\n", ii, rcs_index[ii].val);
