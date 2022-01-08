@@ -4,6 +4,7 @@ LD=wlink
 AS=wasm
 CFLAGS=-bt=dos -os -s -0 -I../../toolkit/include
 LIBDIR=../../toolkit/lib
+INSTDIR=../../toolkit/tools
 
 OBJECTS=main.obj rcfile.obj rclib.obj rcmain.obj
 
@@ -17,6 +18,9 @@ rsconv.app:	$(OBJECTS)
 
 %.obj:	%.asm
 	$(AS) -0 $< -fo=$@ -ml
+
+install: rsconv.app rsconv.rsc
+	cp $^ $(INSTDIR)
 
 clean:
 	rm -f *.obj 
