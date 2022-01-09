@@ -1,6 +1,7 @@
 INSTDIR=../GEMAPPS/GEMSYS
+RELEASE=3.2.6
 
-all:	desktop.app desktopl.app \
+all:	desktop.app desktopl.app desksm.app desklm.app \
 	icn2xml xml2icn desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn
@@ -45,17 +46,26 @@ largem/desktop.app:	*.c *.h
 smallm/desktop.app:	*.c *.h
 	$(MAKE) -C smallm
 
-install:	desktop.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
-	cp deskhi.icn desklo.icn desktop.rsc skeleton.inf $(INSTDIR)
+install:	desktop.app deskhi.icn desklo.icn desktop.rsc
+	cp deskhi.icn desklo.icn desktop.rsc $(INSTDIR)
 	cp desktop.app $(INSTDIR)/desktop.app
 
-zipfile:	desktop.app desktopl.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
-	rm -f wccdesk.zip
-	zip -9 wccdesk.zip $^
+release:	desktop.app desktopl.app desksm.app desklm.app \
+			deskhi.icn desklo.icn desktop.rsc \
+			skeleton.inf readme.txt copying.txt
+	rm -f wccdesk$(RELEASE).zip
+	zip -9 wccdesk$(RELEASE).zip $^
 	
+sourcerel:	*.c *.h *.asm *.rsc *.dfn *.txt *.inf *.xml \
+			makedefs.i Makefile */Makefile
+	rm -f wccdesk$(RELEASE)_src.zip
+	zip -9 wccdesk$(RELEASE)_src.zip $^
+
 clean:
 	$(MAKE) -C small clean
 	$(MAKE) -C large clean
+	$(MAKE) -C smallm clean
+	$(MAKE) -C largem clean
 	rm -f desktop.app 
 	rm -f desktopl.app 
 	rm -f icn2xml 
@@ -65,4 +75,5 @@ clean:
 	rm -f desklo.icn 
 	rm -f deskhi.icn
 	rm -f *.err
+	rm -f wccdesk*.zip
 	
