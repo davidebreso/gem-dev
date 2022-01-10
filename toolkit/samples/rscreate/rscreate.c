@@ -24,10 +24,12 @@
 /*   Author:    LKW                                                     */
 /*   PRODUCT:   GEM RSC-File Converter                                  */
 /*   Module:    RSCREATE.C                                              */
-/*   Version:   1.1                                                     */
+/*   Version:   1.2                                                     */
 /*   Created:   May 18, 1984                                            */
 /*   Modified:  Robert Schneider, April 25, 1989                        */
 /*              Cleaned up for use with ANSI-C COMPILERS                */
+/*   Modified:  Davide Bresolin, January 2021                           */
+/*              Ported to Open Watcom V2 C compiler                     */
 /************************************************************************/
 
 
@@ -94,7 +96,6 @@ int main(VOID)
     }
     
     /*** copy strings ****/
-    _asm{ int 3 };
     printf("Copy strings\n");
     destptr = (LPBYTE)starthdr + sizeof(RSHDR);
     printf("Strings start at %lX\n", (LONG)destptr);    
