@@ -1,6 +1,6 @@
 .8086
 ; This is the actual code that will be written to disk for the boot sector.
-Bsect       segment public
+Bsect       segment public 'FAR_DATA'
             assume cs:bsect, ds:bsect
             org     0                   ;Boot sector will be here
             public  "C",Bootsector      ; make Bootsector public

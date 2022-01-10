@@ -210,7 +210,8 @@ WORD  iac_names(LPTREE tree)
 	ret = dos_sfirst(G.a_cmd, 0x16);
 	while ( ret )
 	{
-	  len = _fstrcpy(ADDR(g_fslist[thefile] = ptr), G.a_wdta+30);
+	  _fstrcpy(ADDR(g_fslist[thefile] = ptr), G.a_wdta+30);
+	  len = _fstrlen(ptr);
 	  ptr += len+1;
 
 	  ret = dos_snext();
