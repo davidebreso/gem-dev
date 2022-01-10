@@ -1,9 +1,5 @@
 include ../../makedefs.i
 
-#
-# nb: Low warning level, so that the RCS-generated file EXAMPLE.RSH 
-# doesn't cause warnings
-#
 CFLAGS = -bt=dos -os -s -0 -i../../include
 CC = wcc
 LD = wlink

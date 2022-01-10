@@ -39,6 +39,8 @@
 
 MLOCAL WORD sub_pointer(LPVOID p1, LPVOID p2);
 MLOCAL LPVOID vsub_pointer(LPVOID p1, LPVOID p2);
+MLOCAL LPBYTE copy_data(LPVOID dest, LPVOID start, LPVOID end);
+MLOCAL LPBYTE copy_string(LPBYTE dest, LPBYTE source);
 VOID fix_trindex(VOID);
 VOID fix_objects(VOID);
 VOID fix_tedinfo(VOID);
@@ -50,10 +52,17 @@ VOID fix_frimg(VOID);
 VOID fix_bb(LONG FAR *where);
 VOID fix_img(LONG FAR *where);
 
+/*
+ * Low warning level, so that the RCS-generated file EXAMPLE.RSH 
+ * doesn't cause warnings
+ */
 #pragma warning * 5
 
 #include "example.rsh"
 
+/*
+ * Restore normal warning level
+ */
 #pragma warning * 1
 
 RSHDR FAR *starthdr; 
@@ -72,9 +81,9 @@ int main(VOID)
     WORD /*jnk1,*/ handle;
     WORD cnt;                        /* in bytes   */
     WORD i;
-    LPBYTE srcptr, dstptr, newptr;
+    LPBYTE destptr, newptr;
     
-    /*** allocate memory for RSC data ****/
+    /*** allocate enough memory to copy RSC data ****/
     cnt = sizeof(RSHDR) + sub_pointer(pname, &_nullarea);
     starthdr = dos_alloc(cnt);
     _asm{ int 3 };
@@ -84,101 +93,68 @@ int main(VOID)
         return 1;
     }
     
-
     /*** copy strings ****/
     _asm{ int 3 };
     printf("Copy strings\n");
-    dstptr = (LPBYTE)starthdr + sizeof(RSHDR);
-    printf("Strings start at %lX\n", (LONG)dstptr);    
+    destptr = (LPBYTE)starthdr + sizeof(RSHDR);
+    printf("Strings start at %lX\n", (LONG)destptr);    
     for(i = 0; i < NUM_STRINGS; i++)
     {
-        newptr = dstptr;
-        for(srcptr = rs_strings[i]; *srcptr; srcptr++)
-        {
-            *dstptr = *srcptr;
-            dstptr++;
-        }
-        rs_strings[i] = newptr;
-        *dstptr=0;
-        dstptr++;
+        newptr = copy_string(destptr, rs_strings[i]);
+        rs_strings[i] = destptr;
+        destptr = newptr;
     }
-    /* aling to word boundary */
-    if((LONG)dstptr & 0x1L) {
-        *dstptr = 0;
-        dstptr++;
+    /*** align to word boundary ***/
+    if((LONG)destptr & 0x1L) {
+        *destptr = 0;
+        destptr++;
     }
         
     /*** copy all other data ***/
-    printf("Copy %d images at %lX\n", NUM_IMAGES, (LONG)dstptr);
+    printf("Copy %d images at %lX\n", NUM_IMAGES, (LONG)destptr);
     
     if(NUM_IMAGES >0) {
         /*** fix pointers in rs_imdope */
         printf("Fix image pointers\n");
         for(i = 0; i < NUM_IMAGES - 1; i++)
         {
-            printf("Image %d at %lX\n", i, (LONG)dstptr);
-            srcptr = (LPBYTE)rs_imdope[i].image;
-            cnt = sub_pointer(rs_imdope[i+1].image, srcptr);
-            _fmemcpy(dstptr, srcptr, cnt);
-            rs_imdope[i].image = (LPWORD)dstptr;
-            dstptr += cnt;
+            printf("Image %d at %lX\n", i, (LONG)destptr);
+            newptr = copy_data(destptr, rs_imdope[i].image, rs_imdope[i+1].image);
+            rs_imdope[i].image = (LPWORD)destptr;            
+            destptr = newptr;
         }
-        printf("Image %d at %lX\n", NUM_IMAGES - 1, (LONG)dstptr);
-        srcptr = (LPBYTE)rs_imdope[NUM_IMAGES - 1].image;
-        rs_imdope[NUM_IMAGES - 1].image = (LPWORD)dstptr;
-        cnt = sub_pointer(rs_frstr, srcptr);
-        _fmemcpy(dstptr, srcptr, cnt);
-        dstptr += cnt;
+        printf("Image %d at %lX\n", NUM_IMAGES - 1, (LONG)destptr);
+        newptr = copy_data(destptr, rs_imdope[NUM_IMAGES - 1].image, rs_frstr);
+        rs_imdope[NUM_IMAGES - 1].image = (LPWORD)destptr;            
+        destptr = newptr;
     }
-    printf("Copy rs_frstr at %lX\n", (LONG)dstptr);
-    ptr_frstr = (LPLONG) dstptr;
-    srcptr = (LPBYTE)rs_frstr;
-    cnt = sub_pointer(rs_bitblk, srcptr);
-    _fmemcpy(dstptr, srcptr, cnt);
-    dstptr += cnt;
+    printf("Copy rs_frstr at %lX\n", (LONG)destptr);
+    ptr_frstr = (LPLONG) destptr;
+    destptr = copy_data(destptr, rs_frstr, rs_bitblk);
 
-    printf("Copy rs_bitblk at %lX\n", (LONG)dstptr);
-    ptr_bitblk = (LPBIT) dstptr;
-    srcptr = (LPBYTE)rs_bitblk;
-    cnt = sub_pointer(rs_frimg, srcptr);
-    _fmemcpy(dstptr, srcptr, cnt);
-    dstptr += cnt;
+    printf("Copy rs_bitblk at %lX\n", (LONG)destptr);
+    ptr_bitblk = (LPBIT) destptr;
+    destptr = copy_data(destptr, rs_bitblk, rs_frimg);
 
-    printf("Copy rs_frimg at %lX\n", (LONG)dstptr);
-    ptr_frimg = (LPLONG) dstptr;
-    srcptr = (LPBYTE)rs_frimg;
-    cnt = sub_pointer(rs_iconblk, srcptr);
-    _fmemcpy(dstptr, srcptr, cnt);
-    dstptr += cnt;
+    printf("Copy rs_frimg at %lX\n", (LONG)destptr);
+    ptr_frimg = (LPLONG) destptr;
+    destptr = copy_data(destptr, rs_frimg, rs_iconblk);
 
-    printf("Copy rs_iconblk at %lX\n", (LONG)dstptr);
-    ptr_iconblk = (LPICON) dstptr;
-    srcptr = (LPBYTE)rs_iconblk;
-    cnt = sub_pointer(rs_tedinfo, srcptr);
-    _fmemcpy(dstptr, srcptr, cnt);
-    dstptr += cnt;
+    printf("Copy rs_iconblk at %lX\n", (LONG)destptr);
+    ptr_iconblk = (LPICON) destptr;
+    destptr = copy_data(destptr, rs_iconblk, rs_tedinfo);
 
-    printf("Copy rs_tedinfo at %lX\n", (LONG)dstptr);
-    ptr_tedinfo = (LPTEDI) dstptr;
-    srcptr = (LPBYTE)rs_tedinfo;
-    cnt = sub_pointer(rs_object, srcptr);
-    _fmemcpy(dstptr, srcptr, cnt);
-    dstptr += cnt;
+    printf("Copy rs_tedinfo at %lX\n", (LONG)destptr);
+    ptr_tedinfo = (LPTEDI) destptr;
+    destptr = copy_data(destptr, rs_tedinfo, rs_object);
 
-    printf("Copy rs_object at %lX\n", (LONG)dstptr);
-    ptr_object = (LPTREE) dstptr;
-    srcptr = (LPBYTE)rs_object;
-    cnt = sub_pointer(rs_trindex, srcptr);
-    _fmemcpy(dstptr, srcptr, cnt);
-    dstptr += cnt;
+    printf("Copy rs_object at %lX\n", (LONG)destptr);
+    ptr_object = (LPTREE) destptr;
+    destptr = copy_data(destptr, rs_object, rs_trindex);
         
-    printf("Copy rs_trindex at %lX\n", (LONG)dstptr);
-    ptr_trindex = (LPLONG) dstptr;
-    srcptr = (LPBYTE)rs_trindex;
-    cnt = sub_pointer(rs_imdope, srcptr);
-    _fmemcpy(dstptr, srcptr, cnt);
-    dstptr += cnt;
-    fflush(stdout);
+    printf("Copy rs_trindex at %lX\n", (LONG)destptr);
+    ptr_trindex = (LPLONG) destptr;
+    destptr = copy_data(destptr, rs_trindex, rs_imdope);
 
     starthdr->rsh_vrsn = 0;
     printf("starthdr->rsh_vrsn=%04X\n", starthdr->rsh_vrsn);
@@ -234,7 +210,7 @@ int main(VOID)
     fix_frimg();
 
     handle = dos_create(pname, 0); 
-    cnt = sub_pointer(dstptr,starthdr);
+    cnt = sub_pointer(destptr,starthdr);
     printf("Writing %d bytes to %s\n", cnt, pname);
     starthdr->rsh_rssize = (UWORD)cnt;
     dos_write(handle, cnt, (LPBYTE)starthdr); 
@@ -245,6 +221,26 @@ int main(VOID)
     return 0;
 }
 
+MLOCAL LPBYTE copy_string(LPBYTE dest, LPBYTE source)
+{
+    for( ; *source; source++)
+    {
+        *dest = *source;
+        dest++;
+    }
+    *dest=0;
+    dest++;
+    return dest;
+}
+
+MLOCAL LPBYTE copy_data(LPVOID dest, LPVOID start, LPVOID end)
+{
+    WORD cnt;
+    
+    cnt = sub_pointer(end, start);
+    _fmemcpy(dest, start, cnt);
+    return (LPBYTE)dest + cnt;
+}
  
 VOID fix_trindex(VOID)
 {
@@ -365,13 +361,6 @@ VOID fix_img(LPLONG where)
 
 MLOCAL WORD sub_pointer(LPVOID p1, LPVOID p2)
 {
-//    LONG l1,l2;
-// 
-//    l1 = FPSEG(p1) * 16l;
-//    l1 += FPOFF(p1);
-//    l2 = FPSEG(p2) * 16l;
-//    l2 += FPOFF(p2);
-
    return ((LPBYTE)p1 - (LPBYTE)p2);
 }
 
