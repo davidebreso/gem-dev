@@ -929,7 +929,8 @@ VOID dcomp_free()
 			return (&where->l_name[0]);
 		else
 			where++;
-	merge_str(punt, "0x%H", &what);
+	/* bugfix: write the value of what, not the address */
+	merge_str(punt, "0x%H", what);
 	return (punt);
 	}
 

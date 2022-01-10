@@ -369,14 +369,15 @@ VOID c_imdata(addr, size)
 	merge_str(hline, "\nWORD IMAG%W[] = {", c_nimage);
 	c_wrlin();
 
-	for (iwd = 0; iwd < size; iwd += 2)
+    /* size is 2*(number of words to write) */
+	for (iwd = 0; iwd < size/2; iwd += 1)
 		{
 		if (iwd)
 			{
 			strcpy(hline, ", ");
 			c_wrlin();
 			}
-		if (iwd % 8 == 0)
+		if (iwd % 4 == 0)
 			{
 			strcpy(hline, "\n");
 			c_wrlin();
@@ -603,7 +604,7 @@ VOID c_frb(LPBIT addr)
 	WORD	blkno;
 
 	if (!rcs_cflag) return;
-	blkno = (WORD)(addr - head->rsh_bitblk) / (WORD)sizeof(BITBLK);
+	blkno = (WORD)((LPBYTE)addr - (LPBYTE)head->rsh_bitblk) / (WORD)sizeof(BITBLK);
 	c_comma(c_nfrbit);
 	merge_str(hline, "%WL", blkno);
 	c_wrlin();
