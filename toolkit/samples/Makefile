@@ -13,10 +13,10 @@ TARGETS=demo-s.app   demo-l.app   \
 	spool-s.app  spool-l.app  \
 	udef-s.app   udef-l.app   \
 	fmem-s.acc   fmem-l.acc   \
-	mgraf-s.app  mgraf-l.app  \
-	mgraf-s.acc  mgraf-l.acc  \
+	mgrf-s.app  mgrf-l.app  \
+	mgrf-s.acc  mgrf-l.acc  \
 	format.app   formatl.app  \
-	rscr-s.exe
+	rscreate.exe
 
 CC = wcc
 AS = wasm
@@ -62,11 +62,10 @@ spool-s.app spool-l.app: $(MAIN)
 udef-s.app udef-l.app: $(MAIN)
 	$(MAKE) -C userdef
 
-
 hello-s.app hello-l.app hello-s.acc hello-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C hello
 
-mgraf-s.app mgraf-l.app mgraf-s.acc mgraf-l.acc:  $(MAIN) $(STARTUP)
+mgrf-s.app mgrf-l.app mgrf-s.acc mgrf-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C memgraf
 
 growbx-s.acc growbx-l.acc: $(MAIN) $(STARTUP)
@@ -75,14 +74,14 @@ growbx-s.acc growbx-l.acc: $(MAIN) $(STARTUP)
 fmem-s.acc fmem-l.acc: $(MAIN) $(STARTUP)
 	$(MAKE) -C freemem
 
-rscr-s.exe: $(MAIN)
-	$(MAKE) -C rscreate
-
 xform-s.app xform-l.app: $(MAIN)
 	$(MAKE) -C xform
 
 format.app formatl.app: $(MAIN)
 	$(MAKE) -C format
+
+rscreate.exe: $(MAIN)
+	$(MAKE) -C rscreate
 
 tidy:
 	rm -f main-?.obj
@@ -99,8 +98,8 @@ tidy:
 	$(MAKE) -C fdtest tidy
 	$(MAKE) -C spooler tidy
 	$(MAKE) -C userdef tidy
-	$(MAKE) -C rscreate tidy
 	$(MAKE) -C format tidy
+	$(MAKE) -C rscreate tidy
 
 clean:
 	rm -f main-?.obj
@@ -122,10 +121,10 @@ clean:
 	$(MAKE) -C fdtest clean
 	$(MAKE) -C spooler clean
 	$(MAKE) -C userdef clean
-	$(MAKE) -C rscreate clean
 	$(MAKE) -C format clean
+	$(MAKE) -C rscreate tidy
 
-# Disable built-in rules	
+# Disable built-in rules
 .SUFFIXES:
 
 
