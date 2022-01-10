@@ -88,7 +88,6 @@ int main(VOID)
     /*** allocate enough memory to copy RSC data ****/
     cnt = sizeof(RSHDR) + sub_pointer(pname, &_nullarea);
     starthdr = dos_alloc(cnt);
-    _asm{ int 3 };
     printf("Allocating %d bytes for the resource data at %lX\n", cnt, (LONG)starthdr);
     if(starthdr == NULL) {
         printf("Cannot allocate memory!\n");
