@@ -20,7 +20,7 @@
 #if MULTIAPP
 #define NUM_ADTREES 17
 #else
-#define NUM_ADTREES 15
+#define NUM_ADTREES 17
 #endif
 
 #define	THESCREEN 0

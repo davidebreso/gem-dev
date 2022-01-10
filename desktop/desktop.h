@@ -210,10 +210,10 @@
 #define ACINST 2  	/* OBJECT in TREE #15 */
 #define ACCNCL 3  	/* OBJECT in TREE #15 */
 #define ACNAMBOX 7  	/* OBJECT in TREE #15 */
-#define ACFDNARO 30  	/* OBJECT in TREE #15 */
-#define ACFUPARO 31  	/* OBJECT in TREE #15 */
-#define ACFSVSLI 32  	/* OBJECT in TREE #15 */
-#define ACFSELEV 33  	/* OBJECT in TREE #15 */
+#define ACFDNARO 31  	/* OBJECT in TREE #15 */
+#define ACFUPARO 32  	/* OBJECT in TREE #15 */
+#define ACFSVSLI 33  	/* OBJECT in TREE #15 */
+#define ACFSELEV 34  	/* OBJECT in TREE #15 */
 #define ACA1NAME 8  	/* OBJECT in TREE #15 */
 #define ACA2NAME 9  	/* OBJECT in TREE #15 */
 #define ACA3NAME 10  	/* OBJECT in TREE #15 */
@@ -227,9 +227,9 @@
 #define ACC2FMEM 19  	/* OBJECT in TREE #15 */
 #define ACC3FMEM 20  	/* OBJECT in TREE #15 */
 #define STACCMEM 41  	/* STRING */
-#define ACC1NAME 24  	/* OBJECT in TREE #15 */
-#define ACC2NAME 25  	/* OBJECT in TREE #15 */
-#define ACC3NAME 26  	/* OBJECT in TREE #15 */
+#define ACC1NAME 21  	/* OBJECT in TREE #15 */
+#define ACC2NAME 22  	/* OBJECT in TREE #15 */
+#define ACC3NAME 23  	/* OBJECT in TREE #15 */
 #define ADFORMAT 14  	/* TREE */
 #define FMT_DRVA 14  	/* OBJECT in TREE #14 */
 #define FMT_DRVB 15  	/* OBJECT in TREE #14 */
@@ -246,3 +246,5 @@
 #define FMTBOX 5  	/* OBJECT in TREE #14 */
 #define FMT_3HD 9  	/* OBJECT in TREE #14 */
 #define REFWITEM 29  	/* OBJECT in TREE #0 */
+#define FMEMTEXT 24  	/* OBJECT in TREE #15 */
+#define ACSCROLL 30  	/* OBJECT in TREE #15 */

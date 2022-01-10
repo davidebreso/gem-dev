@@ -10,9 +10,11 @@ OBJECTS1=desk1.obj    deskact.obj  deskfun.obj  deskwin.obj
 OBJECTS2=deskpro.obj  deskwcc.obj  deskobj.obj  deskfpd.obj  deskins.obj 
 OBJECTS3=deskapp.obj deskgraf.obj deskrsrc.obj  deskfrmt.obj bootsect.obj
 OBJECTS4=deskinf.obj  deskdir.obj  deskgsx.obj  main.obj 
-OBJECTS5=desktype.obj deskcds.obj  optimize.obj int3.obj desksupp.obj
+OBJECTS5=desktype.obj desksupp.obj deskcds.obj  optimize.obj int3.obj
+OBJECTS6=deskiacc.obj
 
-OBJECTS=$(OBJECTS0) $(OBJECTS1) $(OBJECTS2) $(OBJECTS3) $(OBJECTS4) $(OBJECTS5)
+OBJECTS=$(OBJECTS0) $(OBJECTS1) $(OBJECTS2) $(OBJECTS3) $(OBJECTS4) \
+	$(OBJECTS5) $(OBJECTS6)
 
 all:	desktop.app
 

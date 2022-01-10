@@ -27,7 +27,7 @@
 #if MULTIAPP
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #else
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,IACCITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #endif
 GLOBAL BYTE	ILL_FILE[] = {0};
 GLOBAL BYTE	ILL_DOCU[] = {IAPPITEM,0};
@@ -595,7 +595,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		 	desk_wait(FALSE);
 		}
 		break;
-#if MULTIAPP
+#if 1
 	  case IACCITEM:
 		ins_acc();
 		break;
@@ -1257,7 +1257,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	remove("c:/gemapp.log");
 #endif
         
-	memset(&gl_xbuf, 0, sizeof(gl_xbuf));
+    logfile = fopen("desktop.log", "w");
+    fprintf(logfile, "Starting DESKTOP\n");
+    
+    memset(&gl_xbuf, 0, sizeof(gl_xbuf));
 	gl_xbuf.buf_len = sizeof(gl_xbuf);
 	gl_apid = appl_init(&gl_xbuf);
 						/* get GEM's gsx handle	*/
@@ -1375,12 +1378,13 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	  return(FALSE);
 	}
 
+	lstlcpy(G.a_cmd, "GEMVDI.EXE", sizeof(G.g_cmd));	
+						/* get boot drive */
+	ii = shel_find(G.a_cmd);
+	gl_bootdr = G.g_cmd[0];
+	fprintf(logfile, "shel_find returned %d, boot drive is %c:\n", ii, gl_bootdr);
 #if MULTIAPP
 #define LOFFSET(x) ((((x)&0xFFFF0000l)>>12)+((x)&0x0FFFFl))
-	lstlcpy(G.a_cmd, ADDR("GEMVDI.EXE"), sizeof(G.a_cmd));	
-						/* get boot drive */
-	shel_find(G.a_cmd);
-	gl_bootdr = G.g_cmd[0];
 	gl_untop = 0;
 
 	proc_shrink(DESKPID);
@@ -1544,6 +1548,8 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* close gsx virtual ws	*/
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
+	fprintf(logfile, "Closing DESKTOP.\n");
+	fclose(logfile);
 	appl_exit();
 
 	return(TRUE);

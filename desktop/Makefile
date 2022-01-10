@@ -1,7 +1,7 @@
 INSTDIR=../GEMAPPS/GEMSYS
 RELEASE=3.2.6
 
-all:	desktop.app desktopl.app desksm.app desklm.app \
+all:	desktop.app \
 	icn2xml xml2icn desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn
@@ -22,10 +22,10 @@ xml2icn:	xml2icn.c
 xml2icn.exe:	xml2icn.c
 	wcl -bt=dos -0 -ml $<
 
-desktop.app:	small/desktop.app
+desktops.app:	small/desktop.app
 	cp small/desktop.app $@
 
-desktopl.app:	large/desktop.app
+desktop.app:	large/desktop.app
 	cp large/desktop.app $@
 
 desksm.app:	smallm/desktop.app

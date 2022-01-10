@@ -254,7 +254,7 @@ VOID  debugbreak(VOID);
 #endif
 
 
-#if MULTIAPP
+#if 1
 VOID  iac_init(VOID);
 VOID  iac_strcop(LPTREE tree, WORD obj, LPBYTE src);
 VOID  iac_schar(LPTREE tree, WORD obj, BYTE ch);
@@ -265,7 +265,7 @@ WORD  iac_dial(LPTREE tree);
 VOID  iac_save(LPTREE tree);
 WORD  iac_names(LPTREE tree);
 VOID  iac_elev(LPTREE tree, WORD currtop, WORD count);
-WORD  iac_comp(VOID);
+// WORD  iac_comp(VOID);
 VOID  iac_mvnames(LPTREE tree, WORD start, WORD num);
 #endif
 
