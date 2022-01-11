@@ -1254,11 +1254,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 /* initialize libraries	*/
 
 #if DEBUG
-	remove("c:/gemapp.log");
+	remove("c:/gemapp.log");        
+    logfile = fopen("desktop.log", "w");
+    fprintf(logfile, "Starting DESKTOP\n");
 #endif
-        
-    // logfile = fopen("desktop.log", "w");
-    // fprintf(logfile, "Starting DESKTOP\n");
     
     memset(&gl_xbuf, 0, sizeof(gl_xbuf));
 	gl_xbuf.buf_len = sizeof(gl_xbuf);
@@ -1554,8 +1553,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* close gsx virtual ws	*/
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
-	// fprintf(logfile, "Closing DESKTOP.\n");
-	// fclose(logfile);
+#if DEBUG
+	fprintf(logfile, "Closing DESKTOP.\n");
+	fclose(logfile);
+#endif
 	appl_exit();
 
 	return(TRUE);

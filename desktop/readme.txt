@@ -21,7 +21,13 @@ DESKLM.APP   - large model, for GEM/XM.
 Release 3.2.6 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
 
-* "Install disk" enabled even when a disk is not selected
+* "Install Accessories" is now available also for single-tasking builds.
+  The panel lists the .ACC files in GEMAPPS\GEMBOOT as "Available accessories",
+  and the first 3 .ACC files in GEMAPPS\GEMSYS as installed accessories.
+  Installing an accessory moves the .ACC file from GEMBOOT to GEMSYS,
+  removing an accessory moves the .ACC file from GEMSYS to GEMBOOT.
+  Since single-tasking GEM cannot load/unload accessories at runtime,
+  a restart of GEM is needed to reload the new accessories.
 
 * Added "Refresh window" in File menu.
 

@@ -253,20 +253,7 @@ VOID  crashdump(BYTE ch);
 VOID  debugbreak(VOID);
 #endif
 
-
-#if 1
-VOID  iac_init(VOID);
-VOID  iac_strcop(LPTREE tree, WORD obj, LPBYTE src);
-VOID  iac_schar(LPTREE tree, WORD obj, BYTE ch);
-VOID  iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth);
-WORD  iac_isnam(LPBYTE lst);
+/* deskiacc.c */
 VOID  ins_acc(VOID);
-WORD  iac_dial(LPTREE tree);
-VOID  iac_save(LPTREE tree);
-WORD  iac_names(LPTREE tree);
-VOID  iac_elev(LPTREE tree, WORD currtop, WORD count);
-// WORD  iac_comp(VOID);
-VOID  iac_mvnames(LPTREE tree, WORD start, WORD num);
-#endif
 
 

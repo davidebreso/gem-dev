@@ -32,14 +32,21 @@ EXTERN BYTE	gl_bootdr;
 #define NUM_FSNAME  8
 #define LEN_FSNAME 16
 
-GLOBAL LPBYTE	ad_tmp1;
-GLOBAL BYTE	gl_tmp1[LEN_FSNAME];
 GLOBAL BYTE	*g_fslist[NUM_AFILES];
 GLOBAL BYTE	g_fsnames[LEN_FSNAME * NUM_AFILES];
-GLOBAL WORD fcount;
+MLOCAL WORD	fcount;
+MLOCAL WORD	fcurrtop;
+
 #if !MULTIAPP
 	GLOBAL BYTE *g_inslist[3];
 #endif
+
+/*
+ * Forward declarations
+ */
+VOID  iac_elev(LPTREE tree, WORD currtop, WORD count);
+VOID  iac_mvnames(LPTREE tree, WORD start, WORD num);
+VOID  iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth);
 
 #if DEBUG
 	VOID
@@ -183,13 +190,13 @@ VOID  iac_schar(LPTREE tree, WORD obj, BYTE ch)
 
 #else
 
-VOID iac_swap(LPTREE tree, WORD left, WORD right, WORD currtop)
+VOID iac_swap(LPTREE tree, WORD left, WORD right)
 {
-	WORD i, firstfree;
+	WORD i;
 	WORD thefile, theacc;
 	BYTE *temp;
 
-	// fprintf(logfile, "iac_swap(tree, %d, %d, %d)\n", left, right, currtop);
+	// fprintf(logfile, "iac_swap(tree, %d, %d)\n", left, right);
 	if(left < 0)
 	{
 		/* If left is negative, remove the ACC without swapping */
@@ -198,7 +205,7 @@ VOID iac_swap(LPTREE tree, WORD left, WORD right, WORD currtop)
 		g_fslist[thefile] = NULL;
 		fcount++;
 	} else {
-		thefile = currtop + left - ACA1NAME;
+		thefile = fcurrtop + left - ACA1NAME;
 	}
 	theacc = right - ACC1NAME;
 	// fprintf(logfile, "thefile=%d, g_fslist=%s\n", thefile, g_fslist[thefile]);
@@ -217,25 +224,27 @@ VOID iac_swap(LPTREE tree, WORD left, WORD right, WORD currtop)
 			g_fslist[i] = g_fslist[i+1];
 		}
 		g_fslist[fcount] = NULL;
-		/* Clear last item in the view list if necessary */
-		firstfree = (fcount - currtop) + ACA1NAME;
-		if(firstfree <= ACA8NAME)
+		// fprintf(logfile, "fcurrtop = %d, fcount = %d\n", fcurrtop, fcount);
+		if(fcurrtop > max(0, fcount - NUM_FSNAME))
 		{
-		  iac_strcop(tree, firstfree, "________.___");		
+			/* scroll down one line */
+			fcurrtop--;
 		}
 	}
 	/* Update and redraw accessory lists and scroll bar */
-	iac_elev(tree, currtop, fcount);
-	iac_mvnames(tree, currtop, min(fcount - currtop, NUM_FSNAME));
+	iac_elev(tree, fcurrtop, fcount);
+	iac_mvnames(tree, fcurrtop, min(fcount - fcurrtop, NUM_FSNAME));
 	iac_redrw(tree, ACSCROLL, NORMAL, 2);
 	iac_redrw(tree, ACNAMBOX, NORMAL, 1);
 	iac_redrw(tree, right, CHECKED, 0);
 }
 
-VOID  iac_save(LPTREE tree)
+VOID iac_save(LPTREE tree)
 {
 	WORD i, ret;
 	BOOLEAN keep;
+
+    graf_mouse(HOURGLASS,NULL);    /* say we're busy */
 
 	strcpy(&G.g_srcpth[1], ":\\GEMAPPS\\GEMBOOT\\");
 	G.g_srcpth[0] = gl_bootdr;
@@ -249,7 +258,7 @@ VOID  iac_save(LPTREE tree)
 	// fprintf(logfile, "dos_sfirst: %d\n", ret);
 	while(ret)
 	{
-		_fstrcpy(&G.g_dstpth[18], G.a_wdta+30);
+		strcpy(&G.g_dstpth[18], &G.g_wdta[30]);
 		// fprintf(logfile, "Checking installed ACC %s\n", &G.g_dstpth[18]);
 		keep = FALSE;
 		for(i = 0; i < 3; i++)
@@ -265,11 +274,12 @@ VOID  iac_save(LPTREE tree)
 		}
 		if(!keep)
 		{
-			_fstrcpy(&G.g_srcpth[19], G.a_wdta+30);
+			strcpy(&G.g_srcpth[19], &G.g_wdta[30]);
 			// fprintf(logfile, "Move %s to %s\n", G.g_dstpth, G.g_srcpth);
 			ret = dos_rename(G.g_dstpth, G.g_srcpth);
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
 			if(ret) {
+				graf_mouse(ARROW,NULL);
 				form_error(ret);
 				return;
 			}
@@ -288,11 +298,16 @@ VOID  iac_save(LPTREE tree)
 			ret = dos_rename(G.g_srcpth, G.g_dstpth);
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
 			if(ret) {
+				graf_mouse(ARROW,NULL);
 				form_error(ret);
 				return;
 			}
 		}
 	}
+
+	graf_mouse(ARROW,NULL);
+	form_alert(1, "[1][Installation of accessories completed.|Please restart GEM to activate the changes.][  OK  ]");
+	return;
 }
 
 #endif
@@ -368,7 +383,7 @@ WORD  iac_comp(VOID)
 }
  */
 
-VOID iac_padname(LPBYTE fname)
+VOID iac_padname(BYTE *fname)
 {
 	WORD j,k, len;
 	
@@ -381,6 +396,8 @@ VOID iac_padname(LPBYTE fname)
 	    	fname[j] = fname[k];
 	    for (j=len; j < 8; j++)
 	      fname[j] = ' ';
+		/* BIGFIX: set zero terminator */
+		fname[12]='\0';
 	}
 }
 
@@ -389,11 +406,19 @@ VOID  iac_mvnames(LPTREE tree, WORD start, WORD num)
 	WORD		i, j, k;
 	WORD		len;
 
+	// fprintf(logfile, "iac_mvnames\n");
 	for (i=0; i<num; i++)
 	{
-	  _fstrcpy(ad_tmp1, g_fslist[i+start]);
-	  iac_padname(ad_tmp1);
-	  iac_strcop(tree, ACA1NAME+i, ad_tmp1);
+		strcpy(G.g_cmd, g_fslist[i+start]);
+		// fprintf(logfile, "file name: %s\n", G.g_cmd);
+		iac_padname(G.g_cmd);
+		// fprintf(logfile, "padded name: %s\n", G.g_cmd);
+		iac_strcop(tree, ACA1NAME+i, G.a_cmd);
+	}
+	/* Cleanup empty items at the bottom, if any */
+	for( ; i < NUM_FSNAME; i++)
+	{
+		iac_strcop(tree, ACA1NAME+i, "________.___");
 	}
 #if !MULTIAPP
 	/* Update names of installed ACCs */
@@ -401,9 +426,9 @@ VOID  iac_mvnames(LPTREE tree, WORD start, WORD num)
 	{
 		if(g_inslist[i])
 		{
-			_fstrcpy(ad_tmp1, g_inslist[i]);
-			iac_padname(ad_tmp1);
-			iac_strcop(tree, ACC1NAME+i, ad_tmp1);
+			strcpy(G.g_cmd, g_inslist[i]);
+			iac_padname(G.g_cmd);
+			iac_strcop(tree, ACC1NAME+i, G.a_cmd);
 		} else {
 			iac_strcop(tree, ACC1NAME+i, "unused");
 		}
@@ -428,7 +453,6 @@ WORD  iac_names(LPTREE tree)
 					/* adjust elevator size to number */
 	thefile = 0;
 	ptr = &g_fsnames[0];
-	ad_tmp1 = (LPBYTE)ADDR(&gl_tmp1[0]);
 	dos_sdta(G.a_wdta);
 	strcpy(&G.g_cmd[1], ":\\GEMAPPS\\GEMBOOT\\*.ACC");
 	G.g_cmd[0] = gl_bootdr;
@@ -437,8 +461,8 @@ WORD  iac_names(LPTREE tree)
 	// fprintf(logfile, "dos_sfirst: %d\n", ret);
 	while ( ret )
 	{
-	  _fstrcpy(ADDR(g_fslist[thefile] = ptr), G.a_wdta+30);
-	  len = _fstrlen(ptr);
+	  strcpy((g_fslist[thefile] = ptr), &G.g_wdta[30]);
+	  len = strlen(ptr);
 	  ptr += len+1;
 	  // fprintf(logfile, "filename: %s\n", g_fslist[thefile]);
 	  ret = dos_snext();
@@ -451,6 +475,7 @@ WORD  iac_names(LPTREE tree)
 	  }
 	}
 	fcount = thefile;
+
 
 #if MULTIAPP
 	/* Order the accessory names only in the MULTIAPP */
@@ -536,7 +561,6 @@ WORD  iac_dial(LPTREE tree)
 	LPBYTE		chspec;
 	WORD		newstate;
 	WORD		i;
-	WORD		fcurrtop;
 	WORD		move;
 	GRECT		pt;
 	WORD		mx, my, kret, bret;
@@ -612,7 +636,7 @@ WORD  iac_dial(LPTREE tree)
 	      iac_strcop(tree, iac_chkd, "unused");
 	      iac_redrw(tree, iac_chkd, CHECKED, 0);
 #else
-		  iac_swap(tree, -1, iac_chkd, fcurrtop);
+		  iac_swap(tree, -1, iac_chkd);
 #endif
 	      break;
 
@@ -631,7 +655,7 @@ WORD  iac_dial(LPTREE tree)
 	        iac_strcop(tree, iac_chkd, chspec);
 	        iac_redrw(tree, iac_chkd, CHECKED, 0);
 #else
-			iac_swap(tree, touchob, iac_chkd, fcurrtop);
+			iac_swap(tree, touchob, iac_chkd);
 #endif
 	      }
 	      break;
@@ -671,6 +695,7 @@ dofelev:	wind_update(3);
 		break;
 
 	    case ACINST:
+		  iac_save(tree);
 	    case ACCNCL:
 	      cont = FALSE;
 	      break;
@@ -696,21 +721,21 @@ dofelev:	wind_update(3);
 
 VOID  ins_acc()
 {			       
-	LPTREE		tree;
+	LPTREE	tree;
+	WORD	ret;
 
 	tree = G.a_trees[ADINSACC];
 
 /* get current accessory names */
 /* stuff them in slots in dialog */
-
-	if (iac_dial(tree) == ACINST)
-	{
-		iac_save(tree);
-/* copy names from tree to current acc list */
-/* delete some/all current accs and free channels */
-/* run the new accessories */
-
-	}
+	iac_dial(tree);
+// 	if (iac_dial(tree) == ACINST)
+// 	{
+// 		iac_save(tree);
+// /* copy names from tree to current acc list */
+// /* delete some/all current accs and free channels */
+// /* run the new accessories */
+// 	}
 } /* ins_acc */
 
 #endif /* MULTIAPP */
