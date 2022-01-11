@@ -1,27 +1,28 @@
 include ../../makedefs.i
 
-#
-# nb: Low warning level, so that the RCS-generated file EXAMPLE.RSH 
-# doesn't cause warnings
-#
-CFLAGS = -0 -ox -os -s -bcl=dos -w=0 -i=../../include
-CC = wcl
+CFLAGS = -bt=dos -os -s -0 -i../../include
+CC = wcc
+LD = wlink
 
-all:	../rscr-s.exe
+all:	 ../rscreate.exe
 
 ../%.exe:	%.exe
 	cp $< ..
 
-rscr-s.exe:	rscreate.c
-	$(CC) -ms $(CFLAGS) -fe=$@ $< ../../lib/wccgem-s.lib
+rscreate.exe:	rscreate.obj 
+	$(LD) name $@ system dos file \{ $< \} lib ../../lib/wccgem-l.lib option map 
+
+rscreate.obj:	rscreate.c example.rsh
+	$(CC) -ml $(CFLAGS) -fo=$@ $<	
+	
 
 tidy:
-	rm -f rscr-?.exe
+	rm -f rscreate.exe
 	rm -f *.bak
 	rm -f *.sdb
 	rm -f *.sym
 	rm -f *.map
-	rm -f *.o
+	rm -f *.obj
 	rm -f *.err
 
 clean:	tidy

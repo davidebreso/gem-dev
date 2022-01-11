@@ -25,7 +25,7 @@
 
 /* DESKTOP v1.2: Different sets of illegal items */
 #if MULTIAPP
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {RESTITEM,L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #else
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #endif
@@ -459,12 +459,18 @@ MLOCAL WORD  do_filemenu(WORD item)
 		pro_run(TRUE, -1, -1, -1);
 #else
 		done = pro_run(TRUE, TRUE, -1, -1);
+	    break;
+	  case RESTITEM:
+	    pro_restart(&gl_gemvdi, G.a_tail);
+	    done = TRUE;
 #endif
 		break;
+	  
 	  case QUITITEM:
+        // fprintf(logfile, "pro_exit(%s, %s)\n", G.g_cmd, G.g_tail);
 #if MULTIAPP
 		if (fun_alert(1,STEXTDSK,NULLPTR) == 2)		/* CANCEL */
-		  break;
+            break;
 		else
 #endif
 		pro_exit(G.a_cmd, G.a_tail);
@@ -597,7 +603,10 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		break;
 #if 1
 	  case IACCITEM:
-		ins_acc();
+		if(ins_acc() == 2) {
+		    pro_restart(&gl_gemvdi, G.a_tail);
+		    done = TRUE;
+		}
 		break;
 #endif
 	  case PREFITEM:
@@ -1253,11 +1262,11 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	BYTE		docopyrt;
 /* initialize libraries	*/
 
-#if DEBUG
-	remove("c:/gemapp.log");        
+/* #if DEBUG
+	// remove("c:/gemapp.log");        
     logfile = fopen("desktop.log", "w");
     fprintf(logfile, "Starting DESKTOP\n");
-#endif
+#endif */
     
     memset(&gl_xbuf, 0, sizeof(gl_xbuf));
 	gl_xbuf.buf_len = sizeof(gl_xbuf);
@@ -1383,11 +1392,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	  return(FALSE);
 	}
 
-	lstlcpy(G.a_cmd, "GEMVDI.EXE", sizeof(G.g_cmd));	
+	strcpy(gl_gemvdi, "GEMVDI.EXE");	
 						/* get boot drive */
-	ii = shel_find(G.a_cmd);
-	gl_bootdr = G.g_cmd[0];
-	// fprintf(logfile, "shel_find returned %d, boot drive is %c:\n", ii, gl_bootdr);
+	ii = shel_find(&gl_gemvdi);
+	gl_bootdr = gl_gemvdi[0];
 #if MULTIAPP
 #define LOFFSET(x) ((((x)&0xFFFF0000l)>>12)+((x)&0x0FFFFl))
 	gl_untop = 0;
@@ -1553,10 +1561,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* close gsx virtual ws	*/
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
-#if DEBUG
+/* #if DEBUG
 	fprintf(logfile, "Closing DESKTOP.\n");
 	fclose(logfile);
-#endif
+#endif */
 	appl_exit();
 
 	return(TRUE);

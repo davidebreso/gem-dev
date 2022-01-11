@@ -1,6 +1,7 @@
 #include "wccdesk.h"
 
 #if DEBUG
+/**
 void  debugbreak(void)
 {
     _asm {
@@ -24,5 +25,5 @@ __declspec( naked ) WORD  getip(void) {
     }
 }
 #pragma aux getip value [ax] modify exact [ax] nomemory;
-
+**/
 #endif

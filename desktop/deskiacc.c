@@ -12,10 +12,13 @@
 */
 
 #include "wccdesk.h"
+#include <errno.h>
 
 #if 1
 
 MLOCAL WORD	iac_chkd;
+
+int __set_errno_dos( unsigned int err );
 /*
 
 EXTERN ACCNODE gl_caccs[];
@@ -48,7 +51,7 @@ VOID  iac_elev(LPTREE tree, WORD currtop, WORD count);
 VOID  iac_mvnames(LPTREE tree, WORD start, WORD num);
 VOID  iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth);
 
-#if DEBUG
+#if 0
 	VOID
 printstr(lst)
 	LONG		lst;
@@ -239,7 +242,7 @@ VOID iac_swap(LPTREE tree, WORD left, WORD right)
 	iac_redrw(tree, right, CHECKED, 0);
 }
 
-VOID iac_save(LPTREE tree)
+WORD iac_save(LPTREE tree)
 {
 	WORD i, ret;
 	BOOLEAN keep;
@@ -280,8 +283,9 @@ VOID iac_save(LPTREE tree)
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
 			if(ret) {
 				graf_mouse(ARROW,NULL);
-				form_error(ret);
-				return;
+				__set_errno_dos(ret);
+				fun_alert(1, STACFERR, "remove", &G.g_srcpth[19], strerror(errno));
+				return 0;
 			}
 		} 
 		ret = dos_snext();
@@ -299,15 +303,16 @@ VOID iac_save(LPTREE tree)
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
 			if(ret) {
 				graf_mouse(ARROW,NULL);
-				form_error(ret);
-				return;
+				__set_errno_dos(ret);
+				fun_alert(1, STACFERR, "install", g_inslist[i], strerror(errno));
+				return 0;
 			}
 		}
 	}
 
 	graf_mouse(ARROW,NULL);
-	form_alert(1, "[1][Installation of accessories completed.|Please restart GEM to activate the changes.][  OK  ]");
-	return;
+	
+	return fun_alert(1, STACINST, NULL);
 }
 
 #endif
@@ -555,7 +560,7 @@ WORD  iac_scroll(LPTREE tree, WORD currtop, WORD count, WORD move)
 WORD  iac_dial(LPTREE tree)
 {
 	WORD		touchob;
-	WORD		cont;
+	WORD		cont, ret;
 	WORD		xd, yd, wd, hd;
 	LONG		spec;
 	LPBYTE		chspec;
@@ -565,6 +570,7 @@ WORD  iac_dial(LPTREE tree)
 	GRECT		pt;
 	WORD		mx, my, kret, bret;
 	
+	ret = 0;
 	iac_chkd = ACC1NAME;
 	fcount = iac_names(tree);
 	fcurrtop = 0;
@@ -695,7 +701,7 @@ dofelev:	wind_update(3);
 		break;
 
 	    case ACINST:
-		  iac_save(tree);
+	      ret = iac_save(tree);
 	    case ACCNCL:
 	      cont = FALSE;
 	      break;
@@ -712,14 +718,14 @@ dofelev:	wind_update(3);
     }					/* undraw the form	*/
 	show_hide(FMD_FINISH, tree);
 	tree[iac_chkd].ob_state = NORMAL;
-	return(touchob);
+	return(ret);
 }
 
 /************************************************************************/
 /* i n s _ a c c	  						*/
 /************************************************************************/
 
-VOID  ins_acc()
+WORD  ins_acc()
 {			       
 	LPTREE	tree;
 	WORD	ret;
@@ -728,14 +734,7 @@ VOID  ins_acc()
 
 /* get current accessory names */
 /* stuff them in slots in dialog */
-	iac_dial(tree);
-// 	if (iac_dial(tree) == ACINST)
-// 	{
-// 		iac_save(tree);
-// /* copy names from tree to current acc list */
-// /* delete some/all current accs and free channels */
-// /* run the new accessories */
-// 	}
+	return iac_dial(tree);
 } /* ins_acc */
 
 #endif /* MULTIAPP */

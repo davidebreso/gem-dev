@@ -189,7 +189,8 @@ __declspec( naked ) WORD  dos_dtype(WORD drive)
 #pragma aux dos_dtype parm [ax] value [ax] modify exact [ax bx cx dx] nomemory;
 
 
-#if DEBUG
+
+#if DEBUG 
 static char buf[4096];
 
 WORD  form_valert(WORD button, BYTE *str, ...)
@@ -201,6 +202,7 @@ WORD  form_valert(WORD button, BYTE *str, ...)
 	return form_alert(button, ADDR(buf));
 }
 
+/***
 WORD  dbg(BYTE *str, ...)
 {
 	FILE *fp = fopen("c:/gemapp.log", "a");
@@ -216,10 +218,10 @@ WORD  dbg(BYTE *str, ...)
 extern WORD  getcs(void);
 extern WORD  getip(void);
 
-/* Dump system memory to disc, one byte at a time! 
+ * Dump system memory to disc, one byte at a time! 
  * Writes 1Mb of data, followed by four bytes far 
  * pointer to this function giving CS and IP.
- */
+ * 
 VOID  crashdump(BYTE bt)
 {
 	char filename[20];
@@ -245,6 +247,7 @@ VOID  crashdump(BYTE bt)
 	dbg("Created crashdump %c as %s CS=%04x IP=%04x\n", bt, filename,
 			cs, ip);
 }
+*****/
 
 #endif
 

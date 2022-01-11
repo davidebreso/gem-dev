@@ -29,7 +29,7 @@ Release 3.2.6 Changes (most recent at the top) -- Davide Bresolin
   Since single-tasking GEM cannot load/unload accessories at runtime,
   a restart of GEM is needed to reload the new accessories.
 
-* Added "Refresh window" in File menu.
+* Added "Refresh window" and "Restart GEM" items in File menu.
 
 * Removed keyboard shortcuts from buttons, to make dialogs look better with 
   the stock GEM/3 AES.

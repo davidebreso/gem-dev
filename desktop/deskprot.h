@@ -144,6 +144,7 @@ WORD  pro_chdir(WORD drv, BYTE *ppath);
 WORD  pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag);
 WORD  pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr);
 WORD  pro_exit(LPBYTE pcmd, LPBYTE ptail);
+WORD  pro_restart(LPBYTE pcmd, LPBYTE ptail);
 
 /* deskrsrc.c */
 VOID rsrc_init(VOID);
@@ -221,16 +222,6 @@ WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj);
 WORD  inf_what(LPTREE tree, WORD ok, WORD cncl);
 WORD  wildcmp(BYTE *pwld, BYTE *ptst);
 // VOID  ins_char(BYTE *str, WORD pos, BYTE chr, WORD tot_len);
-// 
-
-/* deskosif.asm */
-VOID  takedos(VOID);
-VOID  takekey(VOID);
-VOID  takevid(VOID);
-
-VOID  givedos(VOID);
-VOID  givekey(VOID);
-VOID  givevid(VOID);
 
 /* deskcds.c */
 BOOLEAN  cd_isdrvcd( BYTE drvno );
@@ -246,6 +237,7 @@ VOID  lstlcpy(LPBYTE dest, LPBYTE src, int maxlen);
 UWORD  inside(WORD x, WORD y, GRECT *pt);
 VOID  rc_union    (LPGRECT p1, LPGRECT p2);
 
+
 #if DEBUG
 WORD  form_valert(WORD button, BYTE *str, ...);
 WORD  dbg(BYTE *str, ...);
@@ -254,6 +246,6 @@ VOID  debugbreak(VOID);
 #endif
 
 /* deskiacc.c */
-VOID  ins_acc(VOID);
+WORD  ins_acc(VOID);
 
 
