@@ -13,5 +13,9 @@ dos_rename(poname, pnname)	/* rename file */
 	DOS_DI = FP_OFF(pnname);
 	DOS_ES = FP_SEG(pnname);
 	dos_lpvoid(0x5600, poname);
-	return((WORD) DOS_AX);
+	if(DOS_ERR) {
+    	return((WORD) DOS_AX);
+    } else {
+        return FALSE;
+    }
 }
