@@ -1257,8 +1257,8 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	remove("c:/gemapp.log");
 #endif
         
-    logfile = fopen("desktop.log", "w");
-    fprintf(logfile, "Starting DESKTOP\n");
+    // logfile = fopen("desktop.log", "w");
+    // fprintf(logfile, "Starting DESKTOP\n");
     
     memset(&gl_xbuf, 0, sizeof(gl_xbuf));
 	gl_xbuf.buf_len = sizeof(gl_xbuf);
@@ -1313,6 +1313,12 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	for(ii = 0; ii < NUM_ADTREES; ii++)
 	  rsrc_gaddr(0, ii, (LPVOID *)&G.a_trees[ii]);
 
+	/* 
+	 * bugfix: trim 1 pixel of width for ACNAMBOX in Install Accessories
+	 * dialog so it does not overlap the scroll bar
+	 */
+	tree = G.a_trees[ADINSACC];
+	tree[ACNAMBOX].ob_width -= 1;
 
 #if MULTIAPP
 /* Not done in FreeGEM desktop since it only has an icon, not a graphical
@@ -1382,7 +1388,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* get boot drive */
 	ii = shel_find(G.a_cmd);
 	gl_bootdr = G.g_cmd[0];
-	fprintf(logfile, "shel_find returned %d, boot drive is %c:\n", ii, gl_bootdr);
+	// fprintf(logfile, "shel_find returned %d, boot drive is %c:\n", ii, gl_bootdr);
 #if MULTIAPP
 #define LOFFSET(x) ((((x)&0xFFFF0000l)>>12)+((x)&0x0FFFFl))
 	gl_untop = 0;
@@ -1548,8 +1554,8 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* close gsx virtual ws	*/
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
-	fprintf(logfile, "Closing DESKTOP.\n");
-	fclose(logfile);
+	// fprintf(logfile, "Closing DESKTOP.\n");
+	// fclose(logfile);
 	appl_exit();
 
 	return(TRUE);

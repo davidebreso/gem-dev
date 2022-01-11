@@ -34,8 +34,6 @@ EXTERN BYTE	gl_bootdr;
 
 GLOBAL LPBYTE	ad_tmp1;
 GLOBAL BYTE	gl_tmp1[LEN_FSNAME];
-GLOBAL LPBYTE	ad_tmp2;
-GLOBAL BYTE	gl_tmp2[LEN_FSNAME];
 GLOBAL BYTE	*g_fslist[NUM_AFILES];
 GLOBAL BYTE	g_fsnames[LEN_FSNAME * NUM_AFILES];
 GLOBAL WORD fcount;
@@ -166,6 +164,23 @@ VOID  iac_save(LPTREE tree)
 	wind_update(BEG_UPDATE);
 }
 
+VOID  iac_schar(LPTREE tree, WORD obj, BYTE ch)
+{
+	LONG		longch;
+	LONG		spec;
+
+	spec = (LONG)(tree[obj].ob_spec);
+ 	longch = ch;
+	longch = longch << 24;
+	spec = (spec & 0xFFFFFFl) | longch;
+	tree[obj].ob_spec = (LPBYTE)spec;
+	// [JCE] To make these controls behave like checkboxes
+	if (ch == 'Y')
+		tree[obj].ob_state |= SELECTED;
+	else	tree[obj].ob_state &= ~SELECTED;
+}
+	
+
 #else
 
 VOID iac_swap(LPTREE tree, WORD left, WORD right, WORD currtop)
@@ -177,8 +192,10 @@ VOID iac_swap(LPTREE tree, WORD left, WORD right, WORD currtop)
 	// fprintf(logfile, "iac_swap(tree, %d, %d, %d)\n", left, right, currtop);
 	if(left < 0)
 	{
-		/* Remove the ACC and put it at the end of g_fslist */
+		/* If left is negative, remove the ACC without swapping */
+		/* Add an empty slot at the end of g_fslist */
 		thefile = fcount;
+		g_fslist[thefile] = NULL;
 		fcount++;
 	} else {
 		thefile = currtop + left - ACA1NAME;
@@ -207,11 +224,77 @@ VOID iac_swap(LPTREE tree, WORD left, WORD right, WORD currtop)
 		  iac_strcop(tree, firstfree, "________.___");		
 		}
 	}
-	/* Update and redraw accessory lists */
+	/* Update and redraw accessory lists and scroll bar */
+	iac_elev(tree, currtop, fcount);
 	iac_mvnames(tree, currtop, min(fcount - currtop, NUM_FSNAME));
+	iac_redrw(tree, ACSCROLL, NORMAL, 2);
 	iac_redrw(tree, ACNAMBOX, NORMAL, 1);
 	iac_redrw(tree, right, CHECKED, 0);
 }
+
+VOID  iac_save(LPTREE tree)
+{
+	WORD i, ret;
+	BOOLEAN keep;
+
+	strcpy(&G.g_srcpth[1], ":\\GEMAPPS\\GEMBOOT\\");
+	G.g_srcpth[0] = gl_bootdr;
+	strcpy(&G.g_dstpth[1], ":\\GEMAPPS\\GEMSYS\\");
+	G.g_dstpth[0] = gl_bootdr;
+	dos_sdta(G.a_wdta);
+	strcpy(&G.g_cmd[1], ":\\GEMAPPS\\GEMSYS\\*.ACC");
+	G.g_cmd[0] = gl_bootdr;
+	// fprintf(logfile, "G.g_cmd=%s\n", G.g_cmd);
+	ret = dos_sfirst(G.a_cmd, 0x16);
+	// fprintf(logfile, "dos_sfirst: %d\n", ret);
+	while(ret)
+	{
+		_fstrcpy(&G.g_dstpth[18], G.a_wdta+30);
+		// fprintf(logfile, "Checking installed ACC %s\n", &G.g_dstpth[18]);
+		keep = FALSE;
+		for(i = 0; i < 3; i++)
+		{
+			if(strcmp(&G.g_dstpth[18], g_inslist[i]) == 0)
+			{
+				// fprintf(logfile, "ACC should be kept installed\n");
+				keep = TRUE;
+				/* Set to NULL, so that next phase will skip it */
+				g_inslist[i] = NULL;
+				break;
+			}
+		}
+		if(!keep)
+		{
+			_fstrcpy(&G.g_srcpth[19], G.a_wdta+30);
+			// fprintf(logfile, "Move %s to %s\n", G.g_dstpth, G.g_srcpth);
+			ret = dos_rename(G.g_dstpth, G.g_srcpth);
+			// fprintf(logfile, "dos_rename returned %d\n", ret);
+			if(!ret) {
+				form_error(DOS_ERR);
+				return;
+			}
+		} 
+		ret = dos_snext();
+	}
+
+	/* Move newly installed ACCs to GEMSYS */
+	for(i = 0; i < 3; i++)
+	{
+		if(g_inslist[i])
+		{
+			strcpy(&G.g_srcpth[19], g_inslist[i]);
+			strcpy(&G.g_dstpth[18], g_inslist[i]);
+			// fprintf(logfile, "Move %s to %s\n", G.g_srcpth, G.g_dstpth);
+			ret = dos_rename(G.g_srcpth, G.g_dstpth);
+			// fprintf(logfile, "dos_rename returned %d\n", ret);
+			if(!ret) {
+				form_error(DOS_ERR);
+				return;
+			}
+		}
+	}
+}
+
 #endif
 
 
@@ -234,25 +317,12 @@ VOID  iac_strcop(LPTREE tree, WORD obj, LPBYTE src)
 	_fstrcpy(dst, src);
 }
 
-
-
-VOID  iac_schar(LPTREE tree, WORD obj, BYTE ch)
-{
-	LONG		longch;
-	LONG		spec;
-
-	spec = (LONG)(tree[obj].ob_spec);
- 	longch = ch;
-	longch = longch << 24;
-	spec = (spec & 0xFFFFFFl) | longch;
-	tree[obj].ob_spec = (LPBYTE)spec;
-	// [JCE] To make these controls behave like checkboxes
-	if (ch == 'Y')
-		tree[obj].ob_state |= SELECTED;
-	else	tree[obj].ob_state &= ~SELECTED;
-}
-		    
-
+	    
+/*
+ * Change `state` and redraw tree[obj] with given `depth`
+ * Bugfix: add `trim` parameter to trim the right edge and redraw
+ * overlapped objects correctly
+ */
 VOID  iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth)
 {
 	WORD		x, y, w, h;
@@ -321,7 +391,7 @@ VOID  iac_mvnames(LPTREE tree, WORD start, WORD num)
 
 	for (i=0; i<num; i++)
 	{
-	  _fstrcpy(ad_tmp1, (LPBYTE)ADDR(g_fslist[i+start]));
+	  _fstrcpy(ad_tmp1, g_fslist[i+start]);
 	  iac_padname(ad_tmp1);
 	  iac_strcop(tree, ACA1NAME+i, ad_tmp1);
 	}
@@ -331,7 +401,7 @@ VOID  iac_mvnames(LPTREE tree, WORD start, WORD num)
 	{
 		if(g_inslist[i])
 		{
-			_fstrcpy(ad_tmp1, (LPBYTE)ADDR(g_inslist[i]));
+			_fstrcpy(ad_tmp1, g_inslist[i]);
 			iac_padname(ad_tmp1);
 			iac_strcop(tree, ACC1NAME+i, ad_tmp1);
 		} else {
@@ -359,7 +429,6 @@ WORD  iac_names(LPTREE tree)
 	thefile = 0;
 	ptr = &g_fsnames[0];
 	ad_tmp1 = (LPBYTE)ADDR(&gl_tmp1[0]);
-	ad_tmp2 = (LPBYTE)ADDR(&gl_tmp2[0]);
 	dos_sdta(G.a_wdta);
 	strcpy(&G.g_cmd[1], ":\\GEMAPPS\\GEMBOOT\\*.ACC");
 	G.g_cmd[0] = gl_bootdr;
@@ -433,22 +502,22 @@ WORD  iac_scroll(LPTREE tree, WORD currtop, WORD count, WORD move)
 {
 	WORD		newtop;
 	
-	fprintf(logfile, "iac_scroll(tree, %d, %d, %d)\n", currtop, count, move);
+	// fprintf(logfile, "iac_scroll(tree, %d, %d, %d)\n", currtop, count, move);
 	if (count <= NUM_FSNAME)
 	  return(0);
 	newtop = currtop + move;
 	newtop = max(newtop, 0);
 	newtop = min(newtop, count - NUM_FSNAME);
-	fprintf(logfile, "newtop = %d\n", newtop);
+	// fprintf(logfile, "newtop = %d\n", newtop);
 	if (newtop != currtop) 
 	{
-		fprintf(logfile, "Redraw accessory list\n");
+		// fprintf(logfile, "Redraw accessory list\n");
 		iac_elev(tree, newtop, count);
 		iac_mvnames(tree, newtop, NUM_FSNAME);
 		iac_redrw(tree, ACSCROLL, NORMAL, 2);
 		iac_redrw(tree, ACNAMBOX, NORMAL, 1);
 	}
-	fprintf(logfile, "return %d\n", newtop);
+	// fprintf(logfile, "return %d\n", newtop);
 	return(newtop);
 }
 
@@ -502,12 +571,18 @@ WORD  iac_dial(LPTREE tree)
 	cont = TRUE;
 	while (cont)
 	{
+	  /* Disable "Remove accessory" button if an empty slot is selected */
+	  if(g_inslist[iac_chkd-ACC1NAME]) {
+		objc_change(tree, ACREMV, 0, xd, yd, wd, hd, NORMAL, TRUE);
+	  } else {
+		objc_change(tree, ACREMV, 0, xd, yd, wd, hd, DISABLED, TRUE);	      
+	  }
 	  touchob = form_do(tree, 0);
 	  touchob &= 0x7fff;
 	  newstate = NORMAL;
 	  move = 0;
 	  graf_mkstate(&mx, &my, &kret, &bret);
-	  fprintf(logfile, "touchob: %d\n", touchob);
+	  // fprintf(logfile, "touchob: %d\n", touchob);
 	  switch (touchob)
 	  {
 	    case ACC1NAME:
@@ -580,14 +655,14 @@ dofelev:	wind_update(3);
 		tree[ACFSVSLI].ob_x = pt.g_x;
 		tree[ACFSVSLI].ob_width = pt.g_w;
 		move = graf_slidebox(tree, ACFSVSLI, ACFSELEV, TRUE);
-		fprintf(logfile, "move=%d, fcount=%d, fcurrtop=%d\n", move, fcount, fcurrtop);
+		// fprintf(logfile, "move=%d, fcount=%d, fcurrtop=%d\n", move, fcount, fcurrtop);
 /* APPLE 	pt.g_x -= 3;
 		pt.g_w += 6; */
 		tree[ACFSVSLI].ob_x = pt.g_x;
 		tree[ACFSVSLI].ob_width = pt.g_w;
 		wind_update(2);
 		move = x_mul_div(move, fcount-8, 1000) - fcurrtop;
-		fprintf(logfile, "line move=%d\n", move);		
+		// fprintf(logfile, "line move=%d\n", move);		
 		break;
 
 	    case ACINST:
@@ -625,7 +700,7 @@ VOID  ins_acc()
 
 	if (iac_dial(tree) == ACINST)
 	{
-	//   iac_save(tree);
+		iac_save(tree);
 /* copy names from tree to current acc list */
 /* delete some/all current accs and free channels */
 /* run the new accessories */

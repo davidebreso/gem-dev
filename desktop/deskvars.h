@@ -102,5 +102,5 @@ extern WORD DOS_ERR;
 
 EXT X_BUF_V2 gl_xbuf;
 
-EXT FILE *logfile;
+// EXT FILE *logfile;
 
