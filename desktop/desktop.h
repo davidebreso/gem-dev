@@ -251,3 +251,8 @@
 #define STACFERR 46  	/* STRING */
 #define STACINST 47  	/* STRING */
 #define RESTITEM 30  	/* OBJECT in TREE #0 */
+#define ACC18ERR 56  	/* STRING */
+#define ACC04ERR 57  	/* STRING */
+#define ACC05ERR 58  	/* STRING */
+#define ACC08ERR 59  	/* STRING */
+#define ACCXXERR 60  	/* STRING */

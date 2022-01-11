@@ -12,13 +12,9 @@
 */
 
 #include "wccdesk.h"
-#include <errno.h>
-
-#if 1
 
 MLOCAL WORD	iac_chkd;
 
-int __set_errno_dos( unsigned int err );
 /*
 
 EXTERN ACCNODE gl_caccs[];
@@ -72,6 +68,42 @@ WORD  iac_isnam(LPBYTE lst)
 	ch = LBGET(lst);
 	return((ch>='A') && (ch<='Z'));
 }
+
+/*
+ * Routine that merge concatenate a custom string with the GEM error message 
+ * for a given error number. The resultant alert is then displayed.
+ */
+WORD iac_error(BYTE *dir, BYTE *acc, WORD errnum)
+{
+	WORD string;
+
+	switch (errnum)
+	{
+	  case 2:
+	  case 18:	
+	  case 3:
+		string = ACC18ERR;
+		break;
+	  case 4:
+		string = ACC04ERR;
+		break;
+	  case 5:
+		string = ACC05ERR;
+		break;
+	  case 8:
+	  case 10:
+	  case 11:
+		string = ACC08ERR;
+		break;
+	  default:
+		string = ACCXXERR;
+		break;
+	}
+
+    return fun_alert(1, string, dir, acc, errnum);
+}
+
+
 
 #if MULTIAPP
 VOID  iac_init()
@@ -283,8 +315,7 @@ WORD iac_save(LPTREE tree)
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
 			if(ret) {
 				graf_mouse(ARROW,NULL);
-				__set_errno_dos(ret);
-				fun_alert(1, STACFERR, "remove", &G.g_srcpth[19], strerror(errno));
+				iac_error("remove", &G.g_srcpth[19], ret);
 				return 0;
 			}
 		} 
@@ -303,8 +334,7 @@ WORD iac_save(LPTREE tree)
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
 			if(ret) {
 				graf_mouse(ARROW,NULL);
-				__set_errno_dos(ret);
-				fun_alert(1, STACFERR, "install", g_inslist[i], strerror(errno));
+				iac_error("install", g_inslist[i], ret);
 				return 0;
 			}
 		}
@@ -737,4 +767,4 @@ WORD  ins_acc()
 	return iac_dial(tree);
 } /* ins_acc */
 
-#endif /* MULTIAPP */
+

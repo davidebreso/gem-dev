@@ -40,7 +40,6 @@ WORD  fun_alert(WORD defbut, WORD stnum, ...)
 	return( form_alert(defbut, G.a_alert) );
 }
 
-
 VOID  fun_msg(WORD type, WORD w3, WORD w4, WORD w5, 
 			 WORD w6, WORD w7)
 {
