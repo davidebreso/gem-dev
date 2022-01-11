@@ -269,8 +269,8 @@ VOID  iac_save(LPTREE tree)
 			// fprintf(logfile, "Move %s to %s\n", G.g_dstpth, G.g_srcpth);
 			ret = dos_rename(G.g_dstpth, G.g_srcpth);
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
-			if(!ret) {
-				form_error(DOS_ERR);
+			if(ret) {
+				form_error(ret);
 				return;
 			}
 		} 
@@ -287,8 +287,8 @@ VOID  iac_save(LPTREE tree)
 			// fprintf(logfile, "Move %s to %s\n", G.g_srcpth, G.g_dstpth);
 			ret = dos_rename(G.g_srcpth, G.g_dstpth);
 			// fprintf(logfile, "dos_rename returned %d\n", ret);
-			if(!ret) {
-				form_error(DOS_ERR);
+			if(ret) {
+				form_error(ret);
 				return;
 			}
 		}
@@ -489,6 +489,11 @@ WORD  iac_names(LPTREE tree)
 	    ret = FALSE;
 	    desk_sound(TRUE, 660, 4);
 	  }
+	}
+	/* Set empty accessory slots to NULL */
+	for(;thefile < 3; thefile++)
+	{
+		g_inslist[thefile] = NULL;	
 	}
 #endif 
 
