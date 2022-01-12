@@ -131,7 +131,7 @@ VOID  iac_init()
 
 #define ACCMIN	0x2000
 
-VOID  iac_save(LPTREE tree)
+WORD  iac_save(LPTREE tree)
 {
 	WORD		i;
 	WORD		chnum;
@@ -204,6 +204,8 @@ VOID  iac_save(LPTREE tree)
 	    gl_caccs[i].acc_name[0] = '\0';
         }
 	wind_update(BEG_UPDATE);
+	
+	return 0;
 }
 
 VOID  iac_schar(LPTREE tree, WORD obj, BYTE ch)
@@ -483,13 +485,17 @@ WORD  iac_names(LPTREE tree)
 	
 	// fprintf(logfile, "iac_names()\n");
 
-					/* find all .acc files in \GEMBOOT */
+					/* find all .acc files in GEMBOOT */
 					/* stuff first 8 in object	*/
 					/* adjust elevator size to number */
 	thefile = 0;
 	ptr = &g_fsnames[0];
 	dos_sdta(G.a_wdta);
+#if MULTIAPP
+	strcpy(&G.g_cmd[1], ":\\GEMBOOT\\*.ACC");
+#else
 	strcpy(&G.g_cmd[1], ":\\GEMAPPS\\GEMBOOT\\*.ACC");
+#endif
 	G.g_cmd[0] = gl_bootdr;
 	// fprintf(logfile, "G.g_cmd=%s\n", G.g_cmd);
 	ret = dos_sfirst(G.a_cmd, 0x16);
@@ -636,12 +642,14 @@ WORD  iac_dial(LPTREE tree)
 	cont = TRUE;
 	while (cont)
 	{
+#if !MULTIAPP
 	  /* Disable "Remove accessory" button if an empty slot is selected */
 	  if(g_inslist[iac_chkd-ACC1NAME]) {
 		objc_change(tree, ACREMV, 0, xd, yd, wd, hd, NORMAL, TRUE);
 	  } else {
 		objc_change(tree, ACREMV, 0, xd, yd, wd, hd, DISABLED, TRUE);	      
 	  }
+#endif
 	  touchob = form_do(tree, 0);
 	  touchob &= 0x7fff;
 	  newstate = NORMAL;

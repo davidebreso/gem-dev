@@ -247,5 +247,9 @@ VOID  debugbreak(VOID);
 
 /* deskiacc.c */
 WORD  ins_acc(VOID);
+#if MULTIAPP
+VOID  iac_strcop(LPTREE tree, WORD obj, LPBYTE src);
+VOID  iac_init();
+#endif
 
 

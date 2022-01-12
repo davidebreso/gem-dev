@@ -6,6 +6,7 @@ from <http://www.seasip.info/Gem/desktops.html>. Features that have been added
 to the original Digital Research's GEM Desktop 3.0 include:
 
 * 'Floppy disk format' utility (inspired by EmuTOS)
+* 'Install Accessories' for single- and multi-tasking builds
 * Auto-arrange of icons to match the window size
 * Four windows and desktop icons (like GEM/1)
 * ViewMAX look and feel
@@ -29,7 +30,8 @@ Release 3.2.6 Changes (most recent at the top) -- Davide Bresolin
   Since single-tasking GEM cannot load/unload accessories at runtime,
   a restart of GEM is needed to reload the new accessories.
 
-* Added "Refresh window" and "Restart GEM" items in File menu.
+* Added "Refresh window" item in File menu. "Quit" displays a confirmation 
+  alert with a "Restart" option to restart GEM AES instead of exiting to DOS.
 
 * Removed keyboard shortcuts from buttons, to make dialogs look better with 
   the stock GEM/3 AES.
@@ -106,18 +108,14 @@ behaviour can be disabled from the Preferences screen.
 * DESKHI.ICN and DESKLO.ICN are now up-to-date and contain matching sets
 of icons.
 
-Notes on look and feel
+Notes on source code
 ===============================================================================
-  If you want it to look pretty, this version of DESKTOP should be run on
-a FreeGEM AES. It will also work on a stock GEM/3 AES, though it won't look
-as nice.
-
-To compile DESKTOP.APP from the source in this archive, you will need the
-Open Watcom v2 C compiler, linker and assembler
+To compile DESKTOP.APP from the source code, you need the Open Watcom v2 
+C compiler, linker and assembler
 <https://open-watcom.github.io>
 and Davide Bresolin's GEM bindings for it:
 <https://github.com/davidebreso/gem-dev>
 
-John Elliott, 26 March 2006
 Davide Bresolin, January 2022
+John Elliott, 26 March 2006
 

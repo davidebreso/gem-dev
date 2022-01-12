@@ -323,23 +323,25 @@ VOID set_format_options(LPTREE tree, WORD drive)
     drivetype = get_floppy_type(drive);
     if (drivetype == 0) {
         /* Unknown drive type, disable everything */
-        tree[FMT_5DD].ob_state |= DISABLED;
-        tree[FMT_5DD].ob_state &= ~SELECTED;
-        tree[FMT_5HD].ob_state |= DISABLED;
-        tree[FMT_5HD].ob_state &= ~SELECTED;
-        tree[FMT_3DD].ob_state |= DISABLED;
-        tree[FMT_3DD].ob_state &= ~SELECTED;
-        tree[FMT_3HD].ob_state |= DISABLED;    
-        tree[FMT_3HD].ob_state &= ~SELECTED;
-        tree[FMT_OK].ob_state |= DISABLED;
+        tree[FMT_5DD].ob_state  |= DISABLED;
+        tree[FMT_5DD].ob_state  &= ~SELECTED;
+        tree[FMT_5HD].ob_state  |= DISABLED;
+        tree[FMT_5HD].ob_state  &= ~SELECTED;
+        tree[FMT_3DD].ob_state  |= DISABLED;
+        tree[FMT_3DD].ob_state  &= ~SELECTED;
+        tree[FMT_3HD].ob_state  |= DISABLED;    
+        tree[FMT_3HD].ob_state  &= ~SELECTED;
+        tree[FMTLABEL].ob_state |= DISABLED;
+        tree[FMT_OK].ob_state   |= DISABLED;
         return;    
     }
     /* Enable every option */
-    tree[FMT_5DD].ob_state &= ~DISABLED;
-    tree[FMT_5HD].ob_state &= ~DISABLED;
-    tree[FMT_3DD].ob_state &= ~DISABLED;
-    tree[FMT_3HD].ob_state &= ~DISABLED;    
-    tree[FMT_OK].ob_state  &= ~DISABLED;
+    tree[FMT_5DD].ob_state  &= ~DISABLED;
+    tree[FMT_5HD].ob_state  &= ~DISABLED;
+    tree[FMT_3DD].ob_state  &= ~DISABLED;
+    tree[FMT_3HD].ob_state  &= ~DISABLED;    
+    tree[FMT_OK].ob_state   &= ~DISABLED;
+    tree[FMTLABEL].ob_state &= ~DISABLED;
     switch(drivetype)
     {
         case 1:     /* 5.25" 360K drive */

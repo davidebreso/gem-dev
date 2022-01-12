@@ -25,7 +25,7 @@
 
 /* DESKTOP v1.2: Different sets of illegal items */
 #if MULTIAPP
-  GLOBAL BYTE	ILL_ITEM[] = {RESTITEM,L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #else
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #endif
@@ -459,22 +459,26 @@ MLOCAL WORD  do_filemenu(WORD item)
 		pro_run(TRUE, -1, -1, -1);
 #else
 		done = pro_run(TRUE, TRUE, -1, -1);
-	    break;
-	  case RESTITEM:
-	    pro_restart(&gl_gemvdi, G.a_tail);
-	    done = TRUE;
 #endif
 		break;
 	  
 	  case QUITITEM:
-        // fprintf(logfile, "pro_exit(%s, %s)\n", G.g_cmd, G.g_tail);
 #if MULTIAPP
-		if (fun_alert(1,STEXTDSK,NULLPTR) == 2)		/* CANCEL */
-            break;
-		else
-#endif
-		pro_exit(G.a_cmd, G.a_tail);
-		done = TRUE;
+        switch(fun_alert(1,STEXTDSK,NULLPTR))
+        {
+#else
+        switch(fun_alert(1,STEXTRST,NULLPTR))
+        {
+            case 2:     /* Restart */
+    		    pro_restart(&gl_gemvdi, G.a_tail);
+    		    done = TRUE;
+    		    break;             
+#endif    		      
+            case 1:     /* OK */ 
+                pro_exit(G.a_cmd, G.a_tail);
+                done = TRUE;
+                break;
+        }
 		break;
 /* #if DEBUG
 	  case DBUGITEM:
@@ -601,14 +605,14 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		 	desk_wait(FALSE);
 		}
 		break;
-#if 1
+
 	  case IACCITEM:
 		if(ins_acc() == 2) {
 		    pro_restart(&gl_gemvdi, G.a_tail);
 		    done = TRUE;
 		}
 		break;
-#endif
+
 	  case PREFITEM:
 		if (inf_pref())
 		  desk_all(FALSE);
