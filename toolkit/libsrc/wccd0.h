@@ -17,6 +17,6 @@ extern struct SREGS SR;
 
 extern UWORD	DOS_ERR;
 
-extern WORD __DOS();
+extern VOID __DOS();
 extern VOID dos_func(UWORD ax, UWORD lodsdx, UWORD hidsdx);
 extern VOID dos_lpvoid(UWORD ax, LPVOID fp);

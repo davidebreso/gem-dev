@@ -13,7 +13,6 @@ lib/wccgem-l.lib lib/wccgem-s.lib:
 install:
 	$(MAKE) -C include install
 	$(MAKE) -C lib install
-	$(MAKE) -C bin install
 
 clean:
 	$(MAKE) -C libsrc $@

@@ -1,7 +1,7 @@
 include ../../makedefs.i
 
 CC = wcc
-CFLAGS = -bt=dos -ms -s-os -0 -i../../include -i..
+CFLAGS = -bt=dos -mc -s-os -0 -i../../include -i..
 
 OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj ems_rmap.obj \
 	  ems_smap.obj ems_vers.obj emslib.obj ob_dofl.obj ob_dost.obj ob_dr_di.obj \
@@ -58,10 +58,10 @@ OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj 
 	  wccv131.obj wccv132.obj wccv133.obj wccv134.obj wccv135.obj wccv136.obj \
           wccv137.obj wccv138.obj wccvdi.obj wcclptr.obj
 
-all:	wccgem-s.lib
+all:	wccgem-c.lib
 
-wccgem-s.lib:	$(OBJECTS)
-	wlib -n wccgem-s.lib $(OBJECTS)
+wccgem-c.lib:	$(OBJECTS)
+	wlib -n wccgem-c.lib $(OBJECTS)
 
 %.obj:	../%.c
 	$(CC) -fo=$@ $(CFLAGS) $<

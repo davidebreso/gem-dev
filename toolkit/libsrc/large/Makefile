@@ -1,7 +1,6 @@
 include ../../makedefs.i
-#
+
 CC = wcc
-#CFLAGS = -Bl -Zg -I../../INCLUDE -I.. $(STDINC)
 CFLAGS = -bt=dos -ml -s -os -0 -i../../include -i..
 
 OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj ems_rmap.obj \
@@ -60,18 +59,12 @@ OBJECTS = ems_all.obj ems_fp.obj ems_free.obj ems_fs.obj ems_map.obj ems_np.obj 
           wccv137.obj wccv138.obj wccvdi.obj wcclptr.obj
 
 all:	wccgem-l.lib
-#
-# Because of the short DOS command line, I can't just say "libr r $@ $(OBJECTS)"
-#
+
 wccgem-l.lib:	$(OBJECTS)
 	wlib -n wccgem-l.lib $(OBJECTS)
 
 %.obj:	../%.c
 	$(CC) -fo=$@ $(CFLAGS) $<
-
-%.obj:	../%.as
-	$(CC) -O $@ -C $(CFLAGS) $<
-
 
 tidy:
 	rm -f *.bak *.obj wccgem-s.lib

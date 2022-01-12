@@ -19,7 +19,7 @@ struct SREGS SR;
 
 GLOBAL UWORD	DOS_ERR;
 
-WORD __DOS()
+VOID __DOS()
 {
 	intdosx(&DR, &DR, &SR);
 

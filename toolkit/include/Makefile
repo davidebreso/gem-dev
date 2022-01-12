@@ -3,4 +3,5 @@ include ../makedefs.i
 all:
 
 install:
-	cp *.h $(INSTDIR)/h
+	install -d $(INSTDIR)/h/gem
+	install *.h $(INSTDIR)/h/gem

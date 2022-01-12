@@ -135,24 +135,6 @@ VOID wcc_hookoff(VOID)
 	oldvdi = NULL;
 }
 
-/********
-
-asm {
-
-#ifdef LARGE_MODEL
-	.globl	large_data
-	.globl	large_code
-	.psect	ltext,local,class=CODE,reloc=16,size=65535
-#else
-	.globl	small_data
-	.globl	small_code
-	.psect	_TEXT,class=CODE
-#endif
-
-	.globl	__gem_call
-	.globl  __gem_hook
-	.globl	__gem_old
-*****/
 	
 /*
  *This is our handler for INT 0xEF.
@@ -191,7 +173,7 @@ gcall1:
 	mov ax, seg newstack
 	mov ss, ax
 	mov sp, offset newstack + NEWSTACK_SIZ - 2
-#ifdef __SMALL__
+#if defined( __SMALL__ ) || defined( __COMPACT__ )
 	call _gem_hook
 #else
 	callf _gem_hook

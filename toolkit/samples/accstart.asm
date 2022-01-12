@@ -25,7 +25,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  DOS 16-bit startup code.
+;* Description: Modified DOS 16-bit startup code for GEM Desktop Accessories.
 ;*
 ;*****************************************************************************
 
@@ -36,7 +36,7 @@
 ;               wasm cstrt086 -bt=DOS -mh -0r
 ;
 
-.286p
+.8086
 
         name    accstart
 

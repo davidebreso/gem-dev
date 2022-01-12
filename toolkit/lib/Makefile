@@ -2,8 +2,9 @@
 include ../makedefs.i
 
 install:
-	cp wccgem-l.lib $(INSTDIR)/lib286
-	cp wccgem-s.lib $(INSTDIR)/lib286
+	install -d $(INSTDIR)/lib286
+	install wccgem-l.lib $(INSTDIR)/lib286
+	install wccgem-s.lib $(INSTDIR)/lib286
 
 tidy:
 

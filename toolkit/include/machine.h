@@ -21,9 +21,9 @@ typedef UWORD FAR  *LPUWORD;
 #define LPUWORD LONG
 #endif
 
-#ifdef __LARGE__
-#include "lmachine.h"
-#else
+#if defined( __SMALL__ ) || defined( __MEDIUM__ )
 #include "smachine.h"
+#else
+#include "lmachine.h"
 #endif
 

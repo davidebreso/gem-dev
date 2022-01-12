@@ -70,12 +70,24 @@ large/wccgem-l.lib: $(SOURCE)
 small/wccgem-s.lib: $(SOURCE)
 	$(MAKE) -C small
 
+large/wccgem-c.lib: $(SOURCE)
+	$(MAKE) -C compact
+
+small/wccgem-m.lib: $(SOURCE)
+	$(MAKE) -C medium
+
+small/wccgem-h.lib: $(SOURCE)
+	$(MAKE) -C huge
+
 tidy:
 	rm -f ../lib/wccgem-l.lib 
 	rm -f ../lib/wccgem-s.lib
 	rm -f *.bak
 	$(MAKE) -C small tidy
 	$(MAKE) -C large tidy
+	$(MAKE) -C compact tidy
+	$(MAKE) -C medium tidy
+	$(MAKE) -C huge tidy
 
 clean:	
 	rm -f ../lib/wccgem-l.lib 
@@ -84,3 +96,6 @@ clean:
 	rm -f *.err
 	$(MAKE) -C small clean
 	$(MAKE) -C large clean
+	$(MAKE) -C compact clean
+	$(MAKE) -C medium clean
+	$(MAKE) -C huge clean

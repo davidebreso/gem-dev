@@ -45,7 +45,7 @@ MLOCAL WORD __declspec( naked ) _far_draw(WORD seg, WORD ofs)
         mov dx, ax
         mov ax, bx
         /* _dr_code calls the user function and returns value in AX */
-#ifdef __SMALL__        
+#if defined( __SMALL__ ) || defined( __COMPACT__ )
         call _dr_code
 #else
         callf _dr_code

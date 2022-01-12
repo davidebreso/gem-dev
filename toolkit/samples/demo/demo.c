@@ -501,8 +501,8 @@ WORD	obj, init_no;				/* Pen/Eraser Dialog  	*/
 
 	indir_obj(tree, obj); 			
 	bind[0] = tree[obj].ob_spec;	//LVGET(OB_SPEC(obj)); 		
-	tree[obj].ob_spec = ADDR(bind);	//LVSET(OB_SPEC(obj), ADDR(bind));	
-	bind[1] = ADDR(arry);			
+	tree[obj].ob_spec = (bind);	//LVSET(OB_SPEC(obj), ADDR(bind));	
+	bind[1] = (arry);			
 
 	n = (WORD) arry[0];			
 	count = 0;
@@ -511,13 +511,13 @@ WORD	obj, init_no;				/* Pen/Eraser Dialog  	*/
 	{ 	/* loop to init color selector with colors 1 to 4 	*/
 
 		indir_obj(tree, cobj);
-		tree[cobj].ob_spec = ADDR( &arry[count + 1] );
+		tree[cobj].ob_spec = &arry[count + 1];
 		/*LLSET(OB_SPEC(cobj), (LONG)ADDR( &arry[count + 1] ));*/
 		count = (count + 1) % n;
 	}
 	nobj = tree[obj].ob_next; /*LWGET(OB_NEXT(obj));*/ 	/* set pointer to current color	*/
 	indir_obj(tree, nobj);
-	tree[nobj].ob_spec = ADDR( &arry[1 + init_no % n] ); 
+	tree[nobj].ob_spec = &arry[1 + init_no % n]; 
 	/* LVSET(OB_SPEC(nobj), ADDR( &arry[1 + init_no % n] )); */
 }
 
@@ -1057,7 +1057,7 @@ BYTE	*name;
 	rsrc_gaddr( R_TREE, DEMOSVAD, (LPVOID *)&tree) ;
 	ted_addr = tree[DEMONAME].ob_spec; 
 			 //LLGET(OB_SPEC(DEMONAME));	/* get obspec pointer 	*/
-	ted_addr->te_ptext  = ADDR(name);		/* set obspec pointer   */
+	ted_addr->te_ptext  = name;		/* set obspec pointer   */
 	//LLSET( ted_addr,  (LONG)ADDR(name) ) ;		/* set obspec pointer 	*/
 	ted_addr->te_txtlen = 9;				/* 1 more than */
 //	LWSET( TE_TXTLEN(ted_addr),9); 		/* 1 more than 		*/
@@ -1103,7 +1103,7 @@ BYTE	*tmp_path, *spec;
 	tmp_path[0] = cur_drv + 'A';
 	tmp_path[1] = ':';
 	tmp_path[2] = '\\';
-	dos_gdir(cur_drv+1, ADDR(&tmp_path[3]));
+	dos_gdir(cur_drv+1, &tmp_path[3]);
 	if (strlen(tmp_path) > 3)
 		strcat(tmp_path, "\\");
 	else
@@ -1147,16 +1147,16 @@ BOOLEAN	loop;
 		/* Recent AES supports fsel_exinput() */
 		if (gl_xbuf.arch)
 		{
-			fsel_exinput(ADDR(file_name), ADDR(fs_iinsel), &fs_iexbutton, " Select file to load ");
+			fsel_exinput(file_name, fs_iinsel, &fs_iexbutton, " Select file to load ");
 		}
 		else
 		{
-			fsel_input(ADDR(file_name), ADDR(fs_iinsel), &fs_iexbutton);
+			fsel_input(file_name, fs_iinsel, &fs_iexbutton);
 		}
 		if (fs_iexbutton)
 		{
 			add_file_name(file_name, fs_iinsel);
-			file_handle = dos_open(ADDR(file_name),2);
+			file_handle = dos_open(file_name,2);
 			if (!loop || (loop && !DOS_ERR))
 				return(1);
 		}
@@ -1269,7 +1269,7 @@ WORD 	title, item;
 			do_svas();
 			break;
 		case DEMOABAN: /* Abandon File */
-			file_handle = dos_open(ADDR(file_name),2);
+			file_handle = dos_open(file_name,2);
 			do_load(FALSE);
 			break;
 		case DEMOQUIT: /* Quit - Exit back to Desktop	*/
@@ -1343,7 +1343,7 @@ do_save(VOID)			/* save current named demo picture	*/
 {
 	if (*file_name)
 	{
-		file_handle = dos_open(ADDR(file_name),2);
+		file_handle = dos_open(file_name,2);
 		if (!DOS_ERR) 
 		{ 	/* File already exists 	*/
 			if (form_alert(1, string_addr(DEMOOVWR)) == 2)
@@ -1354,7 +1354,7 @@ do_save(VOID)			/* save current named demo picture	*/
 		}
 
 		if(DOS_ERR) 
-			file_handle = dos_create(ADDR(file_name),0); 
+			file_handle = dos_create(file_name,0); 
 		if(DOS_ERR)
 		{ 	/* disable Save and Abandon	*/ 
 			disab_menu(DEMOSAVE);
@@ -1413,7 +1413,7 @@ BYTE	*eraser;
 	demo_height = height;
 	demo_shade = PEN_ERASER;
 	monumber = 255;  
-	mofaddr = ADDR(eraser);
+	mofaddr = eraser;
 }		
 
 /*------------------------------*/
@@ -1425,7 +1425,7 @@ LPTREE	tree;
 LPVOID  *bind;
 WORD	obj, color_num;
 {
-	set_select(tree, obj, color_num - 1, ADDR(bind), color_sel);
+	set_select(tree, obj, color_num - 1, bind, color_sel);
 }
 
 /*------------------------------*/
@@ -2207,7 +2207,7 @@ demo_init()
 	
 	wind_update(BEG_UPDATE);
 	graf_mouse(HOUR_GLASS, 0x0L);
-	if (!rsrc_load( ADDR("DEMO.RSC") ))
+	if (!rsrc_load( "DEMO.RSC" ))
 	{    	
 		/* No Resource File  */
 		graf_mouse(ARROW, 0x0L);
@@ -2268,7 +2268,7 @@ demo_init()
 	rast_op(0, &undo_area, &scrn_mfdb, &undo_area, &undo_mfdb);
 
 	pict_init();	/* transforms & programmer defined objects 	*/
-	ad_rmsg = ADDR((BYTE *) &gl_rmsg[0]); /* init message address	*/
+	ad_rmsg = (LPBYTE)&gl_rmsg[0]; /* init message address	*/
 
 	/* Get Desktop work area	*/
 	wind_get(DESK, WF_WXYWH, &gl_xfull, &gl_yfull, &gl_wfull, &gl_hfull);

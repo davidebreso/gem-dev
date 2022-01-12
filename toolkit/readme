@@ -1,7 +1,7 @@
 GEM Developers' Kit - Open Watcom libraries     Davide Bresolin, December 2021
 ==============================================================================
 
-Version 1.0.1
+Version 1.0.2
 
 This is based on John Elliott's GDK for Pacific C version 1.0.3 downloadable
 from <http://www.seasip.info/Gem/devkit.html>. 
@@ -21,24 +21,42 @@ Overview of use
 ===============
 
 To use GEM functions, you need only
-  
+
 #include "wccgem.h"
 
 to include all necessary files.
 
 When linking your GEM applications, remember to add 
   
-    $(LIB)/wccgem-s.lib (small model)
-or  $(LIB)/wccgem-l.lib (large model)
+    wccgem-s.lib (small model)
+or  wccgem-l.lib (large model)
 
 to WLINK "library" directive. 
 
-The directory samples/ contains a reference startup code stub (accstart.asm) to
-create Desktop Accessories. By using the stub, a DA can be compiled as a normal
+Examples
+========
+
+The directory samples/ contains Open Watcom ports of the GEM PTK sample
+applications. 
+
+The directory includes a custom startup code stub (accstart.asm) to create
+Desktop Accessories. By using the stub, a DA can be compiled as a normal
 GEM application, and then linked with the
 
     libfile start-s.obj (small model)
 or  libfile start-l.obj (large model)
 
 WLINK directive to replace Open Watcom's startup code. See the examples in
-samples/ for details on how to write and compile DA.
+samples/ for details on how to write and compile Desktop Accessories.
+
+Documentation
+=============
+
+The majority of the code written by John Elliott for Pacific C worked correctly
+out of the box. However, I had to use a few tricks to port some of the more 
+advanced functionalities: USERDEF objects, hooking the AES or VDI and create
+Desktop Accessories. I logged this journey in doc/wccgem.doc.
+
+The directory doc/ includes also the original documentation from the Pacific C
+Developer's kit and the original GEM PTK.
+
