@@ -27,24 +27,24 @@
 #if MULTIAPP
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #else
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,IACCITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
 #endif
-GLOBAL BYTE	ILL_FILE[] = {FORMITEM,IDSKITEM,0};
-GLOBAL BYTE	ILL_DOCU[] = {FORMITEM,IDSKITEM,IAPPITEM,0};
-GLOBAL BYTE	ILL_FOLD[] = {OUTPITEM,FORMITEM,TYPITEM,IDSKITEM,IAPPITEM,0};
+GLOBAL BYTE	ILL_FILE[] = {0};
+GLOBAL BYTE	ILL_DOCU[] = {IAPPITEM,0};
+GLOBAL BYTE	ILL_FOLD[] = {OUTPITEM,TYPITEM,IAPPITEM,0};
 GLOBAL BYTE	ILL_FDSK[] = {OUTPITEM,IAPPITEM,TYPITEM,0};
-GLOBAL BYTE	ILL_HDSK[] = {FORMITEM,OUTPITEM,TYPITEM,IAPPITEM,0};
-GLOBAL BYTE	ILL_TRASH[] = {OPENITEM,OUTPITEM,TYPITEM,FORMITEM,
-	                       IDSKITEM,IAPPITEM,0};
-GLOBAL BYTE ILL_NOTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,0};
-GLOBAL BYTE	ILL_DESKTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,ICONITEM,TEXTITEM,
+GLOBAL BYTE	ILL_HDSK[] = {OUTPITEM,TYPITEM,IAPPITEM,0};
+GLOBAL BYTE	ILL_TRASH[] = {OPENITEM,OUTPITEM,TYPITEM,
+	                       IAPPITEM,0};
+GLOBAL BYTE ILL_NOTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,REFWITEM,0};
+GLOBAL BYTE	ILL_DESKTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,REFWITEM,ICONITEM,TEXTITEM,
 						NAMEITEM,DATEITEM,SIZEITEM,TYPEITEM,0};
-GLOBAL BYTE 	ILL_NOSEL[]={OPENITEM,SHOWITEM,FORMITEM,
-				IDSKITEM,IAPPITEM,TYPITEM,0};
-GLOBAL BYTE	ILL_YSEL[] = {OPENITEM, IDSKITEM, FORMITEM, 
+GLOBAL BYTE 	ILL_NOSEL[]={OPENITEM,SHOWITEM,
+				IAPPITEM,TYPITEM,0};
+GLOBAL BYTE	ILL_YSEL[] = {OPENITEM, 
 				TYPITEM, SHOWITEM, 0};
-GLOBAL BYTE	ILL_TYPE[] = {OPENITEM,SHOWITEM,FORMITEM,TYPITEM,
-				IAPPITEM, IDSKITEM,
+GLOBAL BYTE	ILL_TYPE[] = {OPENITEM,SHOWITEM,TYPITEM,
+				IAPPITEM,
 				NAMEITEM, TYPEITEM, SIZEITEM, DATEITEM,
 				0 };
 
@@ -390,7 +390,7 @@ MLOCAL WORD  do_filemenu(WORD item)
 		if (pw)			/* instead */
 		  fun_mkdir(pw);/* [JCE 19-7-2002] Do correct check: for window */
 		break;			/* open rather than item highlighted */
-	/* These next two only in DESKTOP v1.2 */
+	/* These next trhee only in DESKTOP v1.2 */
           case CLOSITEM:
 		if (pw)
 		  fun_close(pw, 0);
@@ -399,9 +399,12 @@ MLOCAL WORD  do_filemenu(WORD item)
 		if (pw)
 		  fun_close(pw, 1);
 		break;
+	  case REFWITEM:
+		if (pw)
+		  fun_rebld(pw);
+		break;
 	  case FORMITEM:
-		if (curr)
-		  do_format(curr);
+		do_format(curr);
 		break;   
 	  case OUTPITEM:
 
@@ -458,14 +461,24 @@ MLOCAL WORD  do_filemenu(WORD item)
 		done = pro_run(TRUE, TRUE, -1, -1);
 #endif
 		break;
+	  
 	  case QUITITEM:
 #if MULTIAPP
-		if (fun_alert(1,STEXTDSK,NULLPTR) == 2)		/* CANCEL */
-		  break;
-		else
-#endif
-		pro_exit(G.a_cmd, G.a_tail);
-		done = TRUE;
+        switch(fun_alert(1,STEXTDSK,NULLPTR))
+        {
+#else
+        switch(fun_alert(1,STEXTRST,NULLPTR))
+        {
+            case 2:     /* Restart */
+    		    pro_restart(&gl_gemvdi, G.a_tail);
+    		    done = TRUE;
+    		    break;             
+#endif    		      
+            case 1:     /* OK */ 
+                pro_exit(G.a_cmd, G.a_tail);
+                done = TRUE;
+                break;
+        }
 		break;
 /* #if DEBUG
 	  case DBUGITEM:
@@ -547,6 +560,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 
 	done = FALSE;
 	rebld = FALSE;
+	pa = NULL;
 
 	curr = win_isel(G.g_screen, G.g_croot, 0);
 	if (curr)
@@ -555,7 +569,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 	switch( item )
 	{
 	  case IDSKITEM:
-		if (pa)		rebld = ins_disk(pa);
+		rebld = ins_disk(pa);
 		if (rebld)
 		{
 /* DESKTOP v2.x...
@@ -591,11 +605,14 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		 	desk_wait(FALSE);
 		}
 		break;
-#if MULTIAPP
+
 	  case IACCITEM:
-		ins_acc();
+		if(ins_acc() == 2) {
+		    pro_restart(&gl_gemvdi, G.a_tail);
+		    done = TRUE;
+		}
 		break;
-#endif
+
 	  case PREFITEM:
 		if (inf_pref())
 		  desk_all(FALSE);
@@ -1249,11 +1266,13 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	BYTE		docopyrt;
 /* initialize libraries	*/
 
-#if DEBUG
-	remove("c:/gemapp.log");
-#endif
+/* #if DEBUG
+	// remove("c:/gemapp.log");        
+    logfile = fopen("desktop.log", "w");
+    fprintf(logfile, "Starting DESKTOP\n");
+#endif */
     
-	memset(&gl_xbuf, 0, sizeof(gl_xbuf));
+    memset(&gl_xbuf, 0, sizeof(gl_xbuf));
 	gl_xbuf.buf_len = sizeof(gl_xbuf);
 	gl_apid = appl_init(&gl_xbuf);
 						/* get GEM's gsx handle	*/
@@ -1306,6 +1325,12 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	for(ii = 0; ii < NUM_ADTREES; ii++)
 	  rsrc_gaddr(0, ii, (LPVOID *)&G.a_trees[ii]);
 
+	/* 
+	 * bugfix: trim 1 pixel of width for ACNAMBOX in Install Accessories
+	 * dialog so it does not overlap the scroll bar
+	 */
+	tree = G.a_trees[ADINSACC];
+	tree[ACNAMBOX].ob_width -= 1;
 
 #if MULTIAPP
 /* Not done in FreeGEM desktop since it only has an icon, not a graphical
@@ -1371,12 +1396,12 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	  return(FALSE);
 	}
 
+	strcpy(gl_gemvdi, "GEMVDI.EXE");	
+						/* get boot drive */
+	ii = shel_find(&gl_gemvdi);
+	gl_bootdr = gl_gemvdi[0];
 #if MULTIAPP
 #define LOFFSET(x) ((((x)&0xFFFF0000l)>>12)+((x)&0x0FFFFl))
-	lstlcpy(G.a_cmd, ADDR("GEMVDI.EXE"), sizeof(G.a_cmd));	
-						/* get boot drive */
-	shel_find(G.a_cmd);
-	gl_bootdr = G.g_cmd[0];
 	gl_untop = 0;
 
 	proc_shrink(DESKPID);
@@ -1390,7 +1415,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	pr_topmem = LOFFSET(pr_topmem);
 
 	csize = (pr_topmem - pr_begdsk) >> 10;		/* K app space	*/
-	merge_str(&memszstr[0], "%L", csize);		/* to ASCII	*/
+	sprintf(&memszstr[0], "%ld", csize);		/* to ASCII	*/
 	iac_strcop(G.a_trees[ADDINFO], DEMEMSIZ, ADDR(&memszstr[0]));
 	
 	proc_info(GEMPID,&junk1,&junk2,(LPVOID *)&pr_beggem,&csize,
@@ -1540,6 +1565,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* close gsx virtual ws	*/
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
+/* #if DEBUG
+	fprintf(logfile, "Closing DESKTOP.\n");
+	fclose(logfile);
+#endif */
 	appl_exit();
 
 	return(TRUE);

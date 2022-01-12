@@ -355,8 +355,7 @@ MLOCAL WORD  d_dofcopy(BYTE *psrc_file, BYTE *pdst_file, WORD dstpthlen,
 
 
 	      tree = G.a_trees[ADCPALER];
-	      ob = inf_gindex(G.a_trees[ADCPALER], CAOK, CASTOP);
-	      ob = ob + CAOK;
+	      ob = inf_gindex(G.a_trees[ADCPALER], CAOK, CASTOP) + CAOK;
 	      tree[ob].ob_state = NORMAL;
 	      if (ob == CASTOP)
 	        copy = more = FALSE;
@@ -496,7 +495,7 @@ WORD  d_doop(WORD op, LPTREE tree, WORD obj, BYTE *psrc_path,
 	      if (tree)
 	      {
 	        *pdcnt -= 1;
-	        merge_str(&ml_dirs[0], "%W", *pdcnt);
+	        sprintf(&ml_dirs[0], "%u", *pdcnt);
 	        inf_sset(tree, ml_dlfo, &ml_dirs[0]);
 	        draw_fld(tree, ml_dlfo);
 	      }
@@ -565,7 +564,7 @@ WORD  d_doop(WORD op, LPTREE tree, WORD obj, BYTE *psrc_path,
 	      if (tree)
 	      {
 	        *pfcnt -= 1;
-			merge_str(&ml_files[0], "%W", *pfcnt);
+			sprintf(&ml_files[0], "%u", *pfcnt);
 	        inf_sset(tree, ml_dlfi, &ml_files[0]);
 	        draw_fld(tree, ml_dlfi);
 	      }
@@ -749,9 +748,9 @@ MLOCAL VOID dirop_file(WORD op, FNODE *pf, WORD *more,
 
 MLOCAL WORD sset_tree(LPTREE tree, WORD fcnt, WORD dcnt)
 {
-	  merge_str(&ml_files[0], "%W", fcnt);
+	  sprintf(&ml_files[0], "%u", fcnt);
 	  inf_sset(tree, ml_dlfi, &ml_files[0]);
-	  merge_str(&ml_dirs[0], "%W", dcnt);
+	  sprintf(&ml_dirs[0], "%u", dcnt);
 	  inf_sset(tree, ml_dlfo, &ml_dirs[0]);
 	  ml_havebox = TRUE;
 	  show_hide(FMD_START, tree);
@@ -884,7 +883,7 @@ dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
 	      if (tree)
 	      {
 		*pfcnt -= 1;
-		merge_str(&ml_files[0], "%W", *pfcnt);
+		sprintf(&ml_files[0], "%u", *pfcnt);
 		inf_sset(tree, ml_dlfi, &ml_files[0]);
 		draw_fld(tree, ml_dlfi);
 	      } /* if tree */

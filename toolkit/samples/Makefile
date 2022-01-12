@@ -100,6 +100,7 @@ tidy:
 	$(MAKE) -C userdef tidy
 	$(MAKE) -C format tidy
 	$(MAKE) -C rscreate tidy
+	$(MAKE) -C format tidy
 
 clean:
 	rm -f main-?.obj

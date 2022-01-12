@@ -34,12 +34,13 @@ typedef SFCB far *LPSFCB;
 /************************************************************************/
 MLOCAL VOID  my_itoa(UWORD number, BYTE *pnumstr)
 {
-	WORD		ii;
-
-	for (ii = 0; ii < 2; pnumstr[ii++] = '0');
-	pnumstr[2] = 0;
-	if (number > 9) merge_str(pnumstr,   "%W", number);
-	else	        merge_str(pnumstr+1, "%W", number);
+// 	WORD		ii;
+// 
+// 	for (ii = 0; ii < 2; pnumstr[ii++] = '0');
+// 	pnumstr[2] = 0;
+// 	if (number > 9) sprintf(pnumstr,   "%u", number);
+// 	else	        sprintf(pnumstr+1, "%u", number);
+    sprintf(pnumstr, "%02u", number);
 } /* my_itoa */
 
 /*
@@ -164,11 +165,11 @@ MLOCAL WORD  ob_sfcb(LPSFCB psfcb, BYTE *pfmt)
 	  LONG kay = sf.sfcb_size;
 	  static char *fix[3] = { "K", "M", "G" };
 	  char *s = fix[0];  
-	  merge_str(&psize_str[0], "%L", sf.sfcb_size);
+	  sprintf(&psize_str[0], "%ld", sf.sfcb_size);
   	  while (strlen(psrc) > 8)
 	  {
 		kay = (kay + 1023) / 1024;
-		merge_str(&psize_str[0], "%L", kay);
+		sprintf(&psize_str[0], "%ld", kay);
 		strcat(psrc, s);
 		++s;
 	  }
@@ -240,10 +241,11 @@ WORD dr_code(LPPARM pparms)
 	return(state);
 }
 
+
 /*
-*	Put up dialog box & call form_do.
-*/
-WORD  inf_show(LPTREE tree, WORD start)
+ *  Put up dialog box
+ */
+VOID  inf_start(LPTREE tree)
 {
 	WORD		xd, yd, wd, hd;
 
@@ -251,11 +253,33 @@ WORD  inf_show(LPTREE tree, WORD start)
 	form_dial(FMD_START, 0, 0, 0, 0, xd, yd, wd, hd);
 /* ViewMAX here includes code to hide the help button on helpscreens */
 	objc_draw(tree, ROOT, MAX_DEPTH, xd, yd, wd, hd);
-	form_do(tree, start);
+}
+
+/*
+ * Close dialog box
+ */
+VOID inf_end(LPTREE tree)
+{
+    WORD xd, yd, wd, hd;
+    UWORD junk;
+
+    form_center(tree, &xd, &yd, &wd, &hd);
 	form_dial(FMD_FINISH, 0, 0, 0, 0, xd, yd, wd, hd);
-/* ViewMAX here waits for the next two messages. Not sure why. */
+}
+
+/*
+*	Put up dialog box, call form_do and close dialog box.
+*/
+WORD  inf_show(LPTREE tree, WORD start)
+{
+
+    inf_start(tree);
+	form_do(tree, start);
+    inf_end(tree);
+    
 	return(TRUE);
 }
+
 
 /*
 *	Routine for finishing off a simple ok-only dialog box
@@ -285,10 +309,10 @@ MLOCAL WORD  inf_fifo(LPTREE tree, WORD dl_fi, WORD dl_fo, BYTE *ppath, WORD pat
 	  return(FALSE);
 	G.g_ndirs--;
 
-	merge_str(&nf_str[0], "%L", G.g_nfiles);
+	sprintf(&nf_str[0], "%ld", G.g_nfiles);
 	inf_sset(tree, dl_fi, &nf_str[0]);
 
-	merge_str(&nd_str[0], "%L", G.g_ndirs);
+	sprintf(&nd_str[0], "%ld", G.g_ndirs);
 	inf_sset(tree, dl_fo, &nd_str[0]);
 	return(TRUE);
 }
@@ -321,7 +345,7 @@ MLOCAL VOID  inf_dttmsz(LPTREE tree, FNODE *pf, WORD dl_dt, WORD dl_tm, WORD dl_
 	strlcpy(ft, pt, 14);
 	inf_sset(tree, dl_tm, &ftime_str[0]);
 
-	merge_str(&psize_str[0], "%L", *psize);
+	sprintf(&psize_str[0], "%ld", *psize);
 	inf_sset(tree, dl_sz, &psize_str[0]);
 }
 
@@ -460,10 +484,10 @@ WORD  inf_disk(BYTE dr_id)
 	  inf_sset(tree, DIDRIVE, &drive[0]);
 	  inf_sset(tree, DIVOLUME, &plab_str[0]);
 
-	  merge_str(&puse_str[0], "%L", G.g_size);
+	  sprintf(&puse_str[0], "%ld", G.g_size);
 	  inf_sset(tree, DIUSED, &puse_str[0]);
 	  
-	  merge_str(&pav_str[0], "%L", avail);
+	  sprintf(&pav_str[0], "%ld", avail);
 	  inf_sset(tree, DIAVAIL, &pav_str[0]);
 
 	  inf_finish(tree, DIOK);

@@ -51,8 +51,10 @@ EXT WORD gl_iconstart;	/* Was gl_pstart. Renamed so I can check all
 			 * it's an offset. */
 EXT BYTE gl_lngstr[256];
 
-#if MULTIAPP
 EXT BYTE	gl_bootdr;
+EXT BYTE    gl_gemvdi[82];
+
+#if MULTIAPP
 EXT WORD	gl_untop;
 EXT LONG	pr_beggem;
 EXT LONG	pr_begacc;
@@ -63,7 +65,7 @@ EXT LONG	pr_ssize;
 EXT LONG	pr_itbl;
 EXT WORD	pr_kbytes;
 EXT WORD	gl_fmemflg;
-EXT ACCNODE     gl_caccs[3];
+EXT ACCNODE gl_caccs[3];
 EXT WORD	gl_keepac;
 #endif
 
@@ -101,3 +103,7 @@ extern WORD global[G_SIZE];
 extern WORD DOS_ERR;
 
 EXT X_BUF_V2 gl_xbuf;
+
+#if DEBUG
+EXT FILE *logfile;
+#endif

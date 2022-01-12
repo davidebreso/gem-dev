@@ -232,12 +232,18 @@ dbg("PTAIL  = %s\r\n", ptail);
 	return( ret );
 } /*  */
 
-
-
 WORD  pro_exit(LPBYTE pcmd, LPBYTE ptail)
 {
 	WORD		ret;
 
 	ret = shel_write(FALSE, FALSE, 1, pcmd, ptail);
+	return( ret );
+} /* pro_exit */
+
+WORD  pro_restart(LPBYTE pcmd, LPBYTE ptail)
+{
+	WORD		ret;
+
+	ret = shel_write(TRUE, FALSE, 2, pcmd, ptail);
 	return( ret );
 } /* pro_exit */

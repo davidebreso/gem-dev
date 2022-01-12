@@ -25,22 +25,20 @@ WORD  is_installed(ANODE *pa)
 
 
 /*
-*	Routine to find out if this icon is the last disk icon on the
+*	Routine to get the icon of the last disk icon on the
 *	screen.
 */
-MLOCAL 	WORD 
-lastdisk()
+MLOCAL 	ANODE *get_lastdisk()
 {
-	WORD 		i;
-	ANODE		*pa;
+	ANODE		*pa, *last;
+	last = NULL;
 
-	i = 0;
 	for(pa=G.g_ahead; pa; pa=pa->a_next)
 	{
 	  if (pa->a_type == AT_ISDISK)
-	    i++;
+	    last = pa;
 	}
-	return( (i < 2) );
+	return(last);
 }
 
 
@@ -171,22 +169,29 @@ WORD  ins_disk(ANODE *pa)
 	BYTE		cletter[2], clabel[13];
 	BYTE		nletter[2], nlabel[13];
 	ANODE		*newpa;
+	BOOLEAN     noremove = TRUE;
 
 	tree = G.a_trees[ADINSDIS];
 
 	change = FALSE;
-	cletter[0] = pa->a_letter;
-	cletter[1] = 0;
-	strlcpy(clabel, pa->a_pappl, sizeof(clabel));
+	if(pa) {
+        cletter[0] = pa->a_letter;
+        cletter[1] = 0;
+        strlcpy(clabel, pa->a_pappl, sizeof(clabel));
+        noremove = (pa == get_lastdisk());
+    } else {
+        cletter[0] = 0;
+        clabel[0] = 0;
+    }
 
 	inf_sset(tree, DRID, &cletter[0]);
 	inf_sset(tree, DRLABEL, &clabel[0]);
 
-	flop  = (pa->a_aicon == IG_FLOPPY) ? SELECTED : NORMAL;
-	hard  = (pa->a_aicon == IG_HARD)   ? SELECTED : NORMAL;
-	cd    = (pa->a_aicon == IG_CD)     ? SELECTED : NORMAL;  /* BALJ */
-	net   = (pa->a_aicon == IG_NET)    ? SELECTED : NORMAL;
-	other = (pa->a_aicon == IG_5QRTR)  ? SELECTED : NORMAL;
+	flop  = (pa && pa->a_aicon == IG_FLOPPY) ? SELECTED : NORMAL;
+	hard  = (pa && pa->a_aicon == IG_HARD)   ? SELECTED : NORMAL;
+	cd    = (pa && pa->a_aicon == IG_CD)     ? SELECTED : NORMAL;  /* BALJ */
+	net   = (pa && pa->a_aicon == IG_NET)    ? SELECTED : NORMAL;
+	other = (pa && pa->a_aicon == IG_5QRTR)  ? SELECTED : NORMAL;
 
 	if (flop)  tree[DRFLOPPY].ob_state |= SELECTED;
 	else	   tree[DRFLOPPY].ob_state &= ~SELECTED;
@@ -198,7 +203,8 @@ WORD  ins_disk(ANODE *pa)
 	else	   tree[DRNET   ].ob_state &= ~SELECTED;
 	if (other) tree[DR5QRTR ].ob_state |= SELECTED;
 	else	   tree[DR5QRTR ].ob_state &= ~SELECTED;
-	if (lastdisk()) tree[DRREM].ob_state |=  DISABLED;
+	/* if pa is NULL or last disk in the screen, disable Remove button */
+	if (noremove)   tree[DRREM].ob_state |=  DISABLED;
 	else            tree[DRREM].ob_state &= ~DISABLED;
 
 	inf_show(tree, 0);	
@@ -210,55 +216,58 @@ WORD  ins_disk(ANODE *pa)
 	else if (tree[DRCD     ].ob_state & SELECTED) icon = IG_CD;
 	else if (tree[DRNET    ].ob_state & SELECTED) icon = IG_NET;
 	else /*if (tree[DR5QRTR].ob_state & SELECTED)*/ icon = IG_5QRTR;
+	
 
 	if ( tree[DRINST].ob_state & SELECTED) /* Install */
 	{
-	  pa->a_flags &= ~AF_WASDET;	/* No longer an auto-detected drive */
-	  /* (keeps customisations - BALJ) */
-/* BugFix	*/
-	  if ( (cletter[0] != nletter[0]) && (nletter[0] != 0) )
-	  {
-	    newpa = get_disk(nletter[0]);
-	    if (!newpa)
-	    {
-	      newpa = app_alloc(FALSE);
-	      if (newpa)
-	      {
-	        newpa->a_flags = pa->a_flags;
-	        newpa->a_type = pa->a_type;
-  	        newpa->a_obid = pa->a_obid;
-	        newpa->a_pappl = pa->a_pappl;
-		scan_str("@", &newpa->a_pdata);
-	        newpa->a_aicon = pa->a_aicon;
-   	        newpa->a_dicon = NIL;
-  	        newpa->a_letter = nletter[0];
-  	        /* DESKTOP v1.2 */
-  	        ins_posdisk(pa->a_xspot, pa->a_yspot, &newpa->a_xspot, 
-  	        			&newpa->a_yspot);
-
-  	        snap_disk(newpa->a_xspot, newpa->a_yspot, 
-  	        			&newpa->a_xspot, &newpa->a_yspot);			
-	      } /* if newpa */
-	      else
-	        fun_alert(1, STAPGONE);
-	    } /* if !newpa */
-	    if (newpa) pa = newpa;
-	    change = TRUE;
-	  } /* if cletter */
-						/* see if icon changed	*/
-	  if (pa->a_aicon != icon)
-	  {
-	    pa->a_aicon = icon;
-	    change = TRUE;
-	  }
-						/* see if label changed	*/
-/* BugFix	*/
-	  if ( (strcmp(&clabel[0], &nlabel[0])) && (nlabel[0] != 0) )
-	  {
-	    nlabel[ strlen(&nlabel[0]) ] = '@';
-	    scan_str(&nlabel[0], &pa->a_pappl);
-	    change = TRUE;
-	  }
+        if ( (cletter[0] != nletter[0]) && (nletter[0] != 0) )
+        {
+            newpa = get_disk(nletter[0]);
+            if (!newpa)
+            {
+              newpa = app_alloc(TRUE);
+              if (newpa)
+              {
+                /* place after last disk on the screen */
+                pa = get_lastdisk();
+                newpa->a_type = AT_ISDISK;
+                newpa->a_flags = AF_ISCRYS | AF_ISGRAF | AF_ISDESK ;
+                scan_str(&nlabel[0], &newpa->a_pappl);
+                scan_str("@", &newpa->a_pdata);
+                newpa->a_aicon = icon;
+                newpa->a_dicon = NIL;
+                newpa->a_letter = nletter[0];
+                /* DESKTOP v1.2 */
+                ins_posdisk(pa->a_xspot, pa->a_yspot, &newpa->a_xspot, 
+                            &newpa->a_yspot);
+                snap_disk(newpa->a_xspot, newpa->a_yspot, 
+                            &newpa->a_xspot, &newpa->a_yspot);			
+              } /* if newpa */
+              else
+                fun_alert(1, STAPGONE);
+            } /* if !newpa */
+            if (newpa) pa = newpa;
+            change = TRUE;
+        } /* if cletter */
+        if(pa) {
+            pa->a_flags &= ~AF_WASDET;	/* No longer an auto-detected drive */
+            /* (keeps customisations - BALJ) */
+            /* BugFix	*/
+                            /* see if icon changed	*/
+            if (pa->a_aicon != icon)
+            {
+                pa->a_aicon = icon;
+                change = TRUE;
+            }
+                            /* see if label changed	*/
+            /* BugFix	*/
+            if ( (strcmp(&clabel[0], &nlabel[0])) && (nlabel[0] != 0) )
+            {
+                nlabel[ strlen(&nlabel[0]) ] = '@';
+                scan_str(&nlabel[0], &pa->a_pappl);
+                change = TRUE;
+            }
+        } /* if pa */
 	} /* if INSTALL */
 	else if ( tree[DRREM].ob_state & SELECTED )			/* Remove 		*/
 	{
@@ -474,7 +483,7 @@ ins_latoi(st_ad)
 	BYTE	ch;
 
 	retval = 0;
-	while ((ch = LBGET(st_ad)) != '\0')
+	while ((ch = *st_ad) != '\0')
 	{
 	  retval = retval*10 + ch - '0';
 	  st_ad += 1;
@@ -547,7 +556,7 @@ WORD  ins_app(BYTE *pfname, ANODE *pa)
 
 #if MULTIAPP
 	omemsz = pa->a_memreq;
-	merge_str(&memszstr[0], "%W", omemsz);
+	sprintf(&memszstr[0], "%u", omemsz);
 	inf_sset(tree, APMEMSZ, &memszstr[0]);
 #endif
 

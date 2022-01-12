@@ -112,6 +112,8 @@ VOID  gsx_moff(VOID);
 VOID  gsx_mon(VOID);
 
 /* deskinf.c */
+VOID  inf_start(LPTREE tree);
+VOID  inf_end(LPTREE tree);
 WORD  inf_show(LPTREE tree, WORD start);
 WORD  inf_file(BYTE *ppath, FNODE *pfnode);
 WORD  inf_folder(BYTE *ppath, FNODE *pf);
@@ -142,6 +144,7 @@ WORD  pro_chdir(WORD drv, BYTE *ppath);
 WORD  pro_cmd(BYTE *psubcmd, BYTE *psubtail, WORD exitflag);
 WORD  pro_run(WORD isgraf, WORD isover, WORD wh, WORD curr);
 WORD  pro_exit(LPBYTE pcmd, LPBYTE ptail);
+WORD  pro_restart(LPBYTE pcmd, LPBYTE ptail);
 
 /* deskrsrc.c */
 VOID rsrc_init(VOID);
@@ -217,20 +220,8 @@ VOID  inf_fldset(LPTREE tree, WORD obj,
 		UWORD testfld, UWORD testbit, UWORD truestate, UWORD falsestate);
 WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj);
 WORD  inf_what(LPTREE tree, WORD ok, WORD cncl);
-VOID  merge_v(BYTE *pdst, BYTE *ptmp, va_list ap);
-VOID  merge_str(BYTE *pdst, BYTE *ptmp, ...);
 WORD  wildcmp(BYTE *pwld, BYTE *ptst);
 // VOID  ins_char(BYTE *str, WORD pos, BYTE chr, WORD tot_len);
-// 
-
-/* deskosif.asm */
-VOID  takedos(VOID);
-VOID  takekey(VOID);
-VOID  takevid(VOID);
-
-VOID  givedos(VOID);
-VOID  givekey(VOID);
-VOID  givevid(VOID);
 
 /* deskcds.c */
 BOOLEAN  cd_isdrvcd( BYTE drvno );
@@ -244,9 +235,8 @@ VOID  r_set(GRECT *r, WORD x, WORD y, WORD w, WORD h);
 VOID  r_get(GRECT *r, WORD *x, WORD *y, WORD *w, WORD *h);
 VOID  lstlcpy(LPBYTE dest, LPBYTE src, int maxlen);
 UWORD  inside(WORD x, WORD y, GRECT *pt);
-WORD  wmax(WORD a, WORD b);
-// WORD  wmin(WORD a, WORD b);
 VOID  rc_union    (LPGRECT p1, LPGRECT p2);
+
 
 #if DEBUG
 WORD  form_valert(WORD button, BYTE *str, ...);
@@ -255,20 +245,11 @@ VOID  crashdump(BYTE ch);
 VOID  debugbreak(VOID);
 #endif
 
-
+/* deskiacc.c */
+WORD  ins_acc(VOID);
 #if MULTIAPP
-VOID  iac_init(VOID);
 VOID  iac_strcop(LPTREE tree, WORD obj, LPBYTE src);
-VOID  iac_schar(LPTREE tree, WORD obj, BYTE ch);
-VOID  iac_redrw(LPTREE tree, WORD obj, WORD state, WORD depth);
-WORD  iac_isnam(LPBYTE lst);
-VOID  ins_acc(VOID);
-WORD  iac_dial(LPTREE tree);
-VOID  iac_save(LPTREE tree);
-WORD  iac_names(LPTREE tree);
-VOID  iac_elev(LPTREE tree, WORD currtop, WORD count);
-WORD  iac_comp(VOID);
-VOID  iac_mvnames(LPTREE tree, WORD start, WORD num);
+VOID  iac_init();
 #endif
 
 

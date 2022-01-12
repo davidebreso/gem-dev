@@ -787,6 +787,6 @@ VOID  win_sinfo(WNODE *pwin)
 	pn = pwin->w_path;
 	rsrc_gaddr(R_STRING, STINFOST, (LPVOID *)&G.a_alert);
 	lstlcpy(ADDR(G.g_1text), G.a_alert, sizeof(G.g_1text));
-	merge_str(pwin->w_info, G.g_1text, pn->p_size, pn->p_count);
+	sprintf(pwin->w_info, G.g_1text, pn->p_size, pn->p_count);
 }
 

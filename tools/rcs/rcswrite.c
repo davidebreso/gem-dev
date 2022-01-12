@@ -848,6 +848,9 @@ VOID c_defs()
 			rptr = sptr + 1;
 	merge_str(hline, "\nBYTE pname[] = \"%S\";\n", rptr);
 	c_wrlin();
+	// hline[0] = '\032';
+	// hline[1] = '\0';
+	// c_wrlin();
 	}
 
 VOID ctrl_z(FILE *fp)

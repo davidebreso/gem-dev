@@ -108,7 +108,7 @@ typedef struct applstr
 	WORD		a_yspot;		/* 14 desired spot on desk	*/
 } ANODE;
 
-#if MULTIAPP
+#if 1
 
 #define a_memreq	a_xspot
 #define DEFMEMREQ	256

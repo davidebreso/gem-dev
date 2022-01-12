@@ -1,10 +1,12 @@
-GEM/3 Desktop: Open Watcom version (Release 3.2.5)
+GEM/3 Desktop: Open Watcom version (Release 3.2.6)
 ===============================================================================
 
   This is a GEM desktop, based on John Elliott's GEM Desktop 3.2.4 downloadable
 from <http://www.seasip.info/Gem/desktops.html>. Features that have been added
 to the original Digital Research's GEM Desktop 3.0 include:
 
+* 'Floppy disk format' utility (inspired by EmuTOS)
+* 'Install Accessories' for single- and multi-tasking builds
 * Auto-arrange of icons to match the window size
 * Four windows and desktop icons (like GEM/1)
 * ViewMAX look and feel
@@ -17,9 +19,35 @@ DESKTOPL.APP - large model, for single-tasking GEM.
 DESKSM.APP   - small model, for GEM/XM.
 DESKLM.APP   - large model, for GEM/XM.
 
-  To install the package unzip wccdesk3.2.5.zip in GEMAPPS\GEMSYS. If GEMSYS does 
+  To install the package unzip the archive in GEMAPPS\GEMSYS. If GEMSYS does 
 not contain a DESKTOP.INF, or if the file is from an old version of GEM Desktop, 
 rename SKELETON.INF into DESKTOP.INF to have a minimal configuration file.
+
+Release 3.2.6 Changes (most recent at the top) -- Davide Bresolin
+===============================================================================
+
+* "Install Accessories" is now available also for single-tasking builds.
+  The panel lists the .ACC files in GEMAPPS\GEMBOOT as "Available accessories",
+  and the first 3 .ACC files in GEMAPPS\GEMSYS as installed accessories.
+  Installing an accessory moves the .ACC file from GEMBOOT to GEMSYS,
+  removing an accessory moves the .ACC file from GEMSYS to GEMBOOT.
+  Since single-tasking GEM cannot load/unload accessories at runtime,
+  a restart of GEM is needed to reload the new accessories.
+
+* Added "Refresh window" item in File menu. "Quit" displays a confirmation 
+  alert with a "Restart" option to restart GEM AES instead of exiting to DOS.
+
+* Removed keyboard shortcuts from buttons, to make dialogs look better with 
+  the stock GEM/3 AES.
+
+* Most of the string manipulation functions have been replaced with equivalent
+  functions of the Open Watcom library.
+  
+* Added a small utility to format floppy disks. "Format Floppy..." pops up a 
+  dialog box to select drive, disk label and capacity. The actual formatting
+  is executed by the Desktop itself, with no need to call FORMAT.COM.
+  The utility is available as a standalone APP in toolkit/samples/format.
+>>>>>>> desktop_dev
 
 Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
@@ -85,18 +113,14 @@ behaviour can be disabled from the Preferences screen.
 * DESKHI.ICN and DESKLO.ICN are now up-to-date and contain matching sets
 of icons.
 
-Notes on look and feel
+Notes on source code
 ===============================================================================
-  If you want it to look pretty, this version of DESKTOP should be run on
-a FreeGEM AES. It will also work on a stock GEM/3 AES, though it won't look
-as nice.
-
-To compile DESKTOP.APP from the source in this archive, you will need the
-Open Watcom v2 C compiler, linker and assembler
+To compile DESKTOP.APP from the source code, you need the Open Watcom v2 
+C compiler, linker and assembler
 <https://open-watcom.github.io>
 and Davide Bresolin's GEM bindings for it:
 <https://github.com/davidebreso/gem-dev>
 
+Davide Bresolin, January 2022
 John Elliott, 26 March 2006
-Davide Bresolin, 26 December 2021
 

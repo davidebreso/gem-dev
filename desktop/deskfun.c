@@ -32,14 +32,13 @@ WORD  fun_alert(WORD defbut, WORD stnum, ...)
 
 	rsrc_gaddr(R_STRING, stnum, (LPVOID *)&G.a_alert);
 	/* Always use merge_str() */
-	lstlcpy((&G.g_2text[0]),G.a_alert, sizeof(G.g_2text));
-	merge_v(&G.g_1text[0], &G.g_2text[0], ap);
+	lstlcpy((&G.g_2text[0]), G.a_alert, sizeof(G.g_2text));
+	vsprintf(&G.g_1text[0], &G.g_2text[0], ap);
 	G.a_alert = (&G.g_1text[0]);
 
 	va_end(ap);
 	return( form_alert(defbut, G.a_alert) );
 }
-
 
 VOID  fun_msg(WORD type, WORD w3, WORD w4, WORD w5, 
 			 WORD w6, WORD w7)
@@ -388,7 +387,7 @@ MLOCAL VOID  fun_del(WNODE *pdw)
 {
 	WORD		src_ob, ret;
 	LPICON		spib;
-	BYTE		drvch[2], *ptmp;
+	BYTE		drvch, *ptmp;
 
 	if (pdw->w_path->p_spec[0] != '@')
 	{
@@ -409,15 +408,14 @@ MLOCAL VOID  fun_del(WNODE *pdw)
 	      ptmp = &G.g_tmppth[0];
 	      while (*ptmp < 0x40)
 	        ptmp++;
-	      drvch[0] = *ptmp;
+	      drvch = *ptmp;
 	    } /* if V_TEXT */
 /* */
 	    else
 	    {
 	      spib = get_spec(G.g_screen, src_ob);
-	      drvch[0] = (0x00FF & spib->ib_char);
+	      drvch = (0x00FF & spib->ib_char);
 	    } /* else */
-	    drvch[1] = 0;
 	    graf_mouse(ARROW, 0x0L);
 	    ret = fun_alert(2, STDELDIS, drvch);
 	    graf_mouse(HGLASS, 0x0L);
