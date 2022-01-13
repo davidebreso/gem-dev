@@ -13,3 +13,5 @@ The current version is able to recreate resource files for the Desktop and for
 the Resource Construction Set that are almost identical to the original, except 
 for a few bytes. The recreated files do work
 
+The code works only in the large memory model.
+

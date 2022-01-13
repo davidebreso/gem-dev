@@ -67,6 +67,6 @@ wccgem-l.lib:	$(OBJECTS)
 	$(CC) -fo=$@ $(CFLAGS) $<
 
 tidy:
-	rm -f *.bak *.obj wccgem-s.lib
+	rm -f *.bak *.obj *.err wccgem-l.lib
 
 clean:	tidy
