@@ -128,33 +128,40 @@ int main(VOID)
         rs_imdope[NUM_IMAGES - 1].image = (LPWORD)destptr;            
         destptr = newptr;
     }
-    printf("Copy rs_frstr at %lX\n", (LONG)destptr);
+    printf("Copy %d free strings at %lX\n", NUM_FRSTR, (LONG)destptr);
     ptr_frstr = (LPLONG) destptr;
-    destptr = copy_data(destptr, rs_frstr, rs_bitblk);
-
-    printf("Copy rs_bitblk at %lX\n", (LONG)destptr);
+    if(NUM_FRSTR > 0)
+        destptr = copy_data(destptr, rs_frstr, rs_bitblk);
+    
+    printf("Copy %d bit blocks at %lX\n",NUM_BB, (LONG)destptr);
     ptr_bitblk = (LPBIT) destptr;
-    destptr = copy_data(destptr, rs_bitblk, rs_frimg);
+    if(NUM_BB > 0)
+        destptr = copy_data(destptr, rs_bitblk, rs_frimg);
 
-    printf("Copy rs_frimg at %lX\n", (LONG)destptr);
+    printf("Copy %d free images at %lX\n", NUM_FRIMG, (LONG)destptr);
     ptr_frimg = (LPLONG) destptr;
-    destptr = copy_data(destptr, rs_frimg, rs_iconblk);
+    if(NUM_FRIMG > 0)
+        destptr = copy_data(destptr, rs_frimg, rs_iconblk);
 
-    printf("Copy rs_iconblk at %lX\n", (LONG)destptr);
+    printf("Copy %d icon blocks at %lX\n", NUM_IB, (LONG)destptr);
     ptr_iconblk = (LPICON) destptr;
-    destptr = copy_data(destptr, rs_iconblk, rs_tedinfo);
+    if(NUM_IB > 0)
+        destptr = copy_data(destptr, rs_iconblk, rs_tedinfo);
 
-    printf("Copy rs_tedinfo at %lX\n", (LONG)destptr);
+    printf("Copy %d tedinfos at %lX\n", NUM_TI, (LONG)destptr);
     ptr_tedinfo = (LPTEDI) destptr;
-    destptr = copy_data(destptr, rs_tedinfo, rs_object);
+    if(NUM_TI > 0)
+        destptr = copy_data(destptr, rs_tedinfo, rs_object);
 
-    printf("Copy rs_object at %lX\n", (LONG)destptr);
+    printf("Copy %d objects at %lX\n", NUM_OBS, (LONG)destptr);
     ptr_object = (LPTREE) destptr;
-    destptr = copy_data(destptr, rs_object, rs_trindex);
+    if(NUM_OBS > 0)
+        destptr = copy_data(destptr, rs_object, rs_trindex);
         
-    printf("Copy rs_trindex at %lX\n", (LONG)destptr);
+    printf("Copy %d trees at %lX\n", NUM_TREE, (LONG)destptr);
     ptr_trindex = (LPLONG) destptr;
-    destptr = copy_data(destptr, rs_trindex, rs_imdope);
+    if(NUM_TREE > 0)
+        destptr = copy_data(destptr, rs_trindex, rs_imdope);
 
     starthdr->rsh_vrsn = 0;
     printf("starthdr->rsh_vrsn=%04X\n", starthdr->rsh_vrsn);
