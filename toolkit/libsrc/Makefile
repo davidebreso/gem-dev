@@ -80,9 +80,8 @@ small/wccgem-h.lib: $(SOURCE)
 	$(MAKE) -C huge
 
 tidy:
-	rm -f ../lib/wccgem-l.lib 
-	rm -f ../lib/wccgem-s.lib
 	rm -f *.bak
+	rm -f *.err
 	$(MAKE) -C small tidy
 	$(MAKE) -C large tidy
 	$(MAKE) -C compact tidy

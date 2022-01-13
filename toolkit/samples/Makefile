@@ -84,9 +84,8 @@ rscreate.exe: $(MAIN)
 	$(MAKE) -C rscreate
 
 tidy:
-	rm -f main-?.obj
-	rm -f start-?.obj
 	rm -f *.bak
+	rm -f *.err
 	$(MAKE) -C hello tidy
 	$(MAKE) -C demo tidy
 	$(MAKE) -C xform tidy
@@ -100,7 +99,6 @@ tidy:
 	$(MAKE) -C userdef tidy
 	$(MAKE) -C format tidy
 	$(MAKE) -C rscreate tidy
-	$(MAKE) -C format tidy
 
 clean:
 	rm -f main-?.obj

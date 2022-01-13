@@ -39,7 +39,7 @@ clock-s.acc:	clocksac.obj
 	      option map=clocksac.map \
 
 tidy:
-	rm -f clock-?.exe
+	rm -f clock-?.acc
 	rm -f clock-?.app
 	rm -f *.bak
 	rm -f *.sdb

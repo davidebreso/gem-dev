@@ -1,4 +1,5 @@
 include makedefs.i
+RELEASE=1.0.2
 
 TARGETS=lib/wccgem-l.lib lib/wccgem-s.lib samples
 
@@ -24,6 +25,6 @@ tidy:
 	$(MAKE) -C samples $@
 	$(MAKE) -C lib $@
 
-zip:
-	rm -f wccgem.zip
-	zip -9 -r wccgem.zip *
+release: $(TARGETS) tidy
+	rm -f wccgem$(RELEASE).zip
+	zip -r wccgem$(RELEASE).zip *
