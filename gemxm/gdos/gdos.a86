@@ -1,0 +1,1772 @@
+;/*
+;*       Copyright 1999, Caldera Thin Clients, Inc.                      
+;*       This software is licenced under the GNU Public License.         
+;*       Please see LICENSE.TXT for further information.                 
+;*                                                                       
+;*/
+		cseg
+
+FCB1			equ	005Ch
+FCBLEN			equ	006Ah
+FCB2			equ	006Ch
+FCBREC			equ	007Dh
+
+		include	equates.a86
+
+		extrn	kbescflg:word
+		extrn	GDOS_DS:word
+		extrn	ch_entry:near
+		extrn	in_gdos:word
+		extrn	gl_curss:word
+		extrn	gl_cursp:word
+		extrn	ch_stk:byte
+
+		public	GDOS_13_ENTRY
+		public	GDOS_20_ENTRY
+
+		public	GD_CLI
+		public	GD_EXEC
+		public	WS_SIZE
+		public	STEP_ASIDE
+		public	ASSIGN_SEG
+		public	WORK_IDENTIFIER
+		public	GDOS_DRIVE
+		public	RESIDENT_DRIVER
+		public	DRIVER_SEG
+		public	SAVED_DRIVE
+		public	SET_GDOS_DIRECTORY
+		public	ASIDE_ERROR
+		public	CHECK_AND_LOAD
+		public	WS_ID
+		public	RESET_CURRENT_DIRECTORY
+		public	WORK_TABLE_FULL
+		public	WS_CHEAD
+		public	LOCATION_INFO
+		public	ASIDE_FILE
+		public	DRIVER_SIZE
+		public	CLEAR_WS_TABLE_ENTRY
+		public	WS_CSEG
+		public	WS_DSEG
+		public	PSP_BASE
+		public	ASIDE_BLOCK
+		public	BAD_DRIVER
+		public	DRIVER_COUNT
+		public	NOT_INSTALLED_MSG
+		public	WS_FLAGS
+		public	GDOS_PATH
+		public	SIZE_FILE
+		public	DRIVER_HEAD
+		public	SAVED_PATH
+		public	LOAD_SUCCESSFUL
+		public	GSX_SAV
+		public	GSX2_SAV
+		public	AD_CONTR
+		public	AD_INTIN
+		public	AD_PTSIN
+		public	AD_INTOU
+		public	AD_PTSOU
+
+GDOS_13_ENTRY:				; DATA XREF: chg_ints+Co
+		cmp	cl, 73h
+		jz	loc_0_A
+		jmpf	cs:dword ptr GSX_SAV
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_A:				; CODE XREF: cseg:0003j
+		mov	cs:GDOS20, 0
+
+loc_0_11:				; CODE XREF: _ch_entry+76Du
+					; _ch_entry+76Du
+		cmp	cx, 473h
+		jz	loc_0_2A
+		iret	
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+GDOS_20_ENTRY:				; DATA XREF: chg_ints+2Ao
+		jmps	after_signature
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+aGemvdi10	db 'GEMVDI10',0
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+after_signature:			; CODE XREF: cseg:0018j
+		mov	cs:GDOS20, 1
+
+loc_0_2A:				; CODE XREF: cseg:0015j
+		push	bp
+		mov	bp, sp
+		push	ax
+		push	bx
+		push	cx
+		push	dx
+		push	si
+		push	di
+		push	ds
+		push	es
+		cld	
+;
+; Task manager key pressed?
+;
+		cmp	cs:kbescflg, 0
+		jz	loc_0_44
+		call	_hndl_kbesc
+		jmp	gsx_quit
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_44:				; CODE XREF: cseg:003Cj
+		inc	cs:entries
+		jz	copy_parameter_
+		push	ds
+		mov	ax, seg GDOS_13_ENTRY
+		mov	es, ax
+		mov	ds, ax
+		mov	si, offset save_start
+		mov	di, offset WORK_TABLE_FULL
+		mov	cx, cs:save_count
+		rep movsb
+		pop	ds
+
+copy_parameter_:			; CODE XREF: cseg:0049j
+		mov	si, dx
+		mov	ax, cs
+		mov	es, ax
+		mov	di, offset save_start
+		mov	cx, 0Ah
+		rep movsw
+		lds	si, cs:dword ptr save_start
+		mov	ax, [si]
+		cmp	ax, 0
+		jge	loc_0_81
+		call	_hndl_kbesc
+
+loc_0_7E:				; DATA XREF: sub_0_531C+4r
+					; sub_0_531C+Cr
+		jmp	gsx_quit
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_81:				; CODE XREF: cseg:0079j
+		push	word ptr 6[bp]
+		popf	
+		mov	cs:opcode, ax
+		cmp	ax, 1
+		jnz	check_vw
+		call	_open_workstati
+		jmp	gsx_quit
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+check_vw:				; CODE XREF: cseg:008Cj
+		cmp	ax, 100
+		jnz	get_handle
+		call	open_virtual
+		jmp	gsx_quit
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+get_handle:				; CODE XREF: cseg:0097j
+		mov	bx, 12[si]
+		cmp	cs:GDOS20, 0
+		jnz	loc_0_AF
+		mov	bx, cs:gsx_handle
+
+loc_0_AF:				; CODE XREF: cseg:00A8j
+		dec	bx
+		js	gsx_quit
+		shl	bx, 1
+		cmp	cs:ws_id[bx], 0
+		jz	gsx_quit
+		test	cs:ws_flags[bx], 2
+		jz	gsx_quit
+		mov	cs:ws_index, bx
+		cmp	ax, 77h
+		jnz	loc_0_D5
+		call	sub_0_584
+		jmp	gsx_quit
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_D5:				; CODE XREF: cseg:00CDj
+		cmp	ax, 78h
+		jnz	loc_0_E0
+		call	sub_0_6EF
+		jmp	gsx_quit
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_E0:				; CODE XREF: cseg:00D8j
+		call	DRIVER
+		call	sub_0_A4F
+		cmp	cs:opcode, 2
+		jnz	loc_0_F4
+		call	sub_0_856
+		jmp	gsx_quit
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_F4:				; CODE XREF: cseg:00ECj
+		cmp	cs:opcode, 101
+		jnz	gsx_quit
+		call	close_virtual
+
+gsx_quit:				; CODE XREF: cseg:0041j cseg:007Ej
+					; ...
+		dec	cs:entries
+		js	loc_0_11A
+		mov	ax, seg GDOS_13_ENTRY
+		mov	es, ax
+		mov	ds, ax
+
+		mov	si, offset WORK_TABLE_FULL
+		mov	di, offset save_start
+		mov	cx, cs:save_count
+		rep movsb
+
+loc_0_11A:				; CODE XREF: cseg:0104j
+		pop	es
+
+		pop	ds
+
+		pop	di
+		pop	si
+		pop	dx
+		pop	cx
+		pop	bx
+		pop	ax
+		pop	bp
+		iret	
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+_hndl_kbesc:
+		mov	bx, seg GDOS_13_ENTRY
+		mov	ds, bx
+
+		mov	si, offset save_start
+		mov	es, cs:GDOS_DS
+		mov	di, 0
+		mov	cx, 0Ah
+		rep movsw
+		mov	ds, cs:GDOS_DS
+
+		mov	ds:gl_curss, ss
+		mov	ds:gl_cursp, sp
+		mov	ss, cs:GDOS_DS
+		mov	sp, offset ch_stk
+		push	cs:kbescflg
+		mov	cs:kbescflg, 0
+		mov	cs:in_gdos,	1
+		call	ch_entry
+		mov	cs:in_gdos,	0
+		mov	ss, ds:gl_curss
+		mov	sp, ds:gl_cursp
+		retn	
+
+
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+gdx_ret		dw 0			; DATA XREF: GD_EXECw GD_EXEC+38r
+gdx_bp		dw 0			; DATA XREF: GD_EXEC+Dw GD_EXEC+31r
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+GD_EXEC	:
+		pop	cs:gdx_ret
+		pop	dx
+		pop	ds		; ds:dx->command
+		pop	bx
+		pop	es		; es:bx->environ
+		mov	ah, 4Bh
+		mov	al, 0
+		mov	cs:gdx_bp, bp
+		mov	cs:in_gdos,	0
+		int	21h		; DOS -	2+ - LOAD OR EXECUTE (EXEC)
+					; DS:DX	-> ASCIZ filename
+					; ES:BX	-> parameter block
+					; AL = subfunc:	load & execute program
+		mov	cs:in_gdos,	1
+		jb	loc_0_19F
+		mov	ax, 0
+
+loc_0_19F:				; CODE XREF: GD_EXEC+22j
+		mov	ds, cs:GDOS_DS
+		mov	ss, cs:GDOS_DS
+		mov	bp, cs:gdx_bp
+		mov	sp, bp
+		push	cs:gdx_ret
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+gd_cli	:
+					; _ch_setints+6p ...
+		pushf	
+		pop	cs:word_0_FA5
+		cli	
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+_open_workstati:
+		lds	si, cs:dword ptr dword_0_BF9
+		cmp	word ptr [si], 0
+		jg	loc_0_1CB
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_1CB:				; CODE XREF: _open_workstati+8j
+		mov	ax, [si]
+		mov	cs:WORK_IDENTIFIER, ax
+		mov	di, cs
+		mov	es, di
+
+		mov	di, offset ws_id
+		mov	cx, 20h
+		repne scasw
+		jnz	loc_0_201
+		mov	bx, di
+		sub	bx, offset ws_id+2
+		mov	cs:ws_index, bx
+		test	es:ws_flags[bx], 2
+		jz	loc_0_25F
+		cmp	cs:GDOS20, 0
+		jnz	loc_0_1FE
+		jmp	loc_0_447
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_1FE:				; CODE XREF: _open_workstati+3Bj
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_201:				; CODE XREF: _open_workstati+1Fj
+		xor	ax, ax
+		mov	di, offset ws_id
+		mov	cx, 20h
+		repne scasw
+		jz	loc_0_210
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_210:				; CODE XREF: _open_workstati+4Dj
+		mov	bx, di
+		sub	bx, offset ws_id+2
+		mov	cs:ws_index, bx
+		call	SET_GDOS_DIRECTORY
+		call	CHECK_AND_LOAD
+		call	RESET_CURRENT_DIRECTORY
+		cmp	cs:LOAD_SUCCESSFUL, 1
+		jz	loc_0_22F
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_22F:				; CODE XREF: _open_workstati+6Cj
+		mov	bx, cs:ws_index
+		mov	ax, cs:WORK_IDENTIFIER
+		mov	cs:ws_id[bx],ax
+		mov	ax, cs:DRIVER_SEG
+		mov	cs:ws_cseg[bx],ax
+		mov	ax, cs:DRIVER_HEAD
+		mov	cs:ws_chead[bx],ax
+		mov	ax, cs:DRIVER_SIZE
+		mov	cs:ws_size[bx],ax
+		xor	ax, ax
+		mov	cs:ws_flags[bx],ax
+
+loc_0_25F:				; CODE XREF: _open_workstati+33j
+		mov	ax, bx
+		shr	ax, 1
+		inc	ax
+		mov	cs:vdi_handles[bx], ax
+		cmp	cs:GDOS20, 0
+		jnz	loc_0_275
+		mov	cs:gsx_handle, ax
+
+loc_0_275:				; CODE XREF: _open_workstati+B1j
+		or	cs:ws_flags[bx], 2
+		xor	ax, ax
+		mov	cs:WS_FONT[bx], ax
+		lds	si, cs:dword ptr dword_0_BF9
+		mov	ax, cs
+		mov	es, ax
+		mov	di, offset copy_intin
+		push	di
+		mov	cx, 0Bh
+		rep movsw
+		pop	di
+		cmp	cs:GDOS20, 0
+		jnz	loc_0_2A4
+		mov	es:word ptr 20[di], 0
+
+loc_0_2A4:				; CODE XREF: _open_workstati+DEj
+		mov	ax, es:20[di]
+		mov	cs:WS_XFORM[bx], ax
+		mov	si, offset copy_intin
+		mov	di, offset dword_0_BF9
+		mov	es:[di], si
+		mov	es:2[di], es
+		lds	si, cs:dword ptr save_start
+		mov	di, offset SAVE_CONTROL
+		mov	cs:[di], si
+		mov	cs:2[di], ds
+		mov	ax, cs
+		mov	es, ax
+		mov	di, offset copy_contrl
+		mov	cx, 4
+		rep movsw
+		mov	si, offset copy_contrl
+		mov	di, offset save_start
+		mov	es:[di], si
+		mov	es:2[di], es
+		mov	ax, cs:vdi_handles[bx]
+		mov	es:12[si], ax
+		mov	es:word ptr 6[si], 0Bh
+		call	DRIVER
+		lds	si, cs:dword ptr save_start
+		cmp	word ptr 12[si], 0
+		jg	loc_0_304
+		call	sub_0_856
+		jmps	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_304:				; CODE XREF: _open_workstati+13Fj
+		les	di, cs:dword ptr SAVE_CONTROL
+
+		mov	bx, cs:ws_index
+		mov	ax, 14[si]
+		mov	cs:WS_DSEG[bx], ax
+		mov	ax, 16[si]
+		mov	cs:word_0_E87[bx], ax
+		mov	ax, 4[si]
+		mov	es:4[di], ax
+		mov	ax, 8[si]
+		mov	es:8[di], ax
+		cmp	cs:GDOS20, 0
+		jz	loc_0_33B
+		mov	ax, 12[si]
+		mov	es:12[di], ax
+
+loc_0_33B:				; CODE XREF: _open_workstati+174j
+		lds	si, cs:dword ptr dword_0_C01
+		mov	ax, [si]
+		inc	ax
+		mov	cs:WS_XRES[bx],	ax
+		mov	ax, 2[si]
+		inc	ax
+		mov	cs:WS_YRES[bx],	ax
+		cmp	word ptr 58h[si], 4
+		jnz	loc_0_35E
+		mov	cs:WS_XFORM[bx], 2
+
+loc_0_35E:				; CODE XREF: _open_workstati+197j
+		call	sub_0_A4F
+		retn	
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_362:				; CODE XREF: _open_workstati+Aj
+					; _open_workstati+40j
+					; ...
+		mov	cs:LOAD_SUCCESSFUL, 0
+		lds	di, cs:dword ptr save_start
+		mov	word ptr 12[di], 0
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+open_virtual:
+		call	sub_0_8F4
+		jnb	loc_0_37C
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_37C:				; CODE XREF: open_virtual+3j
+		cmp	cs:ws_id[bx], 0
+		jg	loc_0_387
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_387:				; CODE XREF: open_virtual+Ej
+		xor	ax, ax
+		mov	di, cs
+		mov	es, di
+
+		mov	di, offset ws_id
+		mov	cx, 20h
+		repne scasw
+		jz	loc_0_39A
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_39A:				; CODE XREF: open_virtual+21j
+		sub	di, offset ws_id+2
+		mov	cs:ws_index, di
+		mov	si, bx
+		mov	bx, cs:word_0_E87[bx]
+		mov	cx, bx
+		shr	bx, 1
+		shr	bx, 1
+		shr	bx, 1
+		shr	bx, 1
+		inc	bx
+		clc	
+		mov	ah, 48h
+		int	21h		; DOS -	2+ - ALLOCATE MEMORY
+					; BX = number of 16-byte paragraphs desired
+		jnb	loc_0_3BF
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_3BF:				; CODE XREF: open_virtual+46j
+		mov	bx, si
+		mov	si, cs:WS_DSEG[bx]
+		mov	ds, si
+		xor	si, si
+		mov	es, ax
+
+		xor	di, di
+		rep movsb
+		mov	di, cs
+		mov	ds, di
+
+		mov	di, cs:ws_index
+		mov	cs:ws_id[di], 0FFFFh
+		mov	cs:WS_DSEG[di], ax
+		mov	ax, cs:word_0_E87[bx]
+
+loc_0_3EA:
+		mov	cs:word_0_E87[di], ax
+		mov	ax, cs:vdi_handles[bx]
+		mov	cs:vdi_handles[di], ax
+		mov	cs:WS_FONT[di],	0
+		mov	ax, cs:WS_XRES[bx]
+		mov	cs:WS_XRES[di],	ax
+		mov	ax, cs:WS_YRES[bx]
+		mov	cs:WS_YRES[di],	ax
+		mov	ax, cs:WS_CSEG[bx]
+		mov	cs:WS_CSEG[di],	ax
+		mov	ax, cs:ws_flags[bx]
+		and	ax, 0FFFEh
+		mov	cs:ws_flags[di], ax
+		lds	si, cs:dword ptr dword_0_BF9
+
+		mov	ax, 14h[si]
+		mov	cs:WS_XFORM[di], ax
+		lds	si, cs:dword ptr save_start
+		shr	di, 1
+		inc	di
+		mov	12[si], di
+		call	DRIVER
+		retn	
+
+
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_447:				; CODE XREF: _open_workstati+3Dj
+		xor	ax, ax
+		mov	di, cs
+		mov	es, di
+
+		mov	di, offset ws_id
+		mov	cx, 20h
+		repne scasw
+		jz	loc_0_458
+		retn	
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_458:				; CODE XREF: cseg:0455j
+		sub	di, offset ws_id+2
+		mov	cs:ws_index, di
+		mov	si, bx
+		mov	bx, cs:word_0_E87[bx]
+		mov	cx, bx
+		shr	bx, 1
+		shr	bx, 1
+		shr	bx, 1
+		shr	bx, 1
+		inc	bx
+		clc	
+		mov	ah, 48h
+		int	21h		; DOS -	2+ - ALLOCATE MEMORY
+					; BX = number of 16-byte paragraphs desired
+		jnb	loc_0_47B
+		retn	
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_47B:				; CODE XREF: cseg:0478j
+		mov	bx, si
+		mov	si, cs:WS_DSEG[bx]
+		mov	ds, si
+		xor	si, si
+		mov	es, ax
+
+		xor	di, di
+		rep movsb
+		mov	di, cs
+		mov	ds, di
+
+		mov	di, cs:ws_index
+		mov	cs:ws_id[di], 0FFFFh
+		mov	cs:WS_DSEG[di], ax
+		mov	ax, cs:word_0_E87[bx]
+		mov	cs:word_0_E87[di], ax
+		mov	ax, cs:vdi_handles[bx]
+		mov	cs:vdi_handles[di], ax
+		mov	cs:WS_FONT[di],	0
+		mov	ax, cs:WS_XRES[bx]
+		mov	cs:WS_XRES[di],	ax
+		mov	ax, cs:WS_YRES[bx]
+		mov	cs:WS_YRES[di],	ax
+		mov	ax, cs:WS_CSEG[bx]
+		mov	cs:WS_CSEG[di],	ax
+		mov	ax, cs:ws_flags[bx]
+		and	ax, 0FFFEh
+		mov	cs:ws_flags[di], ax
+		mov	cs:WS_XFORM[di], 0
+		lds	si, cs:dword ptr dword_0_BF9
+
+		mov	ax, 14h[si]
+		mov	cs:WS_XFORM[di], ax
+		shr	di, 1
+		inc	di
+		mov	cs:gsx_handle, di
+		lds	si, cs:dword ptr dword_0_BF9
+		mov	ax, cs
+		mov	es, ax
+
+		mov	di, offset copy_intin
+		push	di
+		mov	cx, 0Bh
+		rep movsw
+		pop	di
+		mov	es:word ptr 20[di], 0
+		mov	si, offset copy_intin
+		mov	di, offset dword_0_BF9
+		mov	es:[di], si
+		mov	es:2[di], es
+		lds	si, cs:dword ptr save_start
+		mov	di, offset SAVE_CONTROL
+		mov	cs:[di], si
+		mov	cs:2[di], ds
+		mov	ax, cs
+		mov	es, ax
+		mov	di, offset copy_contrl
+		mov	cx, 4
+		rep movsw
+		mov	si, offset copy_contrl
+		mov	di, offset save_start
+		mov	es:[di], si
+		mov	es:2[di], es
+		mov	ax, cs:vdi_handles[bx]
+		mov	es:12[si], ax
+		mov	es:word ptr 6[si], 0Bh
+		call	DRIVER
+		mov	bx, cs:ws_index
+		lds	si, cs:dword ptr save_start
+		les	di, cs:dword ptr SAVE_CONTROL
+
+		mov	ax, 4[si]
+		mov	es:4[di], ax
+		mov	ax, 8[si]
+		mov	es:8[di], ax
+		call	sub_0_A4F
+		retn	
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_584:
+		call	SET_GDOS_DIRECTORY
+		les	di, cs:dword ptr save_start
+		mov	es:word ptr 8[di], 1
+		les	di, cs:dword ptr dword_0_C01
+		mov	es:word ptr [di], 0
+		cmp	cs:WS_FONT[bx],	0
+		jz	loc_0_5A7
+		jmp	loc_0_6EB
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_5A7:				; CODE XREF: sub_0_584+1Ej
+		mov	ds, cs:ASSIGN_SEG
+		mov	si, cs:vdi_handles[bx]
+		dec	si
+		shl	si, 1
+		mov	dx, cs:ws_id[si]
+		mov	si, 0
+
+loc_0_5BC:				; CODE XREF: sub_0_584+42j
+		cmp	dx, [si]
+		jz	loc_0_5CB
+		mov	si, 4[si]
+		cmp	si, 0
+		jnz	loc_0_5BC
+		jmp	loc_0_6EB
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_5CB:				; CODE XREF: sub_0_584+3Aj
+		mov	cx, 6[si]
+		cmp	cx, 0
+		jnz	loc_0_5D6
+		jmp	loc_0_6EB
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_5D6:				; CODE XREF: sub_0_584+4Dj
+		mov	cs:text_buffer_size, 0
+		add	si, 13h
+
+loc_0_5E0:				; CODE XREF: sub_0_584+123j
+		mov	cs:word_0_F95, cx
+		call	SIZE_FILE
+		jnc	loc_0_5EF
+		jmp	loc_0_699
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_5EF:				; CODE XREF: sub_0_584+66j
+		mov	cs:DRIVER_SIZE, bx
+		clc	
+		mov	ah, 48h
+		int	21h		; DOS -	2+ - ALLOCATE MEMORY
+					; BX = number of 16-byte paragraphs desired
+		jnb	loc_0_669
+		mov	ax, cs:text_buffer_size
+		shr	ax, 1
+		shr	ax, 1
+		shr	ax, 1
+		shr	ax, 1
+		cmp	ax, bx
+		jg	loc_0_60E
+		jmp	loc_0_6AA
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_60E:				; CODE XREF: sub_0_584+85j
+					; sub_0_584+147j
+		mov	si, cs:ws_index
+		cmp	cs:WS_FONT[si],	0
+		jnz	loc_0_61E
+		jmp	loc_0_6EB
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_61E:				; CODE XREF: sub_0_584+95j
+		mov	es, cs:WS_FONT[si]
+		cmp	es:word ptr .FONT_PTR_SEG, 0
+		jnz	loc_0_62E
+		jmp	loc_0_6DB
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_62E:				; CODE XREF: sub_0_584+A5j
+		mov	dx, es
+		cmp	dx, cs:word_0_C11
+		jnz	loc_0_643
+		mov	dx, es:.FONT_PTR_SEG
+		mov	cs:WS_FONT[si],	dx
+		jmps	loc_0_663
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_643:				; CODE XREF: sub_0_584+B1j
+					; sub_0_584+CDj
+		mov	si, es
+		mov	dx, es:.FONT_PTR_SEG
+		mov	es, dx
+		cmp	dx, cs:word_0_C11
+		jnz	loc_0_643
+		mov	dx, es:.FONT_PTR_SEG
+		mov	ax, es
+		mov	es, si
+		mov	es:.FONT_PTR_SEG,	dx
+		mov	es, ax
+
+loc_0_663:				; CODE XREF: sub_0_584+BDj
+		mov	ah, 49h
+		int	21h		; DOS -	2+ - FREE MEMORY
+					; ES = segment address of area to be freed
+		jmps	loc_0_6AA
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_669:				; CODE XREF: sub_0_584+75j
+		mov	bx, ax
+		mov	cs:DRIVER_HEAD,	ax
+		push	ds
+		push	si
+		call	OPEN_DRIVER
+		jc	loc_0_6DB
+		call	LOAD_DRIVER
+		pop	si
+		pop	ds
+		cmp	cs:LOAD_SUCCESSFUL, 0
+		jz	loc_0_6DB
+		call	LINK_FONT
+		mov	ax, cs:DRIVER_HEAD
+		mov	es, ax
+		mov	es:word ptr .HOR_TABLE_SEG,ax
+		mov	es:word ptr .OFF_TABLE_SEG,ax
+		mov	es:word ptr .DAT_TABLE_SEG,ax
+		call	calc_effects_buffer
+
+loc_0_699:				; CODE XREF: sub_0_584+68j
+		add	si, 0Bh
+		mov	cx, cs:word_0_F95
+		dec	cx
+		cmp	cx, 0
+		jle	loc_0_6AA
+		jmp	loc_0_5E0
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_6AA:				; CODE XREF: sub_0_584+87j
+					; sub_0_584+E3j ...
+		mov	si, cs:ws_index
+		cmp	cs:WS_FONT[si],	0
+		jz	loc_0_6EB
+		mov	bx, cs:text_buffer_size
+		shr	bx, 1
+		shr	bx, 1
+		shr	bx, 1
+		shr	bx, 1
+		clc	
+		mov	ah, 48h
+		int	21h		; DOS -	2+ - ALLOCATE MEMORY
+					; BX = number of 16-byte paragraphs desired
+		jnb	loc_0_6CE
+		jmp	loc_0_60E
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_6CE:				; CODE XREF: sub_0_584+145j
+		mov	cs:word_0_F47[si], ax
+		mov	bx, si
+		call	sub_0_711
+		jmp	loc_0_6EB
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_6DB:				; CODE XREF: sub_0_584+A7j
+					; sub_0_584+FBj
+		mov	bx, cs:ws_index
+		cmp	cs:WS_FONT[bx],	0
+		jz	loc_0_6EB
+		call	FREE_FONT_MEMOR
+
+loc_0_6EB:				; CODE XREF: sub_0_584+20j
+					; sub_0_584+44j ...
+		call	RESET_CURRENT_DIRECTORY
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_6EF:
+		cmp	cs:WS_FONT[bx],	0
+		jz	locret_0_710
+		call	sub_0_711
+		mov	bx, cs:ws_index
+		call	FREE_FONT_MEMOR
+		mov	cs:WS_FONT[bx],	0
+		mov	cs:word_0_F47[bx], 0
+
+locret_0_710:				; CODE XREF: sub_0_6EF+6j
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_711:
+					; sub_0_6EF+8p
+		lds	si, cs:dword ptr save_start
+		mov	ax, cs
+		mov	es, ax
+
+		mov	di, offset copy_contrl
+		mov	cx, 7
+		rep movsw
+		mov	si, offset copy_contrl
+		mov	di, offset save_start
+		mov	es:[di], si
+		mov	es:2[di], es
+		mov	ax, cs:vdi_handles[bx]
+		mov	es:12[si], ax
+		mov	ax, cs:WS_FONT[bx]
+		mov	es:14[si], ax
+		mov	ax, cs:word_0_F47[bx]
+		mov	es:16[si], ax
+		mov	ax, cs:text_buffer_size
+		mov	es:18[si], ax
+		call	DRIVER
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_756:
+		mov	ax, cs:vdi_handles[bx]
+		push	ax
+		mov	cs:vdi_handles[bx], 0FFFFh
+		mov	cx, 20h
+		mov	di, cs
+		mov	es, di
+		mov	di, offset vdi_handles
+
+loc_0_76D:				; CODE XREF: sub_0_756+27j
+		repne scasw
+		jnz	loc_0_782
+		mov	si, di
+		sub	si, offset vdi_handles+2
+		cmp	cs:WS_FONT[si],	0
+		jz	loc_0_76D
+		clc	
+		jmps	loc_0_783
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_782:				; CODE XREF: sub_0_756+19j
+		stc	
+
+loc_0_783:				; CODE XREF: sub_0_756+2Aj
+		pop	cs:vdi_handles[bx]
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+LINK_FONT:
+		push	ds
+		mov	ax, cs:DRIVER_HEAD
+		mov	cs:word_0_C11, ax
+		mov	bx, cs:ws_index
+		cmp	cs:WS_FONT[bx],	0
+		jnz	loc_0_7A6
+		mov	cs:WS_FONT[bx],	ax
+		jmps	loc_0_7FD
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_7A6:				; CODE XREF: LINK_FONT+14j
+		mov	es, ax
+
+		mov	cx, es:.FONT_ID
+		mov	dx, es:.POINT_SIZE
+		mov	ds, cs:WS_FONT[bx]
+		cmp	word ptr AD_CONTR, cx
+		jl	loc_0_7D1
+		jg	loc_0_7C5
+		cmp	word ptr AD_CONTR+2, dx
+		jl	loc_0_7D1
+
+loc_0_7C5:				; CODE XREF: LINK_FONT+34j
+		mov	es:.FONT_PTR_SEG,	ds
+		mov	cs:WS_FONT[bx],	es
+		jmps	loc_0_7FD
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+
+loc_0_7D1:				; CODE XREF: LINK_FONT+32j
+					; LINK_FONT+3Aj ...
+		cmp	ds:word ptr .FONT_PTR_SEG, 0
+		jnz	loc_0_7DE
+		mov	ds:.FONT_PTR_SEG,	es
+		jmps	loc_0_7FD
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_7DE:				; CODE XREF: LINK_FONT+4Dj
+		mov	ax, ds
+		mov	ds, ds:.FONT_PTR_SEG
+
+		cmp	word ptr AD_CONTR, cx
+		jl	loc_0_7D1
+		jg	loc_0_7F2
+		cmp	word ptr AD_CONTR+2, dx
+		jl	loc_0_7D1
+
+loc_0_7F2:				; CODE XREF: LINK_FONT+61j
+		mov	es:.FONT_PTR_SEG,	ds
+		mov	ds, ax
+
+		mov	ds:.FONT_PTR_SEG,	es
+
+loc_0_7FD:				; CODE XREF: LINK_FONT+1Bj
+					; LINK_FONT+46j ...
+		pop	ds
+
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+FREE_FONT_MEMOR:
+					; sub_0_6EF+10p ...
+		mov	cx, cs:WS_FONT[bx]
+
+loc_0_804:				; CODE XREF: FREE_FONT_MEMOR+12j
+		jcxz	loc_0_814
+		mov	es, cx
+		mov	cx, es:.FONT_PTR_SEG
+		mov	ah, 49h
+		int	21h		; DOS -	2+ - FREE MEMORY
+					; ES = segment address of area to be freed
+		jmp	loc_0_804
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_814:				; CODE XREF: FREE_FONT_MEMOR+5j
+		mov	cx, cs:word_0_F47[bx]
+		jcxz	locret_0_821
+		mov	es, cx
+		mov	ah, 49h
+		int	21h		; DOS -	2+ - FREE MEMORY
+					; ES = segment address of area to be freed
+
+locret_0_821:				; CODE XREF: FREE_FONT_MEMOR+1Aj
+		retn	
+
+
+
+;************************************************************************
+;* calc_effects_buffer							*
+;*	ds:si -> font header						*
+;************************************************************************
+
+; Text needs a scratch buffer allocated from dynamic memory.  Calculate the
+; size which needs to be allocated for this font.  If it is larger than the
+; size required for any previous font, save it.  The size required is
+;      8 * width * height (for screens)
+;      2.5 * width * height (for printers)
+; where "height" is the font form height and "width" is determined by
+; adding together the font's left offset, right offset, and maximum cell
+; width, rounding up to the next multiple of sixteen, dividing by eight (to
+; get the number of bytes), and then rounding to the next higher multiple of
+; sixteen (i.e., paragraph boundary).
+
+;		S u b r	o u t i	n e
+
+calc_effects_buffer:
+		mov	ax, es:.LEFT_OFF
+		add	ax, es:.RIGHT_OFF
+		add	ax, es:.MAX_CELL_WIDTH
+		add	ax, 0Fh
+		shr	ax, 1
+		shr	ax, 1
+		shr	ax, 1
+		add	ax, 0Fh
+		and	ax, 0FFF0h
+		mul	es:word ptr .FORM_HEIGHT
+		shl	ax, 1
+		shl	ax, 1
+		shl	ax, 1
+		cmp	ax, cs:text_buffer_size
+		jle	end_calc_effects_buffer
+		mov	cs:text_buffer_size, ax
+end_calc_effects_buffer:
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_856:
+		mov	bx, cs:ws_index
+		cmp	cs:ws_id[bx], 0FFFFh
+		jnz	loc_0_866
+		jmp	close_virtual
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_866:				; CODE XREF: sub_0_856+Bj
+		and	cs:ws_flags[bx],	0FFFDh
+		mov	ax, cs:vdi_handles[bx]
+		mov	cs:vdi_handles[bx], 0
+		mov	di, cs
+		mov	es, di
+
+		mov	di, offset vdi_handles
+		mov	cx, 20h
+
+loc_0_883:				; CODE XREF: sub_0_856+4Bj
+		repne scasw
+		jnz	loc_0_8A4
+		push	es
+		push	di
+		push	cx
+		push	ax
+		sub	di, offset vdi_handles+2
+		mov	es, cs:WS_DSEG[di]
+
+		mov	ah, 49h
+		int	21h		; DOS -	2+ - FREE MEMORY
+					; ES = segment address of area to be freed
+		mov	bx, di
+		call	CLEAR_WS_TABLE_ENTRY
+		pop	ax
+		pop	cx
+		pop	di
+		pop	es
+		jmp	loc_0_883
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_8A4:				; CODE XREF: sub_0_856+2Fj
+		mov	bx, cs:ws_index
+		call	FREE_FONT_MEMOR
+		mov	cs:WS_FONT[bx],	0
+		mov	cs:word_0_F47[bx], 0
+		test	cs:ws_flags[bx],1
+		jnz	locret_0_8D1
+		mov	cx, cs:WS_CHEAD[bx]
+		mov	es, cx
+		mov	ah, 49h
+		int	21h		; DOS -	2+ - FREE MEMORY
+					; ES = segment address of area to be freed
+		call	CLEAR_WS_TABLE_ENTRY
+
+locret_0_8D1:				; CODE XREF: sub_0_856+6Bj
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+close_virtual:
+		mov	bx, cs:ws_index
+		mov	es, cs:WS_DSEG[bx]
+		mov	ah, 49h
+		int	21h		; DOS -	2+ - FREE MEMORY
+					; ES = segment address of area to be freed
+		cmp	cs:WS_FONT[bx],	0
+		jz	loc_0_8F0
+		call	sub_0_756
+		jnb	loc_0_8F0
+		call	FREE_FONT_MEMOR
+
+loc_0_8F0:				; CODE XREF: close_virtual+14j
+					; close_virtual+19j
+		call	CLEAR_WS_TABLE_ENTRY
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_8F4:
+		lds	si, cs:dword ptr save_start
+		cmp	word ptr 12[si], 0
+		jle	loc_0_918
+		mov	bx, 12[si]
+		dec	bx
+		shl	bx, 1
+		cmp	cs:ws_id[bx], 0
+		jz	loc_0_918
+		test	cs:word ptr ws_flags[bx], 2
+		jz	loc_0_918
+		clc	
+		retn	
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_918:				; CODE XREF: sub_0_8F4+9j sub_0_8F4+17j
+					; ...
+		stc	
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+CHECK_AND_LOAD:
+					; cseg:5079p
+		mov	ds, cs:ASSIGN_SEG
+		mov	si, 0
+		mov	dx, cs:WORK_IDENTIFIER
+
+loc_0_927:				; CODE XREF: CHECK_AND_LOAD+17j
+		cmp	dx, [si]
+		jz	loc_0_936
+		mov	si, 4[si]
+		cmp	si, 0
+		jnz	loc_0_927
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_936:				; CODE XREF: CHECK_AND_LOAD+Fj
+		add	si, 8
+		call	SIZE_FILE
+		jnc	loc_0_943
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_943:				; CODE XREF: CHECK_AND_LOAD+24j
+		mov	cs:DRIVER_SIZE, bx
+		clc	
+		mov	ah, 48h
+		int	21h		; DOS -	2+ - ALLOCATE MEMORY
+					; BX = number of 16-byte paragraphs desired
+		jnb	loc_0_952
+		jmp	loc_0_362
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_952:				; CODE XREF: CHECK_AND_LOAD+33j
+		mov	bx, ax
+		mov	cs:DRIVER_HEAD,	ax
+		call	OPEN_DRIVER
+		jc	locret_0_969
+		call	LOAD_DRIVER
+		cmp	cs:LOAD_SUCCESSFUL, 0
+		jz	locret_0_969
+		call	sub_0_BD1
+
+locret_0_969:				; CODE XREF: CHECK_AND_LOAD+4Aj
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+OPEN_DRIVER:
+		push	cs
+		pop	ds
+		mov	dx,offset drvname
+		mov	cx,0
+		mov	ax,3D20h
+		int	21h
+		jc	openend
+		mov	cs:DRIVER_HANDLE,ax
+openend:	mov	ds,bx
+		mov	dx,0	
+		ret
+;
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+CLEAR_WS_TABLE_ENTRY:
+					; sub_0_856+78p ...
+		push	ds
+		push	ax
+		mov	ax, cs
+		mov	ds, ax
+
+		xor	ax, ax
+		mov	cs:ws_id[bx], ax
+		mov	cs:WS_XRES[bx],	ax
+		mov	cs:WS_YRES[bx],	ax
+		mov	cs:WS_SIZE[bx],	ax
+		mov	cs:WS_CSEG[bx],	ax
+		mov	cs:WS_CHEAD[bx], ax
+		mov	cs:WS_XFORM[bx], ax
+		mov	cs:ws_flags[bx], ax
+		mov	cs:WS_DSEG[bx], ax
+		mov	cs:word_0_E87[bx], ax
+		mov	cs:vdi_handles[bx], ax
+		mov	cs:WS_FONT[bx],	ax
+		mov	cs:word_0_F47[bx], ax
+		pop	ax
+		pop	ds
+
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+DRIVER:
+					; ...
+		mov	bx, cs:ws_index
+		cmp	cs:WS_XFORM[bx], 2
+		jz	loc_0_A24
+		lds	si, cs:dword ptr save_start
+		mov	cx, 2[si]
+		jcxz	loc_0_A24
+		mov	bp, sp
+		mov	ax, cx
+		shl	ax, 1
+		shl	ax, 1
+		sub	sp, ax
+		lds	si, cs:dword ptr dword_0_BFD
+		mov	cs:word ptr dword_0_BFD, sp
+		mov	cs:word ptr dword_0_BFD+2, ss
+		mov	ax, ss
+		mov	es, ax
+		mov	di, sp
+		push	bp
+		mov	bp, cs:WS_YRES[bx]
+
+loc_0_A07:
+		mov	bx, cs:WS_XRES[bx]
+
+loc_0_A0C:				; CODE XREF: DRIVER+54j
+		lodsw
+
+loc_0_A0D:
+		shl	ax, 1
+		mul	bx
+		mov	ax, dx
+		stosw
+		lodsw
+		shl	ax, 1
+		mul	bp
+		mov	ax, bp
+		dec	ax
+		sub	ax, dx
+		stosw
+		loop	loc_0_A0C
+		jmp	loc_0_A27
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+
+loc_0_A24:				; CODE XREF: DRIVER+Bj	DRIVER+15j
+		mov	bp, sp
+		push	bp
+
+loc_0_A27:				; CODE XREF: DRIVER+56j
+		mov	dx, offset save_start
+		mov	ax, cs
+		mov	ds, ax
+
+		mov	bx, cs:ws_index
+		mov	ax, cs:WS_CSEG[bx]
+		mov	cs:word_0_C19, ax
+		mov	ax, cs:WS_DSEG[bx]
+		mov	bx, cs:WS_FONT[bx]
+		callf	cs:dword ptr DRIVER_OFFSET
+		pop	bp
+		mov	sp, bp
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_A4F:
+					; ...
+		mov	bx, cs:ws_index
+		cmp	cs:WS_XFORM[bx], 2
+		jz	locret_0_AAF
+		les	si, cs:dword ptr save_start
+		mov	cx, es:4[si]
+		jcxz	locret_0_AAF
+		mov	cs:word_0_F93, ax
+		mov	bp, cs:WS_XRES[bx]
+		mov	bx, cs:WS_YRES[bx]
+		les	di, cs:dword ptr dword_0_C05
+		lds	si, cs:dword ptr dword_0_C05
+
+		cld	
+
+loc_0_A80:				; CODE XREF: sub_0_A4F+5Ej
+		lodsw
+		mov	dx, ax
+		lea	ax, -1[bp]
+		add	ax, bp
+		adc	dx, 0
+		div	bp
+		shr	ax, 1
+		stosw
+		lodsw
+		mov	dx, ax
+		cmp	cs:word_0_F93, 0
+		jnz	loc_0_AA0
+		mov	dx, bx
+		dec	dx
+		sub	dx, ax
+
+loc_0_AA0:				; CODE XREF: sub_0_A4F+4Aj
+		lea	ax, -1[bx]
+		add	ax, bx
+		adc	dx, 0
+		div	bx
+		shr	ax, 1
+		stosw
+		loop	loc_0_A80
+
+locret_0_AAF:				; CODE XREF: sub_0_A4F+Bj sub_0_A4F+16j
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+SET_GDOS_DIRECTORY:
+					; sub_0_584p ...
+		push	es
+		push	bx
+		mov	ah, 2Fh
+		int	21h		; DOS -	GET DISK TRANSFER AREA ADDRESS
+					; Return: ES:BX	-> DTA
+		mov	cs:word_0_146B,	es
+		mov	cs:word_0_146D,	bx
+		pop	bx
+		pop	es
+		mov	ah, 19h
+		int	21h		; DOS -	GET DEFAULT DISK NUMBER
+		mov	cs:saved_drive,	al
+		mov	ax, seg GDOS_13_ENTRY
+		mov	ds, ax
+
+		mov	si, offset saved_path
+		inc	si
+		mov	dl, cs:gdos_drive
+		inc	dl
+		mov	ah, 47h
+		int	21h		; DOS -	2+ - GET CURRENT DIRECTORY
+					; DL = drive (0=default, 1=A, etc.)
+					; DS:SI	points to 64-byte buffer area
+		mov	dl, cs:gdos_drive
+		mov	ah, 0Eh
+		int	21h		; DOS -	SELECT DISK
+					; DL = new default drive number	(0 = A,	1 = B, etc.)
+					; Return: AL = number of logical drives
+		mov	ax, seg GDOS_13_ENTRY
+		mov	ds, ax
+		mov	dx, offset gdos_path
+		clc	
+		mov	ah, 3Bh
+		int	21h		; DOS -	2+ - CHANGE THE	CURRENT	DIRECTORY (CHDIR)
+					; DS:DX	-> ASCIZ directory name	(may include drive)
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+RESET_CURRENT_DIRECTORY:
+					; sub_0_584+167p
+		push	dx
+		mov	ds, cs:word_0_146B
+
+		mov	dx, cs:word_0_146D
+		mov	ah, 1Ah
+		int	21h		; DOS -	SET DISK TRANSFER AREA ADDRESS
+					; DS:DX	-> disk	transfer buffer
+		pop	dx
+		mov	ax, seg GDOS_13_ENTRY
+		mov	ds, ax
+
+		mov	dx, offset saved_path
+		mov	ah, 3Bh
+		int	21h		; DOS -	2+ - CHANGE THE	CURRENT	DIRECTORY (CHDIR)
+					; DS:DX	-> ASCIZ directory name	(may include drive)
+		mov	dl, cs:saved_drive
+		mov	ah, 0Eh
+		int	21h		; DOS -	SELECT DISK
+					; DL = new default drive number	(0 = A,	1 = B, etc.)
+					; Return: AL = number of logical drives
+		retn	
+
+
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+drvname		db	'12345678.abc',0
+;
+copyname:	lodsb
+		cmp	al,' '
+		jz	cnend
+		mov	cs:[di],al
+		inc	di
+		loop	copyname
+cnend:		ret	
+
+SIZE_FILE:	push	ds
+		push	si
+;
+; SI->FCB-format filename (ffffffffttt). Convert it to ASCIIZ and get the 
+; size of the resulting file. With file handles, this is done by seeking
+; to the end. 
+;
+		mov	di,offset drvname
+		mov	cx,8
+		push	si
+		call	copyname
+		pop	si
+		add	si,8
+		mov	cs:byte ptr [di],'.'
+		inc	di
+		mov	cx,3
+		call	copyname
+		mov	cs:byte ptr [di],0	;"drvname" is now ASCIIZ.
+
+		call	OPEN_DRIVER
+		jc	size_err
+		mov	bx,DRIVER_HANDLE ;BX = file handle.
+		mov	ax,4202h	;Seek to end
+		mov	cx,0
+		mov	dx,cx
+		int	21h
+		jc	size_clerr	;DXAX = file size, bytes
+		mov	cs:DRIVER_LENGTH,ax
+		mov	cs:DRIVER_LENGTH+2,dx
+		add	ax,0Fh
+		jnc	noidx
+		inc	dx		;DXAX = file size + 0Fh
+noidx:		mov	cl,4
+noidx1:		shr	dx,1
+		rcr	ax,1
+		loop	noidx1		;AX = file size, paras
+		mov	di,ax		;DI = file size, paras	
+;
+; If we were keeping the file open to read it, we'd now seek back to
+; the beginning. But in fact we open it again later, so there's no point.
+;
+;;;;		mov	ax,4200h	;Seek back to start
+;;;;		mov	cx,0		
+;;;;		mov	dx,cx
+;;;;		int	21h
+;;;;		jc	size_clerr	
+		call	CLOSE_DRIVER
+		pop	si
+		pop	ds		;Return with file open
+		mov	bx,di		;BX = file size, paras
+		ret
+;
+size_clerr:	call	CLOSE_DRIVER
+		stc
+size_err:	pop	si
+		pop	ds
+		ret
+					; ...
+		mov	cl, 5
+		shl	bx, cl
+		pop	si
+		pop	ds
+		retn	
+;
+; New for file-handle access; since we now need a file to be open to
+; get its size, the close gets called from multiple places as well
+; as the open.
+;
+CLOSE_DRIVER:	mov	ax,cs:DRIVER_HANDLE
+		and	ax,ax
+		jz	cldr_ret
+		mov	bx,ax
+		mov	ah,3Eh
+		int	21h
+		xor	ax,ax
+		mov	cs:DRIVER_HANDLE,ax
+cldr_ret:	ret
+;
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+;
+; Enter with DS:DX -> load address, DRIVER_HANDLE = handle, 
+; DRIVER_LENGTH= (dword) length to read
+; 
+; (the FCB version used a record count, and set the DTA to be
+; the load address).
+;
+LOAD_DRIVER:
+		mov	cs:LOAD_SUCCESSFUL, 0
+		mov	ax, cs:DRIVER_LENGTH+2
+		and	ax,ax
+		jz	lastchunk
+;
+; If there's more than 64k to read, read 64k (minus 1 para) and try again
+;
+		mov	ah,3Fh
+		mov	bx,cs:DRIVER_HANDLE
+		mov	cx,8000h
+		int	21h
+		jc	lderr
+		mov	ax,ds
+		add	ax,0FFFh
+		mov	ds,ax
+		mov	ax,cs:DRIVER_LENGTH
+		sub	ax,0FFF0h
+		mov	cs:DRIVER_LENGTH,ax
+		jnc	LOAD_DRIVER
+		mov	ax,cs:DRIVER_LENGTH+2
+		dec	ax
+		mov	cs:DRIVER_LENGTH+2,ax
+		jmps	LOAD_DRIVER
+;
+lastchunk:	mov	ax, cs:DRIVER_LENGTH
+		mov	cx,ax
+		mov	ah,3Fh
+		mov	bx,cs:DRIVER_HANDLE	
+		int	21h
+		jc	lderr
+		inc	cs:LOAD_SUCCESSFUL
+		mov	cx, cs:DRIVER_HEAD
+		mov	ds, cx
+		mov	bx, word ptr AD_PTSIN
+		add	cx, bx
+		mov	cs:DRIVER_SEG, cx
+		and	al,al		;Clear carry flag
+lderr:		pushf
+		call	CLOSE_DRIVER
+		popf
+		ret
+
+;€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€
+
+;		S u b r	o u t i	n e
+
+sub_0_BD1:
+		mov	ds, cs:DRIVER_HEAD
+		xor	si, si
+		mov	cx, 6[si]
+		jcxz	locret_0_BF4
+		mov	bx, cs:DRIVER_SEG
+
+loc_0_BE2:				; CODE XREF: sub_0_BD1+21j
+		mov	di, 32[si]
+		mov	ax, 34[si]
+		add	ax, bx
+		mov	es, ax
+		add	es:[di], bx
+		add	si, 4
+		loop	loc_0_BE2
+
+locret_0_BF4:				; CODE XREF: sub_0_BD1+Aj
+		retn	
+
+
+;ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+save_start	dw 0,0			; DATA XREF: cseg:0053o cseg:006Fr
+					; ...
+dword_0_BF9	dw 0,0			; DATA XREF: _open_workstatir
+					; _open_workstati+C5r
+					; ...
+dword_0_BFD	dw 0,0			; DATA XREF: DRIVER+21r DRIVER+26w
+					; ...
+dword_0_C01	dw 0,0			; DATA XREF: _open_workstati+17Dr
+					; sub_0_584+Er
+dword_0_C05	dw 0,0			; DATA XREF: sub_0_A4F+26r
+					; sub_0_A4F+2Br
+GSX_SAV		dw 0,0			; DATA XREF: cseg:0005r chg_ints+8w
+					; ...
+GSX2_SAV	dw 0,0			; DATA XREF: chg_ints+26w rest_ints+15r
+					; ...
+word_0_C11	dw 0			; DATA XREF: sub_0_584+ACr
+					; sub_0_584+C8r ...
+SAVE_CONTROL	dw 0,0			; DATA XREF: _open_workstati+101o
+					; _open_workstati+146r
+					; ...
+DRIVER_OFFSET	dw 0			; DATA XREF: DRIVER+7Br
+word_0_C19	dw 0			; DATA XREF: DRIVER+6Dw
+copy_contrl	rw 0Ah
+copy_intin	rw 0Bh
+ws_index	dw 0
+ws_id		rw 20h
+WS_XRES		rw 20h
+WS_YRES		rw 20h
+WS_SIZE		rw 20h
+WS_CSEG		rw 20h
+WS_CHEAD	rw 20h
+WS_XFORM	rw 20h
+ws_flags	rw 20h
+WS_DSEG		rw 20h
+word_0_E87	rw 20h
+vdi_handles	rw 20h
+WS_FONT		rw 20h
+word_0_F47	rw 20h
+ASSIGN_SEG	dw 0			; DATA XREF: sub_0_584+23r
+					; CHECK_AND_LOADr ...
+gsx_handle	dw 0			; DATA XREF: cseg:00AAr _open_workstati+B3w
+					; ...
+DRIVER_COUNT	dw 0
+DRIVER_HEAD	dw 0			; DATA XREF: _open_workstati+88r
+					; sub_0_584+E7w ...
+DRIVER_SEG	dw 0			; DATA XREF: _open_workstati+7Fr
+					; LOAD_DRIVER+6Fw ...
+DRIVER_SIZE	dw 0			; DATA XREF: _open_workstati+91r
+					; sub_0_584+6Bw ...
+DRIVER_HANDLE	dw 0			; File handle for open driver
+word_0_F93	dw 0			; DATA XREF: sub_0_A4F+18w
+					; sub_0_A4F+44r
+word_0_F95	dw 0			; DATA XREF: sub_0_584+5Cw
+					; sub_0_584+118r
+GDOS20		dw 0			; DATA XREF: cseg:000Aw cseg:0023w
+					; ...
+					; 0 for	GSX, 1 for GEM
+LOAD_SUCCESSFUL	dw 0			; DATA XREF: _open_workstati+66r
+					; _open_workstati+1A4w
+					; ...
+DRIVER_LENGTH	dw 0,0			; DATA XREF: SIZE_FILE+29w
+					; LOAD_DRIVER+8r ...
+opcode		dw 0			; DATA XREF: cseg:0085w cseg:00E6r
+					; ...
+PSP_BASE	dw 0			; DATA XREF: sub_0_96Ar SIZE_FILE+2r
+					; ...
+text_buffer_size	dw 0			; DATA XREF: sub_0_584+52w
+					; sub_0_584+77r ...
+WORK_IDENTIFIER	dw 0			; DATA XREF: _open_workstati+Fw
+					; _open_workstati+76r
+					; ...
+word_0_FA5	dw 0			; DATA XREF: gd_cli+1w
+entries		dw 0FFFFh		; DATA XREF: cseg:0044w cseg:00FFw
+save_count	dw 946			; DATA XREF: cseg:0059r cseg:0113r
+WORK_TABLE_FULL	db 'Too many resident drivers$'; DATA XREF: cseg:0056o
+					; cseg:010Do ...
+RESIDENT_DRIVER	db 'Resident driver at '
+LOCATION_INFO	db 0
+word_0_FD9	dw 0
+byte_0_FDB	db 0			; DATA XREF: sub_0_518D+12o
+a0000		db ':0000',0Dh,0Ah,'$'
+BAD_DRIVER	db 'Corrupted driver file$'; DATA XREF: cseg:5086o
+NOT_INSTALLED_MSG	db 0Dh,0Ah		; DATA XREF: cseg:516Bo
+		db 'GEMVDI not installed',0Dh,0Ah,'$'
+		rs 47h
+byte_0_105A	rs 300h
+		rs 3
+aside_block	dw 0
+		dd saved_path+1
+		dw FCB1
+		dw 0
+		dw 6Ch
+		dw 0
+aside_error	db 0Dh,0Ah
+		db 'Unable to load application program$'
+		rb 5
+aside_file	rb 40h
+step_aside	dw 0
+saved_drive	db 0			; DATA XREF: SET_GDOS_DIRECTORY+16w
+					; RESET_CURRENT_DIRECTORY+1Cr ...
+saved_path	db '\'
+		rs 50h
+gdos_drive	db 0			; DATA XREF: SET_GDOS_DIRECTORY+23r
+					; SET_GDOS_DIRECTORY+2Er ...
+gdos_path	db '\'
+		rs 40h
+					; start+3Do ...
+word_0_146B	dw 0			; DATA XREF: SET_GDOS_DIRECTORY+6w
+					; RESET_CURRENT_DIRECTORY+1r
+word_0_146D	dw 0			; DATA XREF: SET_GDOS_DIRECTORY+Bw
+					; RESET_CURRENT_DIRECTORY+6r
+
+		dseg
+AD_CONTR	dw	0,0
+AD_INTIN	dw	0,0
+AD_PTSIN	dw	0,0
+AD_INTOU	dw	0,0
+AD_PTSOU	dw	0,0
+		end
+

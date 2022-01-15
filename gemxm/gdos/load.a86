@@ -1,0 +1,1259 @@
+;/*
+;*       Copyright 1999, Caldera Thin Clients, Inc.                      
+;*       This software is licenced under the GNU Public License.         
+;*       Please see LICENSE.TXT for further information.                 
+;*                                                                       
+;*/
+
+; [JCE] Rewritten to be more like LOADER.A86 in GEM/3. Next stage would be
+; to do automatic driver loading rather than parsing ASSIGN.SYS
+
+		extrn	ASSIGN_SEG:word
+		extrn	CHECK_AND_LOAD:near
+		extrn	LOAD_SUCCESSFUL:word
+		extrn	WORK_IDENTIFIER:word	
+		extrn	SIZE_FILE:near
+		extrn	GDOS_PATH:byte
+		extrn	PSP_BASE:word
+		extrn	CLEAR_WS_TABLE_ENTRY:near
+		extrn	saved_drive:byte
+		extrn	saved_path:byte
+		extrn	SET_GDOS_DIRECTORY:near
+		extrn	chg_ints:near
+		extrn	rest_ints:near
+		extrn	ch_start:near
+		extrn	ch_end:near
+		extrn	LOCATION_INFO:byte
+		extrn	GDOS_DRIVE:byte
+		extrn	BAD_DRIVER:byte
+		extrn	WORK_TABLE_FULL:byte
+		extrn	NOT_INSTALLED_MSG:byte
+		extrn	RESIDENT_DRIVER:byte
+		extrn	DRIVER_SEG:word
+		extrn	DRIVER_HEAD:word
+		extrn	DRIVER_SIZE:word
+		extrn	WS_ID:word
+		extrn	WS_CSEG:word
+		extrn	WS_FLAGS:word
+		extrn	WS_SIZE:word 
+		extrn	WS_CHEAD:word 
+
+		public	GDOS_DS
+		public	ch_stk
+		public	start
+
+		cseg
+
+ENVIRON		equ	2Ch
+FCB1		equ	5Ch
+FCBLEN		equ	6Ah
+FCB2		equ	6Ch
+CMDLINE		equ	80h
+FCBREC		equ	7Ch
+
+GEMINT		equ	03BCh
+
+		include	equates.a86
+
+;************************************************************************
+;* overlay_loader                                                       *
+;*      The non-overlayable part of the GDOS loader starts here.        *
+;************************************************************************
+overlay_loader:	
+
+; Shrink the size of the program.  
+		mov	ax, seg data_end
+		mov	ds, ax
+		xor	si, si
+		mov	ax, cs:GDOS_DS
+		mov	es, ax
+		
+		xor	di, di
+		mov	cx, offset data_end
+		rep movsb
+		mov	ax, cs:ASSIGN_SEG
+		mov	ds, ax
+		xor	si, si
+		mov	ax, cs:overlay_segment
+		mov	es, ax
+		xor	di, di
+		mov	cx, cs:assign_table_length
+		rep movsb
+		mov	cs:ASSIGN_SEG, es
+		clc	
+		mov	ah, 4Ah
+		mov	es, cs:PSP_BASE
+		int	PCDOS
+		jnb	loc_0_505F
+		jmp	loc_0_5533
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_505F:				; CODE XREF: cseg:505Aj
+		mov	es, cs:ASSIGN_SEG
+		mov	si, es
+		mov	ds, si
+		xor	si, si
+
+loc_0_506A:				; CODE XREF: cseg:50DAj
+		cmp	word ptr 2[si], 0
+		jz	next_driver
+		mov	bx, [si]
+		mov	cs:WORK_IDENTIFIER, bx
+		push	ds
+		push	si
+		call	CHECK_AND_LOAD
+		pop	si
+		pop	ds
+		cmp	cs:LOAD_SUCCESSFUL, 1
+		jz	loc_0_508C
+		mov	dx, offset BAD_DRIVER
+		jmp	reset_and_exit
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_508C:				; CODE XREF: cseg:5084j
+		mov	di, cs
+		mov	es, di
+		
+		mov	di, offset ws_id
+		mov	cx, 20h
+		xor	ax, ax
+		repne scasw
+		jz	found_empty_entry
+		mov	dx, offset WORK_TABLE_FULL
+		jmp	reset_and_exit
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+found_empty_entry:
+		sub	di, offset ws_id+2
+		mov	ax, cs:WORK_IDENTIFIER
+		mov	cs:ws_id[di], ax
+		mov	ax, cs:DRIVER_SEG
+		mov	cs:WS_CSEG[di],	ax
+		mov	ax, cs:DRIVER_HEAD
+		mov	cs:WS_CHEAD[di], ax
+		mov	ax, cs:DRIVER_SIZE
+		mov	cs:WS_SIZE[di],	ax
+		mov	cs:ws_flags[di], 1
+		call	print_driver_info
+;
+; GEM/3 doesn't use a linked list here; it adds ASS_LENGTH to si and the
+; comparison happens elsewhere.
+;
+next_driver:
+		mov	si, 4[si]
+		cmp	si, 0
+		jnz	loc_0_506A
+; Prepare to EXEC the requested application.  Patch interrupts.
+exec_app:
+		call	chg_ints	; GEM/3 inlines this
+
+; Set the drive and directory.
+		mov	dl, cs:gdos_drive
+		mov	ah, SET_DRIVE
+		int	PCDOS
+		push	cs
+		pop	ds
+		mov	dx, offset gdos_path	; [JCE] set gdos path first
+		mov	ah, SET_DIR		; since app_path may be
+		int	PCDOS			; relative (..\gemboot)
+		mov	dx, offset app_path
+		mov	ah, SET_DIR
+		int	PCDOS
+		mov	cs:ss_save, ss
+		mov	cs:sp_save, sp
+		mov	ss, cs:GDOS_DS
+		mov	sp, offset ch_stk
+		mov	ds, cs:GDOS_DS
+		
+		call	ch_start
+
+; Set up the parameter block for the exec call. Restore the PSP command tail
+; size, which was probably wiped out as part of the first PSP FCB.
+		mov	ax, cs:PSP_BASE
+		mov	cs:pblock6,	5Ch
+		mov	cs:pblock8,	ax
+		mov	cs:pblock10,	6Ch
+		mov	cs:pblock12,	ax
+		mov	es, ax
+		
+		mov	al, cs:save_tail_len
+		mov	es:.80h, al
+		mov	ax, cs
+		mov	ds, ax
+		
+		mov	dx, offset app_name	; ds:dx -> app file name
+		mov	bx, ds
+		mov	es, bx
+		
+		mov	bx, offset pblock	; es:bx -> parameter block
+		mov	ah, EXEC		; load and execute function
+		xor	al, al			; load and execute sub-func
+		int	PCDOS
+
+; Restore the environment
+		mov	ss, cs:GDOS_DS
+		mov	sp, offset ch_stk
+		mov	ds, cs:GDOS_DS
+		
+		call	ch_end
+		cli	
+		mov	sp, cs:sp_save
+		mov	ss, cs:ss_save
+		sti	
+		call	rest_ints
+		jmp	terminate
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+reset_and_exit:				; CODE XREF: cseg:5089j cseg:509Fj
+					; ...
+		push	cs
+		pop	ds
+		
+		mov	ah, PRINT_STRING
+		int	PCDOS		; DOS -	PRINT STRING
+					; DS:DX	-> string terminated by	"$"
+		mov	dx, offset NOT_INSTALLED_MSG
+		mov	ah, PRINT_STRING
+		int	PCDOS		; DOS -	PRINT STRING
+					; DS:DX	-> string terminated by	"$"
+; Reset the directory and exit.
+terminate:		
+		mov	dl, cs:gdos_drive
+		mov	ah, 0Eh
+		int	PCDOS
+		mov	dx, seg root_path
+		mov	ds, dx
+		mov	dx, offset root_path
+		mov	ah, SET_DIR
+		int	PCDOS
+
+		xor	al, al
+		mov	ah, EXIT_PROGRAM
+		int	PCDOS
+
+;************************************************************************
+;* print_driver_info                                                    *
+;************************************************************************
+print_driver_info:
+; Save registers.  Save workstation table index.
+		push	ds
+		push	si
+		mov	bx, di			; bx = workstation table index
+		mov	di, cs
+		mov	es, di
+
+; Convert the location information into the location info sub-string.  The
+; conversion will be performed from right to left.
+prep_hex_out:
+		std	
+		mov	bx, cs:WS_CSEG[bx]
+		mov	ch, 4
+		mov	cl, ch
+		mov	di, offset LOCATION_INFO+3
+
+next_hex_digit:	
+		mov	ax, bx
+		and	al, 0Fh			; mask four bits (hex digit)
+		cmp	al, 9
+		jle	zero_to_nine
+		add	al, 'A' - 10		; convert to alpha character
+		jmps	move_next_hex
+
+zero_to_nine:		
+		add	al, '0'			; convert to numeric character
+
+move_next_hex:		
+		stosb
+		shr	bx, cl			; shift to next hex digit
+		dec	ch
+		jnz	next_hex_digit
+;
+; GEM/3 does it all again here for the offset
+;
+		mov	dx, offset RESIDENT_DRIVER
+		mov	ax, cs
+		mov	ds, ax
+		mov	ah, PRINT_STRING
+		int	PCDOS
+
+; Restore.
+		pop	si
+		pop	ds
+		cld	
+		retn	
+
+
+;************************************************************************
+;* Local data area for information which must be retained after loading.*
+;************************************************************************
+
+prog_size	dw 0
+assign_table_length	dw 0
+overlay_segment	dw 0
+any_key		db CR, LF, 'Press any key to continue$'
+ss_save		rw 1
+sp_save		rw 1
+		dw 0,0			;Unknown
+root_path	db '\',0
+app_path	db '\'
+		rb 64
+
+app_name	db 'GEM.EXE',0
+		rb 5
+pblock		dw 0
+pblock2		dw 0
+pblock4		dw 0
+pblock6		dw 0
+pblock8		dw 0
+pblock10	dw 0
+pblock12	dw 0
+command_tail	db 0,CR
+save_tail_len	db 0
+GDOS_DS		dw 0
+
+;************************************************************************
+;* loader_code_start                                                    *
+;************************************************************************
+start:
+
+; Save the PSP segment address so the GDOS can find its FCBs later.
+		mov	cs:PSP_BASE, es
+
+; Get the current drive and path.
+		mov	ah, GET_DRIVE
+		int	PCDOS
+		mov	cs:gdos_drive, al
+		mov	cs:saved_drive,	al
+;
+; XM-only: Check that GEM is not being invoked from within GEM.
+;
+		mov	ax, 0
+		mov	ds, ax
+		lds	si, ds:dword ptr .GEMINT
+		mov	ah, 2[si]
+		cmp	ah, 'G'
+		jnz	not_already_in_gem
+		mov	ax, cs
+		mov	ds, ax
+		
+		mov	dx, offset already_in
+		mov	ah, 9
+		int	PCDOS
+		jmp	terminate
+;
+; End of XM-specific bit
+;
+not_already_in_gem:
+		mov	al, cs:saved_drive
+		mov	dl, al
+		inc	dl
+		mov	ax, seg saved_drive
+		mov	ds, ax
+		mov	si, offset gdos_path	;ds:si = GDOS path string
+		inc	si
+		mov	ah, GET_DIR
+		int	PCDOS	
+		mov	si, offset saved_path	;ds:si = saved path string
+		inc	si
+		mov	ah, GET_DIR
+		int	PCDOS
+		mov	si, offset app_path	;ds:si = application path
+		inc	si
+		mov	ah, GET_DIR
+		int	PCDOS
+
+; Initialize the exec parameter block to indicate no command tail. Parse
+; the command line.
+ini_parm_block:
+		mov	cs:pblock2, offset command_tail
+		mov	cs:pblock4, seg command_tail
+		call	parse_command_line
+
+; Find the application.
+		call	find_app
+
+; Initialise the workstation table to zeroes
+;
+; Interesting. In GEM/3, this is WS_ENTRIES which is 8. But in GEM/XM it's 
+; 32 while WS_ENTRIES is still 8.
+;
+		mov	cx, 20h
+		xor	bx, bx			; bx = table index
+
+init_table_loop:
+		call	CLEAR_WS_TABLE_ENTRY	; clear the table entry
+		inc	bx
+		inc	bx			; next index
+		loop	init_table_loop
+
+; Try to build an assignment table. If none is built (length zero), 
+; report an error and exit.
+		call	SET_GDOS_DIRECTORY
+		call	build_assign_table
+		cmp	di, 0
+		jnz	lcs_calc_overlay
+		mov	dx, offset no_drivers
+		jmp	reset_and_exit
+
+; Compute the ending address of the overlayable part of the GDOS and the
+; driver.  This is equal to the address of the first paragraph after the
+; overlay point plus the size of the assign table in paragraphs.
+lcs_calc_overlay:
+		mov	ax, offset start
+		mov	cl, 4
+		shr	ax, cl
+		add	ax, seg start
+		inc	ax
+		mov	cs:overlay_segment, ax
+		mov	dx, cs:assign_table_length
+		shr	dx, cl
+		inc	dx
+		add	ax, dx
+		mov	cs:GDOS_DS, ax
+		mov	dx, offset data_end
+		shr	dx, cl
+		inc	dx
+		add	ax, dx
+		mov	bx, ax
+		sub	bx, cs:PSP_BASE
+		inc	bx
+		mov	cs:prog_size,	bx
+
+; Switch the stack back to the PSP and jump to the resident part of the loader.
+end_overlay:
+		cld	
+		pushf	
+		pop	si
+		cli	
+		mov	ss, cs:PSP_BASE
+		
+		mov	sp, 0FEh
+		push	si
+		popf	
+		jmp	overlay_loader
+
+
+;************************************************************************
+;* parse_command_line                                                   *
+;************************************************************************
+;
+; The GEM/3 version of this function is much more complicated, since it
+; parses command line arguments -M (set mouse), -S (set screen driver),
+; -R (set driver as resident) and -I (set info path)
+;
+parse_command_line:
+		push	es
+		pop	ds		; ds = PSP segment address
+		xor	bx, bx
+
+; If a command line was not specified, bail out.
+		cmp	byte ptr .CMDLINE, 0
+		jz	end_parse_command_line
+
+pcl_loop:				; CODE XREF: parse_command_line+18j
+					; parse_command_line+1Cj
+		inc	bx
+		cmp	bl, byte ptr .CMDLINE
+		ja	end_parse_command_line
+		mov	al, CMDLINE[bx]
+		cmp	al, ' '
+		jz	pcl_loop
+		cmp	al, 9
+		jz	pcl_loop
+		cmp	al, 0Dh
+		jz	end_parse_command_line
+		cmp	al, '/'
+		jz	alt_app
+		cmp	al, 'A'
+		jb	loc_0_5352
+		cmp	al, 'Z'
+		jbe	pcl_parse_done
+		cmp	al, 'a'
+		jb	loc_0_5352
+		cmp	al, 'z'
+		jbe	pcl_parse_done
+
+loc_0_5352:				; CODE XREF: parse_command_line+28j
+					; parse_command_line+30j
+		mov	dx, offset aCommandLineSyn
+		jmp	reset_and_exit
+
+end_parse_command_line:
+		retn	
+
+; Parsing is done.  If an alternate application is not being EXECed, pass
+; the command tail on to the GEMAES.  Put the command tail address into
+; the exec parameter block.  Save the length of the command tail so that
+; it can be restored after being wiped out by an FCB.
+pcl_parse_done:	
+		mov	cs:pblock2, 80h 	;command tail offset
+		mov	cs:pblock4, ds		;command tail segment (PSP)
+		mov	al, ds:.80h
+		mov	cs:save_tail_len, al
+		retn	
+;
+; An alternate AES is being used
+;
+alt_app:
+		mov	ax, cs
+		mov	es, ax
+		mov	di, offset app_name	; es:di = app file name
+		mov	si, bx
+		add	si, 81h
+
+app_loop:
+		lodsb
+		call	is_separator
+		jb	aa_attach_extension
+		cmp	al, '.'		;Extension present?
+		jz	aa_extension_given
+		stosb
+		jmps	app_loop
+
+; An extension occurs with the file name.  Store the '.' and get the remainder
+; of the file name.
+aa_extension_given:
+		stosb
+aa_extension_loop:
+		lodsb
+		call	is_separator
+		jb	alt_app_done
+		stosb
+		jmps	aa_extension_loop
+
+aa_attach_extension:
+		mov	al, '.'
+		stosb
+		mov	al, 'e'
+		stosb
+		mov	al, 'x'
+		stosb
+		mov	al, 'e'
+		stosb
+
+; Tag on a null.
+alt_app_done:
+		xor	al, al
+		stosb
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+is_separator:		; CODE XREF: parse_command_line+5Fp
+					; parse_command_line+6Dp
+		cmp	al, 0
+		jz	loc_0_53B3
+		cmp	al, 0Dh
+		jz	loc_0_53B3
+		cmp	al, 20h
+		jz	loc_0_53B3
+		cmp	al, 9
+		jz	loc_0_53B3
+		clc	
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_53B3:				; CODE XREF: is_separator+2j
+					; is_separator+6j ...
+		stc	
+		retn	
+
+
+
+;************************************************************************
+;* find_app                                                             *
+;************************************************************************
+find_app:
+		mov	ax, STACK_SIZE
+		mov	cl, 4
+		shr	ax, cl
+		mov	bx, ss
+		add	ax, bx
+		inc	ax
+		mov	ds, ax
+		xor	dx, dx
+		mov	ah, SET_DTA
+		int	PCDOS
+
+; Does the application exist in the current directory?
+		mov	ax, cs
+		mov	ds, ax
+		mov	dx, offset app_name
+		xor	cx, cx
+		mov	ah, FIND_FIRST
+		int	PCDOS
+		jc	check_gem_directories
+		jmp	end_find_app
+
+; Couldn't find the application in the current directory. Check the 
+; GEMBOOT directory.
+
+;
+; [JCE] Use GEM/3 search (..\GEMBOOT) rather than GEM/2 
+; (\GEMBOOT then \GEMAPPS)
+;
+check_gem_directories:			
+		mov	dx, offset gemboot
+		call	gem_directory
+		jb	check_gemapps
+		jmp	end_find_app
+
+check_gemapps:
+;;; GEM/3 does not look for the AES in \GEMAPPS
+;;;		mov	dx, offset gemapps
+;;;		call	gem_directory
+;;;		jb	traverse_search_path
+;;;		jmp	end_find_app
+
+; Couldn't find the application in a GEM directory. Traverse the search path.
+traverse_search_path:
+		mov	es, cs:PSP_BASE
+		mov	es, es:.ENVIRON		; environment segment address
+		mov	al, cs:byte ptr path_string
+		xor	di, di			; es:di = environment address
+		mov	cx, 7FFFh		; maximum environment space
+
+find_repeat:			
+		repne	scasb
+		jnz	end_find_app		; couldn't find 'PATH'
+		mov	dx, di			; save
+		mov	bx, cx			; save
+		dec	di
+		mov	si, offset path_string
+		mov	cx, cs:path_string_len
+		rep cmpsb
+		jcxz	path_found
+		mov	cx, bx			; restore
+		mov	di, dx			; restore
+		jmps	find_repeat
+
+; Found 'PATH'.  The first path name is pointed to by es:di.
+path_found:
+		xor	bx, bx			; done flag
+
+path_check_loop:		
+		cmp	bx, 0			; done yet?
+		jnz	app_not_found
+		mov	si, offset app_path
+		mov	dx, si
+		dec	si
+
+get_path_loop:	
+		mov	al, es:[di]
+		cmp	al, 0
+		jnz	check_for_semi
+		inc	bx
+		jmps	check_path
+check_for_semi:
+		inc	di
+		cmp	al, ';'
+		jz	check_path
+		inc	si
+		mov	[si], al
+		jmps	get_path_loop
+
+; A path name is now stored in app_path.  Concatenate the file name.
+check_path:		
+		cmp	byte ptr [si], '\'	; '\' already specified?
+		jz	prep_get_name_loop
+		inc	si
+		mov	byte ptr [si], '\'
+
+prep_get_name_loop:			
+		push	si			; save for later
+		push	di			; save for later
+		inc	si
+		mov	di, offset app_name
+
+get_name_loop:
+		mov	al, [di]
+		inc	di
+		mov	[si], al
+		inc	si
+		cmp	al, 0
+		jnz	get_name_loop
+
+; Does the file exist?
+		mov	ax, cs
+		mov	ds, ax
+		xor	cx, cx
+		mov	ah, FIND_FIRST
+		int	PCDOS
+		pop	di			; restore environment pointer
+		pop	si			; restore path end pointer
+		jc	path_check_loop		; not found: try another
+
+; Found the file.  Tag a null at the end of the path name. If the path name
+; is something like 'C:\', make sure that the '\' is included.
+		dec	si			; point to candidate ':'
+		cmp	byte ptr [si], ':'
+		jnz	null_tag		; skip if not '?:\'
+		inc	si
+		mov	byte ptr [si], '\'	; concatenate '\'
+null_tag:			
+		inc	si
+		mov	byte ptr [si], 0
+end_find_app:
+		retn
+
+; The application does not exist. Output an error message and exit.
+app_not_found:	
+		mov	dx, offset app_error
+		jmp	reset_and_exit
+
+
+;************************************************************************
+;* gem_directory                                                        *
+;************************************************************************
+gem_directory:
+
+; Set to the requested directory.
+		mov	ah, SET_DIR
+		int	PCDOS
+		jb	end_gem_directory
+
+; Look for the application.
+		push	dx
+		mov	dx, offset app_name
+		xor	cx, cx
+		mov	ah, FIND_FIRST
+		int	PCDOS
+		pushf	
+
+; Restore the GDOS directory.
+		mov	dx, offset gdos_path
+		mov	ah, SET_DIR
+		int	PCDOS
+
+; If the application was found, copy the directory name.
+		popf	
+		pop	dx
+		jc	end_gem_directory
+		mov	si, dx
+		mov	di, offset app_path
+gem_directory_loop:
+		lodsb
+		mov	[di], al
+		inc	di
+		cmp	al, 0
+		jnz	gem_directory_loop
+		clc	
+
+end_gem_directory:
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+assign_sys	db 'assign.sys',0
+
+build_assign_table:	
+;
+; [JCE 20-2-2006] Rewrite to use DOS handles, not FCBs.
+;
+		push	cs
+		pop	ds
+		mov	ax,3D20h	;Open read-only, deny write
+		mov	dx,offset assign_sys
+		mov	cx,0	
+		int	PCDOS		;Open assign.sys
+		push	es
+		pop	ds
+		jnc	assign_open
+
+		mov	dx, offset aUnableToOpenAs
+		jmp	reset_and_exit
+;
+assign_open:
+		mov	bx,ax		;BX is now our file handle
+		xor	ax,ax
+		mov	cx,ax
+		mov	dx,ax
+		mov	ax,4202h	;LSEEK to end
+		int	PCDOS
+		mov	bp, ax		;File size
+		add	ax,10h
+		mov	cl,4
+		shr	ax,cl		;File size in paras
+		mov	cs:_assign_size, ax
+		xor	ax,ax
+		mov	cx,ax
+		mov	dx,ax
+		mov	ax,4200h
+		int	PCDOS		;LSEEK back to start
+		mov	di, bx		;DI = file handle
+		mov	bx, STACK_SIZE
+		mov	cl, 4
+		shr	bx, cl
+		mov	ax, ss
+		add	bx, ax
+		inc	bx
+		jb	loc_0_5533
+		mov	cs:ASSIGN_SEG, bx
+		mov	ds, bx
+		mov	bx, di		;BX = file handle	
+		xor	dx, dx		;DS:DX = load address
+		mov	cx, bp		;Bytes to read
+		mov	ah,3Fh		;Read
+		int	PCDOS
+		jnc	loc_0_554F	;If OK...
+		mov	dx, offset aErrorReadingAs
+		jmp	reset_and_exit
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5533:				; CODE XREF: cseg:505Cj build_assign_table+38j
+		cmp	ax, 7
+		jnz	loc_0_553E
+		mov	dx, offset aMemoryTableCor
+		jmp	reset_and_exit
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_553E:				; CODE XREF: build_assign_table+8Fj
+		cmp	ax, 8
+		jnz	loc_0_5549
+		mov	dx, offset aInsufficientMe
+		jmp	reset_and_exit
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5549:				; CODE XREF: build_assign_table+9Aj
+		mov	dx, offset aInvalidMemoryB
+		jmp	reset_and_exit
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_554F:				; CODE XREF: build_assign_table+84j
+		mov	ds:byte ptr [bp],1Ah	;Add EOF marker
+		mov	ah,3Eh
+		int	PCDOS		;Close ASSIGN.SYS
+		mov	bx, cs:_assign_size
+		inc	bx
+		mov	dx, cs:ASSIGN_SEG
+		mov	ds, dx
+		add	dx, bx
+		inc	dx
+		xor	si, si
+		mov	es, dx
+		xor	di, di
+		xor	bx, bx
+		call	sub_0_5708
+		call	sub_0_55F0
+		jnb	loc_0_5571
+		jmps	loc_0_55EA
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5571:				; CODE XREF: build_assign_table+C6j
+					; build_assign_table+127j
+		mov	cs:word ptr byte_0_5719, 0FFFFh
+		xor	dh, dh
+		mov	dl, al
+		sub	dl, 30h
+		call	sub_0_562D
+		pushf	
+		mov	es:[di], dx
+		mov	es:word ptr 2[bx], 0
+		lea	di, 8[bx]
+		popf	
+		jnb	loc_0_559B
+		cmp	al, 1Ah
+		jz	loc_0_55EA
+		call	sub_0_565E
+		jb	loc_0_55EA
+
+loc_0_559B:				; CODE XREF: build_assign_table+E9j
+		call	sub_0_55F0
+		jnb	loc_0_55EA
+		call	sub_0_56F4
+		jb	loc_0_55EA
+
+loc_0_55A5:				; CODE XREF: build_assign_table+116j
+		inc	cs:word ptr byte_0_5719
+		call	sub_0_5673
+		jb	loc_0_55EA
+		call	sub_0_55F0
+		jnb	loc_0_55BF
+		cmp	al, 1Ah
+		jz	loc_0_55D0
+		call	sub_0_56F4
+		jb	loc_0_55EA
+		jmps	loc_0_55A5
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_55BF:				; CODE XREF: build_assign_table+10Bj
+		mov	dx, cs:word ptr byte_0_5719
+		mov	es:6[bx], dx
+		mov	es:4[bx], di
+		mov	bx, di
+		jmps	loc_0_5571
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_55D0:				; CODE XREF: build_assign_table+10Fj
+		mov	dx, cs:word ptr byte_0_5719
+		mov	es:6[bx], dx
+		mov	cs:assign_table_length,	di
+		mov	es:word ptr 4[bx], 0
+		mov	cs:ASSIGN_SEG, es
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_55EA:				; CODE XREF: build_assign_table+C8j
+					; build_assign_table+EDj ...
+		mov	dx, offset aSyntaxErrorWhi
+		jmp	reset_and_exit
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_55F0:		; CODE XREF: build_assign_table+C3p
+					; build_assign_table+F4p ...
+		cmp	al, 20h
+		jz	loc_0_5615
+		cmp	al, 0Dh
+		jz	loc_0_5615
+		cmp	al, 0Ah
+		jz	loc_0_5615
+		cmp	al, 9
+		jz	loc_0_5615
+		cmp	al, 3Bh
+		jnz	loc_0_560B
+		call	sub_0_561E
+		jnb	loc_0_5615
+		jmps	loc_0_561A
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_560B:				; CODE XREF: sub_0_55F0+12j
+		cmp	al, '0'
+		jl	loc_0_561A
+		cmp	al, '9'
+		jg	loc_0_561A
+		jmps	loc_0_561C
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5615:				; CODE XREF: sub_0_55F0+2j
+					; sub_0_55F0+6j ...
+		call	sub_0_5708
+		jmps	sub_0_55F0
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_561A:				; CODE XREF: sub_0_55F0+19j
+					; sub_0_55F0+1Dj ...
+		stc	
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_561C:				; CODE XREF: sub_0_55F0+23j
+		clc	
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_561E:		; CODE XREF: sub_0_55F0+14p
+					; sub_0_561E+9j
+		call	sub_0_5708
+		cmp	al, 1Ah
+		jz	loc_0_562B
+		cmp	al, 0Ah
+		jnz	sub_0_561E
+		clc	
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_562B:				; CODE XREF: sub_0_561E+5j
+		stc	
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_562D:		; CODE XREF: build_assign_table+D8p
+		push	bx
+		xor	bx, bx
+		mov	cx, 0Ah
+
+loc_0_5633:				; CODE XREF: sub_0_562D+26j
+		call	sub_0_5708
+		cmp	al, ' '
+		jz	loc_0_5656
+		cmp	al, '0'
+		jl	loc_0_565B
+		cmp	al, '9'
+		jg	loc_0_565B
+		mov	bl, al
+		sub	bl, '0'
+		mov	ax, dx
+		mul	cx
+		jb	loc_0_5659
+		add	ax, bx
+		jb	loc_0_5659
+		mov	dx, ax
+		jmp	loc_0_5633
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5656:				; CODE XREF: sub_0_562D+Bj
+		clc	
+		pop	bx
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5659:				; CODE XREF: sub_0_562D+1Ej
+					; sub_0_562D+22j
+		mov	al, 1Ah
+
+loc_0_565B:				; CODE XREF: sub_0_562D+Fj
+					; sub_0_562D+13j
+		stc	
+		pop	bx
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_565E:		; CODE XREF: build_assign_table+EFp
+		cmp	al, 'r'
+		jz	loc_0_5668
+		cmp	al, 'R'
+		jz	loc_0_5668
+		stc	
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5668:				; CODE XREF: sub_0_565E+2j
+					; sub_0_565E+6j
+		mov	es:word ptr 2[bx], 1
+		call	sub_0_5708
+		clc	
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_5673:		; CODE XREF: build_assign_table+103p
+		stosb
+		mov	cx, 7
+
+loc_0_5677:				; CODE XREF: sub_0_5673+24j
+		call	sub_0_5708
+		cmp	al, '.'
+		jnz	loc_0_5686
+		mov	al, ' '
+		rep stosb
+		call	sub_0_56C8
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5686:				; CODE XREF: sub_0_5673+9j
+		cmp	al, '0'
+		jl	loc_0_569A
+		cmp	al, '9'
+		jle	loc_0_5693
+		call	sub_0_56F4
+		jb	loc_0_569A
+
+loc_0_5693:				; CODE XREF: sub_0_5673+19j
+		dec	cx
+		jl	loc_0_56C6
+		stosb
+		jmp	loc_0_5677
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_569A:				; CODE XREF: sub_0_5673+15j
+					; sub_0_5673+1Ej
+		cmp	al, ';'
+		jz	loc_0_56A2
+		cmp	al, ' '
+		jg	loc_0_56C6
+
+loc_0_56A2:				; CODE XREF: sub_0_5673+29j
+		push	ax
+		mov	al, ' '
+		rep stosb
+		cmp	cs:word ptr byte_0_5719, 0
+		jg	loc_0_56BA
+		mov	al, 'S'
+		stosb
+		mov	al, 'Y'
+		stosb
+		mov	al, 'S'
+		stosb
+		jmps	loc_0_56C3
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_56BA:				; CODE XREF: sub_0_5673+3Aj
+		mov	al, 'F'
+		stosb
+		mov	al, 'N'
+		stosb
+		mov	al, 'T'
+		stosb
+
+loc_0_56C3:				; CODE XREF: sub_0_5673+45j
+		pop	ax
+		clc	
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_56C6:				; CODE XREF: sub_0_5673+21j
+					; sub_0_5673+2Dj
+		stc	
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_56C8:		; CODE XREF: sub_0_5673+Fp
+		mov	cx, 3
+
+loc_0_56CB:				; CODE XREF: sub_0_56C8+17j
+		call	sub_0_5708
+		cmp	al, '0'
+		jl	loc_0_56E2
+		cmp	al, '9'
+		jle	loc_0_56DB
+		call	sub_0_56F4
+		jb	loc_0_56E2
+
+loc_0_56DB:				; CODE XREF: sub_0_56C8+Cj
+		jcxz	loc_0_56F2
+		dec	cx
+		stosb
+		jmp	loc_0_56CB
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_56E2:				; CODE XREF: sub_0_56C8+8j
+					; sub_0_56C8+11j
+		cmp	al, ';'
+		jz	loc_0_56EA
+		cmp	al, ' '
+		jg	loc_0_56F2
+
+loc_0_56EA:				; CODE XREF: sub_0_56C8+1Cj
+		push	ax
+		mov	al, ' '
+		rep stosb
+		pop	ax
+		clc	
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_56F2:				; CODE XREF: sub_0_56C8+13j
+					; sub_0_56C8+20j
+		stc	
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_56F4:		; CODE XREF: build_assign_table+F9p
+					; build_assign_table+111p ...
+		cmp	al, 'A'
+		jl	loc_0_5706
+		cmp	al, 'Z'
+		jle	loc_0_5704
+		cmp	al, 'a'
+		jl	loc_0_5706
+		cmp	al, 'z'
+		jg	loc_0_5706
+
+loc_0_5704:				; CODE XREF: sub_0_56F4+6j
+		clc	
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5706:				; CODE XREF: sub_0_56F4+2j
+					; sub_0_56F4+Aj ...
+		stc	
+		retn	
+
+
+
+;栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢栢
+
+;		S u b r	o u t i	n e
+
+sub_0_5708:		; CODE XREF: build_assign_table+C0p
+					; sub_0_55F0+25p ...
+		cmp	si, bp
+		jg	loc_0_5712
+		lodsb
+		cmp	al, 0
+		jz	sub_0_5708
+		retn	
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+loc_0_5712:				; CODE XREF: sub_0_5708+2j
+		mov	al, 1Ah
+		retn	
+
+
+;컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+_assign_size	dw 0			; DATA XREF: build_assign_table+8w
+					; build_assign_table+A8r
+		dw 0
+byte_0_5719	db 0			; DATA XREF: build_assign_table+CAw
+					; build_assign_table+FEw ...
+		db 0
+;aAssignSys	db 'ASSIGN  SYS' 	;FCB name for assign.sys, no longer used
+app_error	db 'Application not found$'
+aCommandLineSyn	db 'Command line syntax error$'
+no_drivers	db 'ASSIGN.SYS file is empty$'
+;;;gemapps		db '\GEMAPPS',0
+;;;gemboot		db '\GEMBOOT',0
+gemboot		db	'..\GEMBOOT',0
+aInvalidMemoryB	db 'Invalid memory block address$'
+aInsufficientMe	db 'Insufficient memory$'
+aMemoryTableCor	db 'Memory table corrupted$'
+aUnableToOpenAs	db 'Unable to open ASSIGN.SYS$'
+aSyntaxErrorWhi	db 'Syntax error while parsing ASSIGN.SYS$'
+already_in	db 'You are in GEM already.$'
+path_string	db 'PATH='
+path_string_len	dw 5
+aErrorReadingAs	db 'Error reading ASSIGN.SYS$'
+
+		db '-------------------------------------------------', CR, LF
+		db 'GEMVDI                                Version 3.0', CR, LF
+		db 'Serial No. XXXX-0000-654321   All Rights Reserved', CR, LF
+		db 'Copyright (C) 1985,1986     Digital Research Inc.', CR, LF
+		db '-------------------------------------------------', CR, LF
+		db '$'
+		db '14 May 2006'
+;		db '07/01/85'
+
+		dseg
+aStackEnd	db 'stack end'
+		rw 100h
+ch_stk		db 'data end'           ; DATA XREF: _hndl_kbesc+27o
+					; cseg:5100o ...
+data_end	db	0		; DATA XREF: cseg:502Fo start+A3o
+
+		sseg
+		rs	STACK_SIZE
+
+		end	start
+
