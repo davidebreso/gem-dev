@@ -496,11 +496,14 @@ MLOCAL WORD  do_filemenu(WORD item)
         switch(fun_alert(1,STEXTRST,NULLPTR))
         {
             case 2:     /* Restart */
+            	G.g_tail[0] = '\0';
     		    pro_restart(&gl_gemvdi, G.a_tail);
     		    done = TRUE;
     		    break;             
 #endif    		      
             case 1:     /* OK */ 
+            	G.g_cmd[0] = '\0';
+            	G.g_tail[0] = '\0';
                 pro_exit(G.a_cmd, G.a_tail);
                 done = TRUE;
                 break;

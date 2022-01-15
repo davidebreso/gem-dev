@@ -23,7 +23,15 @@ DESKLM.APP   - large model, for GEM/XM.
 not contain a DESKTOP.INF, or if the file is from an old version of GEM Desktop, 
 rename SKELETON.INF into DESKTOP.INF to have a minimal configuration file.
 
-Release 3.2.6 Changes (most recent at the top) -- Davide Bresolin
+Release 3.2.7 Changes (most recent at the top) -- Davide Bresolin
+===============================================================================
+
+* The structure of the menus have been changed. There is a  "Window" menu with 
+  the commands to close folders and windows, cycle through open windows, select
+  all items and set file mask. "Execute DOS commands" is now "To DOS shell" 
+  and it is placed in the "File" menu. New option "Size to fit" in "View" menu.
+
+Release 3.2.6 Changes 
 ===============================================================================
 
 * "Install Accessories" is now available also for single-tasking builds.
@@ -47,9 +55,8 @@ Release 3.2.6 Changes (most recent at the top) -- Davide Bresolin
   dialog box to select drive, disk label and capacity. The actual formatting
   is executed by the Desktop itself, with no need to call FORMAT.COM.
   The utility is available as a standalone APP in toolkit/samples/format.
->>>>>>> desktop_dev
 
-Release 3.2.5 Changes (most recent at the top) -- Davide Bresolin
+Release 3.2.5 
 ===============================================================================
 
 * Bugfix: fixed file name conflict resolution when copying files.

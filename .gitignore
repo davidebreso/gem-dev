@@ -48,30 +48,11 @@ desktop/xml2icn
 *.err
 *.lst
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# Sample programs resource files
-toolkit/samples/*.rsc
-
-# Generated icon and zip files
+# Generated icons and zip files
 desktop/deskhi.icn
 desktop/desklo.icn
 desktop/*.zip
-
-# Directories
-pacific/
-gemapps/
-utils/
-
-# Files
-gem.bat
+toolkit/*.zip
 
 # Mac OS X system files
 .DS_Store
