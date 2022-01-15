@@ -1,0 +1,10 @@
+-Oppdaes.exe -lm \
+ gemstart.obj geminit.obj gemgmain.obj gemasync.obj gemctrl.obj gembase.obj \
+ gemdisp.obj gemflag.obj geminput.obj gempd.obj gemqueue.obj gemwrect.obj \
+ gemsuper.obj gemaplib.obj gemevlib.obj gemmnlib.obj gemoblib.obj \
+ gemfmalt.obj gemfmlib.obj gemsclib.obj gemwmlib.obj  \
+ gemrslib.obj gemgrlib.obj gemgsxif.obj gempplib.obj gemasm.obj gemcicon.obj \
+ xstate.obj debug.obj gemgraf.obj gsx2.obj optimize.obj large.obj gemdos.obj \
+ gemobjop.obj gemdosif.obj gememsif.obj optimopt.obj gemglobe.obj proend.obj \
+ lmul.obj ldiv.obj \
+ gemobed.obj gemfslib.obj gemshlib.obj
