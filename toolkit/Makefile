@@ -16,6 +16,7 @@ install:
 	$(MAKE) -C lib install
 
 clean:
+	rm -f wccgem$(RELEASE).zip
 	$(MAKE) -C libsrc $@
 	$(MAKE) -C samples $@
 	$(MAKE) -C lib $@

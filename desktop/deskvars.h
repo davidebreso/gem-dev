@@ -87,6 +87,7 @@ EXT WORD	can_iapp;		/* TRUE if INSAPP enabled	*/
 EXT WORD	can_show;		/* TRUE if SHOWITEM enabled	*/
 EXT WORD	can_del;		/* TRUE if DELITEM enabled	*/
 EXT WORD	can_output;		/* TRUE if OUTPITEM endabled	*/
+EXT WORD	can_cycle;		/* TRUE if CYCLITEM endabled	*/
 EXT WORD	gl_whsiztop;		/* wh of window fulled		*/
 EXT WORD	gl_idsiztop;		/* id of window fulled		*/
 

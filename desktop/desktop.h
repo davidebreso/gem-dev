@@ -43,32 +43,27 @@
 #define STASICON 1		/* FREE STRING */
 #define FILEMENU 4  	/* OBJECT in TREE #0 */
 #define VIEWMENU 6  	/* OBJECT in TREE #0 */
-#define OPTNMENU 5  	/* OBJECT in TREE #0 */
+#define OPTNMENU 7  	/* OBJECT in TREE #0 */
 #define DESKMENU 3  	/* OBJECT in TREE #0 */
-#define ABOUITEM 9  	/* OBJECT in TREE #0 */
-#define OPENITEM 18  	/* OBJECT in TREE #0 */
-#define SHOWITEM 19  	/* OBJECT in TREE #0 */
-#define FORMITEM 25  	/* OBJECT in TREE #0 */
-#define OUTPITEM 26  	/* OBJECT in TREE #0 */
-#define QUITITEM 27  	/* OBJECT in TREE #0 */
+#define ABOUITEM 10  	/* OBJECT in TREE #0 */
+#define OPENITEM 19  	/* OBJECT in TREE #0 */
+#define FORMITEM 22  	/* OBJECT in TREE #0 */
+#define OUTPITEM 23  	/* OBJECT in TREE #0 */
+#define QUITITEM 24  	/* OBJECT in TREE #0 */
 #define NFOLITEM 21  	/* OBJECT in TREE #0 */
-#define CLOSITEM 22  	/* OBJECT in TREE #0 */
-#define CLSWITEM 23  	/* OBJECT in TREE #0 */
 #define L2ITEM 20  	/* OBJECT in TREE #0 */
-#define L3ITEM 24  	/* OBJECT in TREE #0 */
-#define IDSKITEM 31  	/* OBJECT in TREE #0 */
-#define IAPPITEM 32  	/* OBJECT in TREE #0 */
-#define L5ITEM 33  	/* OBJECT in TREE #0 */
-#define PREFITEM 34  	/* OBJECT in TREE #0 */
-#define SAVEITEM 35  	/* OBJECT in TREE #0 */
-#define DOSITEM 36  	/* OBJECT in TREE #0 */
-#define ICONITEM 39  	/* OBJECT in TREE #0 */
-#define TEXTITEM 40  	/* OBJECT in TREE #0 */
-#define L4ITEM 41  	/* OBJECT in TREE #0 */
-#define NAMEITEM 42  	/* OBJECT in TREE #0 */
-#define DATEITEM 43  	/* OBJECT in TREE #0 */
-#define SIZEITEM 44  	/* OBJECT in TREE #0 */
-#define TYPEITEM 45  	/* OBJECT in TREE #0 */
+#define IDSKITEM 50  	/* OBJECT in TREE #0 */
+#define IAPPITEM 51  	/* OBJECT in TREE #0 */
+#define L7ITEM 52  	/* OBJECT in TREE #0 */
+#define PREFITEM 53  	/* OBJECT in TREE #0 */
+#define SAVEITEM 54  	/* OBJECT in TREE #0 */
+#define ICONITEM 40  	/* OBJECT in TREE #0 */
+#define TEXTITEM 41  	/* OBJECT in TREE #0 */
+#define L5ITEM 42  	/* OBJECT in TREE #0 */
+#define NAMEITEM 43  	/* OBJECT in TREE #0 */
+#define DATEITEM 44  	/* OBJECT in TREE #0 */
+#define SIZEITEM 45  	/* OBJECT in TREE #0 */
+#define TYPEITEM 46  	/* OBJECT in TREE #0 */
 #define FIOK 2  	/* OBJECT in TREE #1 */
 #define FICNCL 3  	/* OBJECT in TREE #1 */
 #define FITIME 6  	/* OBJECT in TREE #1 */
@@ -178,7 +173,7 @@
 #define AUTHOR6 14  	/* OBJECT in TREE #4 */
 #define AUTHOR7 15  	/* OBJECT in TREE #4 */
 #define AUTHOR8 16  	/* OBJECT in TREE #4 */
-#define TYPITEM 28  	/* OBJECT in TREE #0 */
+#define TYPITEM 25  	/* OBJECT in TREE #0 */
 #define STFSCAN 18		/* FREE STRING */
 #define STFBYTES 19		/* FREE STRING */
 #define STFWORDS 20		/* FREE STRING */
@@ -201,7 +196,7 @@
 #define DEMEMSIZ 19  	/* OBJECT in TREE #4 */
 #define DEMEMCAP 20  	/* OBJECT in TREE #4 */
 #define STEXTDSK 49  	/* STRING */
-#define IACCITEM 37  	/* OBJECT in TREE #0 */
+#define IACCITEM 55  	/* OBJECT in TREE #0 */
 #define STNOROOM 51  	/* STRING */
 #define APMEMSZ 36  	/* OBJECT in TREE #8 */
 #define STNOFSTP 52  	/* STRING */
@@ -245,7 +240,6 @@
 #define STNODRIV 56  	/* STRING */
 #define FMTBOX 5  	/* OBJECT in TREE #14 */
 #define FMT_3HD 9  	/* OBJECT in TREE #14 */
-#define REFWITEM 29  	/* OBJECT in TREE #0 */
 #define FMEMTEXT 24  	/* OBJECT in TREE #15 */
 #define ACSCROLL 30  	/* OBJECT in TREE #15 */
 #define STACFERR 46  	/* STRING */
@@ -256,3 +250,18 @@
 #define ACC08ERR 60  	/* STRING */
 #define ACCXXERR 61  	/* STRING */
 #define STEXTRST 50  	/* STRING */
+#define WINDMENU 5  	/* OBJECT in TREE #0 */
+#define SRCHITEM 26  	/* OBJECT in TREE #0 */
+#define DOSITEM 27  	/* OBJECT in TREE #0 */
+#define CLOSITEM 32  	/* OBJECT in TREE #0 */
+#define CLSWITEM 33  	/* OBJECT in TREE #0 */
+#define CYCLITEM 34  	/* OBJECT in TREE #0 */
+#define REFWITEM 35  	/* OBJECT in TREE #0 */
+#define ALLITEM 37  	/* OBJECT in TREE #0 */
+#define MASKITEM 38  	/* OBJECT in TREE #0 */
+#define FITITEM 48  	/* OBJECT in TREE #0 */
+#define L6ITEM 47  	/* OBJECT in TREE #0 */
+#define L4ITEM 36  	/* OBJECT in TREE #0 */
+#define L3ITEM 28  	/* OBJECT in TREE #0 */
+#define SHOWITEM 29  	/* OBJECT in TREE #0 */
+#define DELTITEM 30  	/* OBJECT in TREE #0 */

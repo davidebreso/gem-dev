@@ -891,6 +891,8 @@ WORD  app_start()
 			G.g_cnxsave.cdetd_save = ( (envr & 0x04) == 0);
 			G.g_detdrives = G.g_cnxsave.cdetd_save;
 			G.g_probedrives = G.g_cnxsave.cdetn_save;
+/* New Arrange to fid option */
+		    G.g_cnxsave.szfit_save = ( (envr & 0x02) != 0);
 			break;
 	    }
 	  }
@@ -956,6 +958,7 @@ WORD  app_save(WORD todisk)
 	envr  = 0;
 	envr |= (G.g_cnxsave.cdetd_save) ? 0x00 : 0x04;
 	envr |= (G.g_cnxsave.cdetn_save) ? 0x00 : 0x08;
+	envr |= (G.g_cnxsave.szfit_save) ? 0x02 : 0x00;
 	pcurr = save_2(pcurr, envr );
 	*pcurr++ = 0x0d;
 	*pcurr++ = 0x0a;

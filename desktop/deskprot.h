@@ -60,7 +60,7 @@ WORD  true_closewnd(WNODE *pw);
 WORD  fun_close(WNODE *pw, WORD hotclose);
 VOID  snap_disk(WORD x, WORD y, LPWORD x1, LPWORD y1);
 WORD  desk1_drag(WORD wh, WORD dest_wh, WORD root, WORD dobj, WORD mx, WORD my);
-WNODE *  win_ontop(VOID);
+WNODE *win_ontop(VOID);
 
 
 /* deskact.c */
@@ -92,6 +92,7 @@ WORD  pn_active(PNODE *thepath);
 WORD  fun_alert(WORD defbut, WORD stnum, ...);
 VOID  fun_msg(WORD type, WORD w3, WORD w4, WORD w5, WORD w6, WORD w7);
 VOID  fun_rebld(WNODE *pwin);
+VOID fun_selectall(WNODE *pw);
 WORD  fun_mkdir(WNODE *pw_node);
 WORD  fun_op(WORD op, PNODE *pspath, BYTE *pdest, 
 			WORD dulx, WORD duly, WORD from_disk, WORD src_ob);
@@ -101,7 +102,7 @@ WORD  fun_op(WORD op, PNODE *pspath, BYTE *pdest,
 // WORD  fun_disk(WORD src_ob, WNODE *pdw, WORD datype, FNODE *pdf, 
 // 			  WORD dulx, WORD duly);
 VOID  fun_drag(WORD src_wh, WORD dst_wh, WORD dst_ob, WORD dulx, WORD duly);
-// VOID  fun_del(WNODE *pdw);
+VOID  fun_del(WNODE *pdw);
 // WORD  cmp_names(BYTE *psrc, BYTE *pdst);
 
 
@@ -185,7 +186,7 @@ VOID  win_free(WNODE *thewin);
 WNODE *  win_alloc(WORD obid);
 WNODE *  win_find(WORD wh);
 VOID  win_top(WNODE *thewin);
-// WORD  win_cnt(WORD level);
+WORD  win_cnt(WORD level);
 WNODE *  win_ith(WORD level);
 // VOID  win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart);
 // VOID  win_icalc(FNODE *pfnode);

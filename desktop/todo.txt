@@ -4,7 +4,11 @@ GEM/3 Desktop: Open Watcom version (Release 3.2.6)
 This files lists known bugs, todos and desired new functionalities.
 Open items are on top.
 
-
+TODO: Implement all new menu options correctly:
+        * Search...
+        * Set file mask
+OPEN: Scrolling window deselect all selected files
+OPEN: Drag&Drop and Delete operates only on the selected items that are visible
 OPEN: Installed applications must be in PATH or in GEMAPPS to open documents
 
 DONE: Better alerts in "Install Accessories". 

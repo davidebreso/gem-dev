@@ -88,6 +88,32 @@ VOID  fun_rebld(WNODE *pwin)
 	graf_mouse(ARROW, 0x0L);
 } /* fun_rebld */
 
+
+VOID fun_selectall(WNODE *pw)
+{
+	WORD		xc, yc, wc, hc;
+    FNODE *pf;
+
+    /* paranoia - check for desktop pseudo-window */
+    if (pw->w_root == DROOT)
+        return;
+
+    /*
+     * select all filenodes & corresponding screen objects
+     */
+    for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
+    {
+        G.g_screen[pf->f_obid].ob_state |= SELECTED;
+    }
+
+    /*
+     * update info line & redisplay window
+     */
+	wind_get(pw->w_id, WF_WXYWH, &xc, &yc, &wc, &hc);
+    fun_msg(WM_REDRAW, pw->w_id, xc, yc, wc, hc);
+}
+
+
 /*
 *	Routine that creates a new directory in the specified window/path
 */
@@ -383,7 +409,7 @@ VOID  fun_drag(WORD src_wh, WORD dst_wh, WORD dst_ob, WORD dulx, WORD duly)
 *	Routine to call when several icons have been dragged from a
 *	desktop to the desktop and dropped on a particular icon.
 */
-MLOCAL VOID  fun_del(WNODE *pdw)
+VOID  fun_del(WNODE *pdw)
 {
 	WORD		src_ob, ret;
 	LPICON		spib;

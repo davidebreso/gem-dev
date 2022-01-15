@@ -1,5 +1,5 @@
 
-#define DEBUG 0
+#define DEBUG 1
 
 #include <string.h>	/* strlen, strcpy etc. */
 #include <stdarg.h>

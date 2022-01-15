@@ -34,10 +34,13 @@
 #define ALTV 0x2F00			/* Save Desktop			*/
 #define ALTX 0x2D00			/* Show as Text			*/
 #define ALTZ 0x2C00			/* Sort by Size			*/
+#define CNTLA 0x1E01		/* Select all items		*/
+#define CNTLN 0x310E		/* Cycle windows		*/
+#define CNTLQ 0x1011			/* Exit To Dos			*/
+#define CNTLR 0x1312		/* Refresh Window		*/
 #define CNTLU 0x1615			/* To Output			*/
 #define CNTLW 0x1117			/* Close Window			*/
-#define CNTLQ 0x1011			/* Exit To Dos			*/
-
+#define CNTLX 0x2D18			/* Close Folder			*/
 
 #define BEG_UPDATE 1
 #define END_UPDATE 0

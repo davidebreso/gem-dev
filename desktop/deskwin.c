@@ -247,11 +247,13 @@ MLOCAL 	WNODE
 }	
 */
 
+
+
 /*
 *	Find the window node that is the ith from the bottom.  Where
 *	0 is the bottom (desktop surface) and 1-4 are windows.
 */
-MLOCAL 	WORD 
+ 	WORD 
 win_cnt(level)
 	WORD		level;
 {
@@ -299,11 +301,23 @@ MLOCAL VOID   win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart)
 	  pf->f_obid = NIL;
 	  cnt++;
 	}
-						/* set windows virtual	*/
-						/*   number of rows and	*/
-						/*   columns		*/
-	pwin->w_vncol = wfit;
-	pwin->w_vnrow = (cnt + wfit - 1) / wfit;
+
+    /*
+     * set window's virtual number of rows and columns: this is the number
+     * of rows and columns that would be needed to display all the files.
+     * if size-to-fit, this uses the current window width; otherwise it
+     * assumes a maximum-width window for the current resolution.
+     */
+    if (G.g_ifit)
+    {
+        pwin->w_vncol = wfit;
+        pwin->w_vnrow = (cnt + wfit - 1) / wfit;
+    }
+    else
+    {
+        pwin->w_vncol = min(cnt, G.g_incol);
+        pwin->w_vnrow = (cnt + G.g_incol - 1) / G.g_incol;
+    }
 
 	if (pwin->w_vnrow < 1)
 	  pwin->w_vnrow = 1;
@@ -432,8 +446,7 @@ VOID  win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 	    r_cnt++;
 	    c_cnt = 0;
 	    skipcnt = pwin->w_vncol - o_wfit;
-	    while( (skipcnt--) &&
-		   (pstart) )
+	    while( (skipcnt--) && (pstart) )
 	      pstart = pstart->f_next;
 	  }
 	}

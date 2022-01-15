@@ -99,7 +99,7 @@ typedef struct glnode
 	 LPBYTE		a_wdta;
 
 	 WNODE	g_wlist[NUM_WNODES];
-	 WORD		g_wcnt;
+	 WORD	g_wcnt;
 
 /* BugFix	*/
 /* this has been moved into gl_icons[NUM_WOBS] & declared in DESKGLOB.C	*/
@@ -123,7 +123,8 @@ typedef struct glnode
 	 WORD		g_incol;		/* # of cols in full	*/
 						/*   window		*/
 	 WORD		g_isort;		/* current sort type	*/
-
+	 WORD		g_ifit;			/* current fit to size switch */
+	
 	 BYTE		g_srcpth[82];
 	 BYTE		g_dstpth[82];
 				 		/* data xfer buffer and	*/

@@ -25,28 +25,28 @@
 
 /* DESKTOP v1.2: Different sets of illegal items */
 #if MULTIAPP
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM, 0};
 #else
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM, 0};
 #endif
 GLOBAL BYTE	ILL_FILE[] = {0};
 GLOBAL BYTE	ILL_DOCU[] = {IAPPITEM,0};
 GLOBAL BYTE	ILL_FOLD[] = {OUTPITEM,TYPITEM,IAPPITEM,0};
-GLOBAL BYTE	ILL_FDSK[] = {OUTPITEM,IAPPITEM,TYPITEM,0};
-GLOBAL BYTE	ILL_HDSK[] = {OUTPITEM,TYPITEM,IAPPITEM,0};
+GLOBAL BYTE	ILL_FDSK[] = {OUTPITEM,IAPPITEM,TYPITEM,DELTITEM,0};
+GLOBAL BYTE	ILL_HDSK[] = {OUTPITEM,TYPITEM,IAPPITEM,DELTITEM,0};
 GLOBAL BYTE	ILL_TRASH[] = {OPENITEM,OUTPITEM,TYPITEM,
-	                       IAPPITEM,0};
-GLOBAL BYTE ILL_NOTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,REFWITEM,0};
-GLOBAL BYTE	ILL_DESKTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,REFWITEM,ICONITEM,TEXTITEM,
-						NAMEITEM,DATEITEM,SIZEITEM,TYPEITEM,0};
-GLOBAL BYTE 	ILL_NOSEL[]={OPENITEM,SHOWITEM,
+	                       IAPPITEM,DELTITEM,0};
+GLOBAL BYTE ILL_NOTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,CYCLITEM,
+							REFWITEM,ALLITEM,MASKITEM,0};
+GLOBAL BYTE	ILL_DESKTOP[] = {NFOLITEM,CLOSITEM,CLSWITEM,REFWITEM,CYCLITEM,
+							ALLITEM,MASKITEM,ICONITEM,TEXTITEM,NAMEITEM,
+							DATEITEM,SIZEITEM,TYPEITEM,0};
+GLOBAL BYTE 	ILL_NOSEL[]={OPENITEM,SHOWITEM,DELTITEM,
 				IAPPITEM,TYPITEM,0};
 GLOBAL BYTE	ILL_YSEL[] = {OPENITEM, 
 				TYPITEM, SHOWITEM, 0};
-GLOBAL BYTE	ILL_TYPE[] = {OPENITEM,SHOWITEM,TYPITEM,
-				IAPPITEM,
-				NAMEITEM, TYPEITEM, SIZEITEM, DATEITEM,
-				0 };
+GLOBAL BYTE	ILL_TYPE[] = {OPENITEM,SHOWITEM,TYPITEM,IAPPITEM,NAMEITEM,DELTITEM, 
+						TYPEITEM, SIZEITEM, DATEITEM,0 };
 
 /* DESKTOP v1.2 has the easter egg */
 GLOBAL WORD	freq[]=
@@ -239,6 +239,7 @@ MLOCAL VOID  men_update(LPTREE tree)
 	can_show = TRUE;
 	can_del = TRUE;
 	can_output = TRUE;
+	can_cycle = FALSE;
 	  					/* disable some items	*/
 	men_list(tree, ILL_ITEM, FALSE);
 
@@ -278,9 +279,17 @@ MLOCAL VOID  men_update(LPTREE tree)
 
 	if (win_ontop()) pvalue = ILL_DESKTOP;	/* DESKTOP v1.2 */
 	else			 pvalue = ILL_NOTOP;
-	if (pvalue == ILL_DESKTOP) men_list(tree, pvalue, TRUE);
-	else					   men_list(tree, pvalue, FALSE);
-
+	if (pvalue == ILL_DESKTOP) 
+	{
+		men_list(tree, pvalue, TRUE);
+		if(G.g_wcnt == 1) /* disable cycle windows if there is only 1 window open */
+			menu_ienable(tree, CYCLITEM, FALSE);
+		else
+			can_cycle = TRUE;
+	} else {
+		men_list(tree, pvalue, FALSE);
+	}
+	
 	if ( nsel != 1 )
 	{
 	  if (nsel)
@@ -339,7 +348,7 @@ MLOCAL WORD  do_deskmenu(WORD item)
 
 MLOCAL WORD  do_filemenu(WORD item)
 {
-	WORD		done;
+	WORD		done, ret;
 	WORD		curr, savwin, junk, first;
 	WNODE		*pw;
 	FNODE		*pf;
@@ -386,28 +395,46 @@ MLOCAL WORD  do_filemenu(WORD item)
  *		cursor_init();  */
 		do_chkall( FALSE );
 		break;
+	  case DELTITEM:
+		if (curr)
+		  fun_del(pw);
+		break;
 	  case NFOLITEM:	/* DESKTOP v1.2 No delete, but new folder */
 		if (pw)			/* instead */
 		  fun_mkdir(pw);/* [JCE 19-7-2002] Do correct check: for window */
 		break;			/* open rather than item highlighted */
 	/* These next trhee only in DESKTOP v1.2 */
-          case CLOSITEM:
-		if (pw)
-		  fun_close(pw, 0);
-		break;
-	  case CLSWITEM:
-		if (pw)
-		  fun_close(pw, 1);
-		break;
-	  case REFWITEM:
-		if (pw)
-		  fun_rebld(pw);
-		break;
 	  case FORMITEM:
 		do_format(curr);
 		break;   
-	  case OUTPITEM:
+	  case DOSITEM:
+#if MULTIAPP
+		ret = appl_find(ADDR("COMMAND "));
+		if (ret == -1)
+		{
+		  ret = pro_cmd( "\0", "\0", FALSE);
+		  if (ret)
+		  {
+		    pa = app_afind(FALSE, AT_ISFILE, -1,"COMMAND.COM", &junk);
+		    pr_kbytes = (pa ? pa->a_memreq : 128);
+		    pro_run(FALSE, -1, -1, -1);
+		  }
+		}
+		else
+		{
+		  menu_tnormal(G.a_trees[ADMENU], OPTNMENU, TRUE);
+		  proc_switch(ret);
+		}
 
+#else
+		ret = pro_cmd( "\0", "\0", FALSE);
+		if (ret)
+		{
+		  done = pro_run(FALSE, TRUE, -1, -1);
+		}
+#endif
+		break;
+	  case OUTPITEM:
 			/* build cmd tail that looks like this:		*/
 			/* C:\path\*.*,file.ext,file.ext,file.ext	*/
 		G.g_tail[1] = 0;
@@ -460,8 +487,7 @@ MLOCAL WORD  do_filemenu(WORD item)
 #else
 		done = pro_run(TRUE, TRUE, -1, -1);
 #endif
-		break;
-	  
+		break;  
 	  case QUITITEM:
 #if MULTIAPP
         switch(fun_alert(1,STEXTDSK,NULLPTR))
@@ -489,14 +515,63 @@ MLOCAL WORD  do_filemenu(WORD item)
 	return(done);
 } /* do_filemenu */
 
+MLOCAL WORD  do_windmenu(WORD item)
+{
+	WORD		done, ii, last;
+	WNODE		*pw;
+	WORD		xc, yc, wc, hc;
+	
+	done = FALSE;
+	pw = win_ontop();	/* DESKTOP v1.2  win_find(G.g_cwin);*/
+
+	switch( item )
+	{
+	/* These next trhee only in DESKTOP v1.2 */
+      case CLOSITEM:
+		if (pw)
+		  fun_close(pw, 0);
+		break;
+	  case CLSWITEM:
+		if (pw)
+		  fun_close(pw, 1);
+		break;
+	  case CYCLITEM:
+        last = 0;
+        for(ii = 0; ii < NUM_WNODES; ii++)
+        {
+        	if(last != 0 && G.g_wlist[ii].w_id == pw->w_id) 
+        		break;
+        	if(G.g_wlist[ii].w_id != 0)
+        		last = G.g_wlist[ii].w_id;
+        }
+        if (last)
+        {
+	    	wind_get(last, WF_WXYWH, &xc, &yc, &wc, &hc);
+            fun_msg(WM_TOPPED, last, xc, yc, wc, hc);
+        } 
+        break;
+	  case REFWITEM:
+		if (pw)
+		  fun_rebld(pw);
+		break;
+	  case ALLITEM:
+	  	if (pw)
+	  	  fun_selectall(pw);
+	  	 break;
+	}
+	return(done);
+} /* do_windmenu */
+
 
 MLOCAL WORD  do_viewmenu(WORD item)
 {
 	WORD		newview, newsort;
+	LPTREE		tree;
 // not in DESKTOP v1.2	LPBYTE		ptext;
 
 	newview = G.g_iview;
 	newsort = G.g_isort;
+	tree = G.a_trees[ADMENU];
 	switch( item )
 	{
 	  case ICONITEM:
@@ -517,6 +592,11 @@ MLOCAL WORD  do_viewmenu(WORD item)
 	  case TYPEITEM:
 		newsort = S_TYPE;
 		break;
+	  case FITITEM:
+        G.g_ifit = G.g_ifit ? FALSE : TRUE;     /* flip size-to-fit mode */
+        menu_icheck(tree, FITITEM, G.g_ifit);
+        return(TRUE);
+        break;
 	}
 	if ( (newview != G.g_iview) ||
 	     (newsort != G.g_isort) )
@@ -528,15 +608,15 @@ MLOCAL WORD  do_viewmenu(WORD item)
 	    ptext = (newview == V_TEXT) ? ad_picon : ad_ptext;
 	    menu_text(G.a_trees[ADMENU], ICONITEM, ptext);
 */
-	    menu_icheck(G.a_trees[ADMENU], G.g_viewpref, FALSE);
+	    menu_icheck(tree, G.g_viewpref, FALSE);
 	    G.g_viewpref = item;
-	    menu_icheck(G.a_trees[ADMENU], item, TRUE);
+	    menu_icheck(tree, item, TRUE);
 	  }
 	  if (newsort != G.g_isort)
 	  {
-	    menu_icheck(G.a_trees[ADMENU], G.g_csortitem, FALSE);
+	    menu_icheck(tree, G.g_csortitem, FALSE);
 	    G.g_csortitem = item;
-	    menu_icheck(G.a_trees[ADMENU], item, TRUE);
+	    menu_icheck(tree, item, TRUE);
 	  }
 	  win_view(newview, newsort);
 	  return(TRUE);			/* need to rebuild	*/
@@ -544,12 +624,10 @@ MLOCAL WORD  do_viewmenu(WORD item)
 	return( FALSE );
 }
 
-
-
 MLOCAL WORD  do_optnmenu(WORD item)
 {
 	ANODE		*pa;
-	WORD		done, rebld, curr, ret;
+	WORD		done, rebld, curr;
 	FNODE		*pf;
 	WORD		isapp;
 	BYTE		*pstr;
@@ -622,35 +700,6 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		cnx_put();
 		app_save(TRUE);
 		desk_wait(FALSE);
-		break;
-	  case DOSITEM:
-
-
-#if MULTIAPP
-		ret = appl_find(ADDR("COMMAND "));
-		if (ret == -1)
-		{
-		  ret = pro_cmd( "\0", "\0", FALSE);
-		  if (ret)
-		  {
-		    pa = app_afind(FALSE, AT_ISFILE, -1,"COMMAND.COM", &junk);
-		    pr_kbytes = (pa ? pa->a_memreq : 128);
-		    pro_run(FALSE, -1, -1, -1);
-		  }
-		}
-		else
-		{
-		  menu_tnormal(G.a_trees[ADMENU], OPTNMENU, TRUE);
-		  proc_switch(ret);
-		}
-
-#else
-		ret = pro_cmd( "\0", "\0", FALSE);
-		if (ret)
-		{
-		  done = pro_run(FALSE, TRUE, -1, -1);
-		}
-#endif
 		break;
 	}
 	return(done);
@@ -755,11 +804,10 @@ hndl_kbd(thechar)
 	  	  done = hndl_menu(OPTNMENU, IAPPITEM);
 		}
 		break;
-	  case ALTC:	/* Options: Enter DOS commands	*/
-		menu_tnormal(G.a_trees[ADMENU], OPTNMENU, FALSE);
-	  	done = hndl_menu(OPTNMENU, DOSITEM);
+	  case ALTC:	/* File: To DOS shell	*/
+		menu_tnormal(G.a_trees[ADMENU], FILEMENU, FALSE);
+	  	done = hndl_menu(FILEMENU, DOSITEM);
 		break;
-#if 0	/* No delete hotkey */
 	  case ALTD:	/* File: Delete		*/
 	  	if (can_del)		/* if it's ok to delete		*/
 		{
@@ -767,7 +815,6 @@ hndl_kbd(thechar)
 	  	  done = hndl_menu(FILEMENU, DELTITEM);
 		}
 		break;
-#endif
 	  case ALTI:	/* File: Info/Rename	*/
 	  	if (can_show)		/* if it's ok to show		*/
 		{
@@ -803,22 +850,50 @@ hndl_kbd(thechar)
 	  	menu_tnormal(G.a_trees[ADMENU], VIEWMENU, FALSE);
 	  	done = hndl_menu(VIEWMENU, SIZEITEM);
 		break;
-	  case CNTLU:
+	  case CNTLA:	/* Window: Select all items	*/
+	    if (win_ontop())
+	    {
+		  menu_tnormal(G.a_trees[ADMENU], WINDMENU, FALSE);
+		  done = hndl_menu(WINDMENU, ALLITEM);	    
+	    }
+	    break;
+	  case CNTLN:	/* Window: Cycle windows	*/
+	    if (can_cycle)
+	    {
+		  menu_tnormal(G.a_trees[ADMENU], WINDMENU, FALSE);
+		  done = hndl_menu(WINDMENU, CYCLITEM);	    
+	    }
+	    break;
+	  case CNTLQ:	/* File: Quit	*/
+	  	menu_tnormal(G.a_trees[ADMENU], FILEMENU, FALSE);
+	  	done = hndl_menu(FILEMENU, QUITITEM);
+		break;
+	  case CNTLR:	/* Window: Refresh window	*/
+	    if (win_ontop())
+	    {
+		  menu_tnormal(G.a_trees[ADMENU], WINDMENU, FALSE);
+		  done = hndl_menu(WINDMENU, REFWITEM);	    
+	    }
+	    break;
+	  case CNTLU:	/* File: To Output */
 		if (can_output)
 	  	{
 		  menu_tnormal(G.a_trees[ADMENU], FILEMENU, FALSE);
 	  	  done = hndl_menu(FILEMENU, OUTPITEM);
 		}
 		break;
-	  case CNTLQ:
-	  	menu_tnormal(G.a_trees[ADMENU], FILEMENU, FALSE);
-	  	done = hndl_menu(FILEMENU, QUITITEM);
-		break;
 	  case CNTLW:	/* [JCE] Add ^W for 'close window' */
 		if (win_ontop())
 		{
-		  menu_tnormal(G.a_trees[ADMENU], FILEMENU, FALSE);
-		  done = hndl_menu(FILEMENU, CLSWITEM);
+		  menu_tnormal(G.a_trees[ADMENU], WINDMENU, FALSE);
+		  done = hndl_menu(WINDMENU, CLSWITEM);
+		}
+		break;
+	  case CNTLX:	/* Window: close folder */
+		if (win_ontop())
+		{
+		  menu_tnormal(G.a_trees[ADMENU], WINDMENU, FALSE);
+		  done = hndl_menu(WINDMENU, CLOSITEM);
 		}
 		break;
 	} /* switch */
@@ -842,6 +917,9 @@ WORD hndl_menu(WORD title, WORD item)
 	  case FILEMENU:
 		done = do_filemenu(item);
 		break;
+	  case WINDMENU:
+	    done = do_windmenu(item);
+		break;
 	  case VIEWMENU:
 		done = FALSE;
 						/* for every window	*/
@@ -851,7 +929,7 @@ WORD hndl_menu(WORD title, WORD item)
 			desk_all(TRUE);
 		break;
 	  case OPTNMENU:
-		done = do_optnmenu(item);
+	    done = do_optnmenu(item);
 		break;
 	}
 	menu_tnormal(G.a_trees[ADMENU], title, TRUE);
@@ -963,12 +1041,12 @@ WORD  hndl_msg()
 	{
 	  case WM_TOPPED:
 	  case WM_CLOSED:
-	  case WM_FULLED:
-	  case WM_ARROWED:
-	  case WM_HSLID: // reinstated in DESKTOP v1.2
-	  case WM_VSLID:
-	  case WM_SIZED: // reinstated in DESKTOP v1.2
-	  case WM_MOVED: // reinstated in DESKTOP v1.2
+	  // case WM_FULLED:
+	  // case WM_ARROWED:
+	  // case WM_HSLID: // reinstated in DESKTOP v1.2
+	  // case WM_VSLID:
+	  // case WM_SIZED: // reinstated in DESKTOP v1.2
+	  // case WM_MOVED: // reinstated in DESKTOP v1.2
 		desk_clear(G.g_cwin);
 		break;
 	}
@@ -1018,7 +1096,7 @@ WORD  hndl_msg()
 #endif
 	  case WM_CLOSED:
 	//	hot_close(G.g_rmsg[3]);	// DESKTOP v1.2 change
-		do_filemenu(CLOSITEM);
+		do_windmenu(CLOSITEM);
 		break;
 	  case WM_FULLED:
 /* DESKTOP v1.2 doesn't bother with these checks...
@@ -1102,6 +1180,8 @@ MLOCAL VOID  cnx_put()
 	/* Copied these from BALJ's Desktop */
 	G.g_cnxsave.cdetd_save = G.g_detdrives;
 	G.g_cnxsave.cdetn_save = G.g_probedrives;
+	/* New Size to fit option */
+	G.g_cnxsave.szfit_save = G.g_ifit;
 
 /* DESKTOP v1.2 version of this function doesn't assume 2 fixed windows */
 	for (iwsave=0, iwin = 0; iwin < NUM_WNODES; iwin++)
@@ -1216,6 +1296,10 @@ MLOCAL VOID  cnx_get(VOID)
 	else G.g_cmclkpref = menu_click(G.g_cmclkpref, TRUE);
 	G.g_detdrives = G.g_cnxsave.cdetd_save;
 	G.g_probedrives = G.g_cnxsave.cdetn_save;
+/* New Size to fit option */
+	G.g_ifit      = FALSE;
+	if(G.g_cnxsave.szfit_save)
+		do_viewmenu(FITITEM);
 
 /* DESKTOP v1.2: Remove 2-window limit; and cnx_open() inlined.
 	cnx_open(gl_open1st);

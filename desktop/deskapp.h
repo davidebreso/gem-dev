@@ -150,5 +150,6 @@ typedef struct context_save
 	WORD	cdtfm_save;
 	WORD    cdetd_save;                     /* BALJ - det. drives   */
 	WORD    cdetn_save;                     /* BALJ - det. network  */
+	WORD    szfit_save;                     /* Size to fit */
 	WSAVE	win_save[4];
 } CSAVE;
