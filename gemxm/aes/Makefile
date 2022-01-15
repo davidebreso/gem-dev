@@ -22,8 +22,8 @@ gem.exe:	$(OBJECTS)
 	lc1 $< -s
 	lc2 $< -scode -v
 	
-install: gem.exe
-	copy gem.exe $(INSTDIR)
+install: gem.exe gem.rsc
+	copy gem.exe gem.rsc $(INSTDIR)
 	
 clean:
 	del *.obj
