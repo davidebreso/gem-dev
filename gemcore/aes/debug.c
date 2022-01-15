@@ -4,7 +4,7 @@
 #if DEBUG
 
 int	TRACEFLAG;
-
+/*
 #asm
 ;
 ; Debugging code
@@ -69,5 +69,6 @@ _border:			;Set border & background colour
 	ret
 ;
 #endasm
+*/
+#endif
 
-#endif /* DEBUG */u

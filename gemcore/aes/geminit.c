@@ -192,42 +192,42 @@ ini_dlongs()
 
 	dseg1   = ADDR(&D.g_sysglo[0]);
 	ad_dseg = (LPBYTE) (((LONG)dseg1) & 0xFFFF0000L);
-	ad_sysglo  = (LPVOID)(ad_dseg + LW(&D.g_sysglo[0]));
-	ad_windspb = (LPSPB)(ad_dseg + LW(&wind_spb));
-	ad_mouse   = (LPMFORM)(ad_dseg + LW(&gl_mouse[0]));
+	ad_sysglo  = (LPVOID)((&D.g_sysglo[0]));
+	ad_windspb = (LPSPB)((&wind_spb));
+	ad_mouse   = (LPMFORM)((&gl_mouse[0]));
 						/* gemfslib longs	*/
-	ad_tmp1    = (LPBYTE)(ad_dseg + LW(&gl_tmp1[0]));
-	ad_tmp2    = (LPBYTE)(ad_dseg + LW(&gl_tmp2[0]));
+	ad_tmp1    = (LPBYTE)((&gl_tmp1[0]));
+	ad_tmp2    = (LPBYTE)((&gl_tmp2[0]));
 						/* gemrslib		*/
-	ad_hdrbuff = (LPUWORD)(ad_dseg + LW(&hdr_buff[0]));
+	ad_hdrbuff = (LPUWORD)((&hdr_buff[0]));
 						/* gemoblib		*/
-	ad_valstr = ad_dseg + LW(&D.g_valstr[0]);
-	ad_fmtstr = ad_dseg + LW(&D.g_fmtstr[0]);
-	ad_rawstr = ad_dseg + LW(&D.g_rawstr[0]);
-	ad_tmpstr = ad_dseg + LW(&D.g_tmpstr[0]);
-	ad_edblk = (LPTEDI)(ad_dseg + LW(&edblk));
-	ad_bi = (LPBBLK)(ad_dseg + LW(&bi));
-	ad_ib = (LPICON)(ad_dseg + LW(&ib));
+	ad_valstr = (&D.g_valstr[0]);
+	ad_fmtstr = (&D.g_fmtstr[0]);
+	ad_rawstr = (&D.g_rawstr[0]);
+	ad_tmpstr = (&D.g_tmpstr[0]);
+	ad_edblk = (LPTEDI)((&edblk));
+	ad_bi = (LPBBLK)((&bi));
+	ad_ib = (LPICON)((&ib));
 
 	D.s_cmd = (BYTE *) &pqueue[0];
-	ad_scmd = (LPBYTE)(ad_dseg + LW(D.s_cmd));
+	ad_scmd = (LPBYTE)((D.s_cmd));
 						/* put scrap and some	*/
 						/*   other arrays at	*/
 						/*   at top of the	*/
 						/*   screen mgr stack	*/
 	ps = D.g_scrap = (BYTE *) &usuper[0];
-	ad_scrap = ad_dseg + LW(ps);
+	ad_scrap = (ps);
 	D.s_cdir = ps += 82;
-	ad_scdir = (LPBYTE)(ad_dseg + LW(ps));
+	ad_scdir = (LPBYTE)((ps));
 	D.g_loc1 = ps = &gl_1loc[0];
-	ad_g1loc = ad_dseg + LW(ps);
+	ad_g1loc = (ps);
 	D.g_loc2 = ps = &gl_2loc[0];
-	ad_g2loc = ad_dseg + LW(ps);
+	ad_g2loc = (ps);
 	D.g_dir = ps = &gl_dir[0];
-	ad_path = ad_dseg + LW(ps);
+	ad_path = (ps);
 	D.g_dta = ps = &gl_dta[0];
-	ad_dta = (LPVOID)(ad_dseg + LW(ps));
-	ad_fsdta = ad_dseg + LW(&gl_dta[30]);
+	ad_dta = (LPVOID)((ps));
+	ad_fsdta = (&gl_dta[30]);
 #endif
 #if MC68K
 						/* init. long pointer	*/

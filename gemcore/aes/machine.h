@@ -101,13 +101,6 @@ EXTERN WORD	LHIWD(UWORD x);
 						/*   a word value	*/
 #define LHIBT(x) ((BYTE)( (x >> 8) & 0x00ff))
 
-/* [JCE] I'm more comfortable with these macros */
-
-#define FP_SEG(x)	   (((LONG)(FAR VOID *)(x)) >> 16)
-
-#define FP_OFF(x)      ((UWORD)(x))
-#define MK_FP(seg,off) ((VOID FAR *) ((((ULONG)seg)<< 16) | ((UWORD)off)))
-
 /************************************************************************/
 
 #if I8086
@@ -116,7 +109,7 @@ EXTERN WORD	LHIWD(UWORD x);
 						/* return long address	*/
 						/*   of short ptr	*/
 /*EXTERN LONG	ADDR();*/
-#define ADDR(x) ((FAR BYTE *) (x))
+#define ADDR    (LPVOID)
 
 						/* return long address	*/
 						/*   of the data seg	*/

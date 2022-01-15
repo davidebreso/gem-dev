@@ -96,4 +96,3 @@
 #define PROPSHEL 28		/* FREE STRING */
 #define PROPGOPT 29		/* FREE STRING */
 #define FSDRIVES 7  	/* OBJECT in TREE #0 */
-

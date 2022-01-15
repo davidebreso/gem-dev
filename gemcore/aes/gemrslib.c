@@ -265,8 +265,8 @@ fix_long(plong)
         VOID
 fix_trindex()
 {
-	REG WORD	ii;
-	REG LPLPTR	ptreebase;
+	WORD	ii;
+	LPLPTR	ptreebase;
 	LPTREE		tree;
 
 	ptreebase = (LPLPTR)get_sub(0, RT_TRINDEX, sizeof(LONG) );
@@ -274,7 +274,7 @@ fix_trindex()
 
 	for (ii = NUM_TREE-1; ii >= 0; ii--)
 	{
-	  tree = (LPTREE)fix_long(&ptreebase[ii]);
+	  tree = (LPTREE)fix_long((LPLONG)&ptreebase[ii]);
 	  if ( (tree[ROOT].ob_state == OUTLINED) &&
 	       (tree[ROOT].ob_type == G_BOX) &&
                (gl_opts.rsrc_compat & 1))
@@ -516,7 +516,7 @@ rs_readit(pglobal, rsfname)
 */
 	VOID
 rs_fixit(pglobal)
-	LONG		pglobal;
+	LPWORD		pglobal;
 {
 	rs_sglobe(pglobal);
 	fix_objects();

@@ -356,6 +356,7 @@ kchange(ch, kstat)
 	kstate = kstat;
 	if (ch)
 	  post_keybd(gl_mowner->p_cda, (UWORD)ch);
+	return 0;
 }
 
 
@@ -417,6 +418,7 @@ bchange(new, clicks)
 	button = new;
 	mclick = clicks;
 	post_mb(FALSE, gl_mowner->p_cda->c_bsleep, button, clicks);
+	return 0;
 }
 
 
@@ -494,12 +496,13 @@ mchange(rx, ry)
 	if ( (gl_mowner != ctl_pd) &&
 	     (button == 0x0) &&
 	     (gl_mntree) &&
-	     (in_mrect(&gl_ctwait.m_out)) )
+	     (in_mrect(&gl_ctwait)) )
 	  {
 	  gl_mowner = ctl_pd;
 		
 	  }
 	post_mb(TRUE, gl_mowner->p_cda->c_msleep, xrat, yrat);
+	return 0;
 }
 
 /*
@@ -669,7 +672,7 @@ amouse(e, pmo)
 						/*   out) signal	*/
 						/*   immediately	*/
 	if ( (rlr == gl_mowner) &&
-	     (in_mrect(&mob.m_out)) )
+	     (in_mrect(&mob)) )
 	  azombie(e, 0);
 	else
 	{
@@ -685,4 +688,4 @@ amouse(e, pmo)
 
 
 
-
+

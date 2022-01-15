@@ -458,5 +458,3 @@ THEGLO
 /* GLOBAL */ PD		g_extpd[NUM_PDS-2];
 /* GLOBAL */ CDA	g_extcda[NUM_PDS-2];
 };
-
-

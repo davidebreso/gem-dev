@@ -31,4 +31,4 @@ GLOBAL WORD	fpt, fph, fpcnt;		/* forkq tail, head, 	*/
 GLOBAL SPB	wind_spb;
 GLOBAL WORD	curpid;
 
-
+

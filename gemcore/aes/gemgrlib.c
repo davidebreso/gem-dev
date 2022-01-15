@@ -451,4 +451,4 @@ gr_mkstate(pmx, pmy, pmstat, pkstat)
 	return TRUE;
 }
 
-
+

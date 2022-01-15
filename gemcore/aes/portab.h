@@ -16,8 +16,8 @@
 *
 ****************************************************************************/
 
-#ifndef __PACIFIC__
-#error This file is set up for the Pacific C compiler
+#ifndef __WATCOMC__
+#error This file is set up for the Open Watcom C compiler
 #endif
 
 
@@ -70,5 +70,5 @@ typedef unsigned long ULONG;			/* Unsigned long           */
 #define	FALSE	(0)			/*	Function FALSE value	    */
 
 /* [JCE] Pacific C far pointer types */
-#include "ppdptr.h"
+#include "wccptr.h"
 

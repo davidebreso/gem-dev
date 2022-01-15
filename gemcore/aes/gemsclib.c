@@ -121,4 +121,4 @@ sc_clear()
 {
 	return( sc_clrd(FALSE) );
 }
-
+

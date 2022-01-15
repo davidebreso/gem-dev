@@ -514,4 +514,4 @@ ins_char(str, pos, chr, tot_len)
 	LSTCPY(ADDR(&gl_rsname[0]), pname);
 	return(&gl_rsname[0]);
 }
-
+

@@ -601,7 +601,7 @@ xif(pcrys_blk)
 */
 	VOID
 super(pcrys_blk)
-	LONG		pcrys_blk;
+	LPLPTR		pcrys_blk;
 {
 	xif(pcrys_blk);
 	
@@ -619,4 +619,4 @@ nsuper(pcrys_blk)
 #endif
 }
 
-
+

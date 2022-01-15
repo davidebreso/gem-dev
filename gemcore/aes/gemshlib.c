@@ -246,7 +246,7 @@ sh_toalpha()
 
 	VOID
 sh_draw(lcmd, start, depth)
-	LONG		lcmd;
+	LPBYTE		lcmd;
 	WORD		start;
 	WORD		depth;
 {
@@ -259,7 +259,8 @@ sh_draw(lcmd, start, depth)
 	{
 	  tree = ad_stdesk;
 	  gsx_sclip(&gl_rscreen);
-	  *((LPLONG)ad_pfile) = lcmd;
+	  /* TODO: is this correct? */
+	  ad_pfile = lcmd;
 	  ob_draw(tree, start, depth);
 	}
 }
@@ -268,7 +269,7 @@ sh_draw(lcmd, start, depth)
 
         VOID
 sh_show(lcmd)
-	LONG		lcmd;
+	LPBYTE		lcmd;
 {
 	WORD		i;
 	

@@ -28,4 +28,4 @@ EXTERN WORD	fpt, fph, fpcnt;		/* forkq tail, head, 	*/
 EXTERN SPB	wind_spb;
 EXTERN CDA	*cda;
 EXTERN WORD	curpid;
-
+

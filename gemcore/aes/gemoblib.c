@@ -405,7 +405,7 @@ just_draw(tree, obj, sx, sy)
 		state &= ~SELECTED;
 		break;
 	    case G_USERDEF:
-		state = ob_user(tree, obj, &t, spec, state, state);
+		state = ob_user(tree, obj, &t, (LPUSER)spec, state, state);
 		break;
 	    case G_DTMFDB:
 
@@ -748,7 +748,7 @@ ob_change(tree, obj, new_state, redraw)
 
 	  if ( obtype == G_USERDEF )
 	  {
-	    ob_user(tree, obj, &t, spec, curr_state, new_state);
+	    ob_user(tree, obj, &t, (LPUSER)spec, curr_state, new_state);
 	    redraw = FALSE;
 	  }
 	  else

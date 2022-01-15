@@ -62,7 +62,7 @@ fm_strbrk(tree, palstr, stroff, pcurr_id, pnitem, pmaxlen)
 	REG WORD	nitem, curr_id;
 	REG WORD	len, maxlen;
 	REG BYTE	tmp;
-	FAR BYTE	*pstr;
+	BYTE FAR 	*pstr;
 	REG BYTE	nxttmp;
 
 	nitem = maxlen = 0; 
@@ -261,4 +261,4 @@ fm_alert(defbut, palstr)
 	return( i - BUT_OFF + 1 );
 }
 
-
+

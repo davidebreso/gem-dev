@@ -220,4 +220,4 @@ newrect(tree, wh, d1, d2)
 	pwin->w_rlist = new;
 }
 
-
+

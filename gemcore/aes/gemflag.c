@@ -75,6 +75,7 @@ WORD tchange(WORD cl, WORD ch)	/* number of ticks that	*/
 	    break;
 	  }
 	}
+	return 0;
 }
 
 
@@ -149,4 +150,4 @@ unsync(sy)
 }
 
 
-
+
