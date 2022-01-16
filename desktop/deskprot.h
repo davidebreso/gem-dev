@@ -87,6 +87,7 @@ FNODE *  pn_sort(WORD lstcnt, FNODE *pflist);
 WORD  pn_active(PNODE *thepath);
 VOID pn_select(WNODE *pw);
 VOID pn_count(WNODE *pw, WORD *psel, WORD *papp, WORD *pdoc, WORD *pfold);
+VOID pn_rebuild(WNODE *pw);
 
 /* deskfun.c */
 WORD  fun_alert(WORD defbut, WORD stnum, ...);

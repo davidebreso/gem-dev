@@ -583,11 +583,6 @@ WORD pn_folder(PNODE *thepath)
 
 */
 
-/*
-*	Make a particular path the active path.  This involves
-*	reading its directory, initializing a file list, and filling
-*	out the information in the path node.
-*/
 /* This function is not used in DESKTOP v1.2; it provides the 
   "my computer"-style window in v2.x+. 
 WORD pn_desktop(PNODE *thepath)
@@ -656,13 +651,17 @@ WORD pn_active(PNODE *thepath)
 
 */
 
-
+/*
+ *	Make a particular path the active path.  This involves
+ *	reading its directory, initializing a file list, and filling
+ *	out the information in the path node.
+ */
 WORD  pn_active(PNODE *thepath)
 {
 	FNODE *thefile, *prevfile;
 	WORD ret;
 
-    fprintf(logfile, "pn_active(%s)\n",thepath->p_spec);
+    // fprintf(logfile, "pn_active(%s)\n",thepath->p_spec);
 	thepath->p_count = 0;
 	thepath->p_size = 0x0L;
 	fl_free(thepath->p_flist);
@@ -741,33 +740,33 @@ VOID pn_count(WNODE *pw, WORD *psel, WORD *papp, WORD *pdoc, WORD *pfold)
     FNODE *pf;
     ANODE *appl;
     
-    fprintf(logfile, "pn_count()\n");
+    // fprintf(logfile, "pn_count()\n");
     for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
     {
         if (pf->f_selected)
         {
-            fprintf(logfile, "%s selected", pf->f_name);
+            // fprintf(logfile, "%s selected", pf->f_name);
             sel++;
             switch(pf->f_type)
             {
                 case FT_ISDOC:
-                    fprintf(logfile, " is doc");
+                    // fprintf(logfile, " is doc");
                     doc++;
                     break;
                 case FT_ISAPP:
                 case FT_ISINST:
-                     fprintf(logfile, " is app or installed");
+                     // fprintf(logfile, " is app or installed");
                      app++;
                      break; 
                 case FT_ISFOLD:
-                    fprintf(logfile, " is folder");
+                    // fprintf(logfile, " is folder");
                     fold++;
                     break; 
                 default:
-                    fprintf(logfile, " is %d", appl->a_type); 
+                    // fprintf(logfile, " is %d", appl->a_type); 
                     break;                          
             }
-            fprintf(logfile, "\n");
+            // fprintf(logfile, "\n");
         }
     }
 
@@ -777,3 +776,14 @@ VOID pn_count(WNODE *pw, WORD *psel, WORD *papp, WORD *pdoc, WORD *pfold)
     *pfold = fold;
 }
 
+/*
+ * Rebuild the information of all the FNODES in a directory window.
+ */
+VOID pn_rebuild(WNODE *pw)
+{
+    FNODE *pf;
+    for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
+    {
+		win_icalc(pf);
+	}
+}

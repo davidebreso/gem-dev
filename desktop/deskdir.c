@@ -787,7 +787,7 @@ dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
 	pgldst = &G.g_dstpth[0]; pgldstlen = sizeof(G.g_dstpth);
 
 
-    fprintf(logfile,"dir_op(%d,...) with selected items:\n", op);
+    // fprintf(logfile,"dir_op(%d,...) with selected items:\n", op);
 
 	tree = 0x0L;
 	ml_havebox = FALSE;
@@ -804,7 +804,7 @@ dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
 	{
 	  if ( pf->f_selected )
 	  {
-        fprintf(logfile, "%s\n", pf->f_name);
+        // fprintf(logfile, "%s\n", pf->f_name);
 	    strcpy(pglsrc, psrc_path);
 	    if (op == OP_COPY)
 	    {

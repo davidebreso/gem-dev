@@ -25,6 +25,8 @@ VOID  desk_clear(WORD wh)
 	WNODE		*pw;
 	GRECT		c;
 	WORD	    root;
+	
+	// fprintf(logfile, "desk_clear(%d)\n", wh);
 						/* get current size	*/
 	wind_get(wh, WF_WXYWH, &c.g_x, &c.g_y, &c.g_w, &c.g_h);
 						/* find its tree of 	*/
@@ -32,10 +34,11 @@ VOID  desk_clear(WORD wh)
 	pw = win_find(wh);
 
 	/* DESKTOP v1.2: We have to clear selected desktop objects */
-	if (pw) root = pw->w_root;
-	else    root = 1;
+	if (wh != DESKWH) root = pw->w_root;
+	else    root = DROOT;
 						/* clear all selections	*/
 	act_allchg(wh, G.a_screen, root, 0, &gl_rfull, &c, FALSE, TRUE);
+	// fprintf(logfile, "END of desk_clear()\n");
 }
 
 /*
@@ -141,7 +144,7 @@ VOID  do_wopen(WORD new_win, WORD wh, WORD curr, WORD x, WORD y, WORD w, WORD h)
 {
 	GRECT		d,c;
     
-    fprintf(logfile, "do_wopen()\n");
+    // fprintf(logfile, "do_wopen()\n");
 	do_xyfix(&x, &y);
 	// DESKTOP v1.2: Zooming box effect
 	get_xywh(G.g_screen, curr,      &d.g_x, &d.g_y, &d.g_w, &d.g_h);
@@ -243,7 +246,7 @@ WORD  do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 	WORD		ret;
 	PNODE		*tmp;
 
-    fprintf(logfile, "do_diropen: ppath=%s pname=%s pext=%s\n", ppath, pname, pext);	
+    // fprintf(logfile, "do_diropen: ppath=%s pname=%s pext=%s\n", ppath, pname, pext);	
 						/* convert to hourglass	*/
 	graf_mouse(HGLASS, 0x0L);
 						/* open a path node	*/
@@ -290,7 +293,7 @@ WORD  do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 	if (/*redraw && */( !new_win ))
 	  fun_msg(WM_REDRAW, pw->w_id, pt->g_x, pt->g_y, pt->g_w, pt->g_h);
 
-    fprintf(logfile,"END OF do_diropen\n");
+    // fprintf(logfile,"END OF do_diropen\n");
 	graf_mouse(ARROW, 0x0L);
 	return(TRUE);
 } /* do_diropen */
@@ -699,7 +702,6 @@ do_chkall(redraw)
 	  }
 	}
 } /* do_chkall */
-
 
 WORD  alert_s(WORD defbut, WORD alert_num, BYTE *s)
 {

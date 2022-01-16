@@ -146,6 +146,7 @@ win_free(thewin)
 
 	G.g_wcnt--;
 	thewin->w_id = 0;
+	// fprintf(logfile, "win_free: objc_order(.., %d, 1)", thewin->w_root);
 	objc_order(G.a_screen, thewin->w_root, 1);
 	obj_wfree( thewin->w_root, 0, 0, 0, 0 );
 }
@@ -224,6 +225,7 @@ win_find(wh)
 win_top(thewin)
 	WNODE		*thewin;
 {
+	// fprintf(logfile, "win_top: objc_order(.., %d, %d)", thewin->w_root, NIL);
 	objc_order(G.a_screen, thewin->w_root, NIL);
 }	
 
@@ -701,20 +703,21 @@ win_bdall()
 	WORD		ii;
 	WORD		wh, xc, yc, wc, hc;
 	
-	fprintf(logfile,"win_bdall(), G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
+	// fprintf(logfile,"win_bdall(), G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 	for (ii = 0; ii < NUM_WNODES; ii++)
 	{
 	  wh = G.g_wlist[ii].w_id;
 	  if ( wh )
 	  {
-		fprintf(logfile,"%d, G.g_screen->ob_tail=%d\n", wh, G.g_screen->ob_tail);
+	  	pn_rebuild(&G.g_wlist[ii]);
+		// fprintf(logfile,"%d, G.g_screen->ob_tail=%d\n", wh, G.g_screen->ob_tail);
 	    wind_get(wh, WF_WXYWH, &xc, &yc, &wc, &hc);
-		fprintf(logfile,"wind_get, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
+		// fprintf(logfile,"wind_get, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 	    win_bldview(&G.g_wlist[ii], xc, yc, wc, hc);
-		fprintf(logfile,"win_bldview, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
+		// fprintf(logfile,"win_bldview, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 	  }
 	}
-	fprintf(logfile,"END OF win_bdall, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
+	// fprintf(logfile,"END OF win_bdall, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 }
 
 /*
@@ -741,7 +744,9 @@ win_shwall()
 		continue;
 	    }
 	    wind_get(wh, WF_WXYWH, &xc, &yc, &wc, &hc);
-	    fun_msg(WM_TOPPED, wh, xc, yc, wc, hc);
+	    /**** removed to keep the current window order
+	      fun_msg(WM_TOPPED, wh, xc, yc, wc, hc);
+	    *******/
 	    fun_msg(WM_REDRAW, wh, xc, yc, wc, hc);
 	    if (justtop)
 	      return;

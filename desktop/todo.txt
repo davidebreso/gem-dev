@@ -7,9 +7,10 @@ Open items are on top.
 TODO: Implement all new menu options correctly:
         * Search...
         * Set file mask
-OPEN: Items on the desktop stay selected when the focus is on a window
+        * Status bar with number of selected files
 OPEN: Installed applications must be in PATH or in GEMAPPS to open documents
 
+FIXED: Items on the desktop stay selected when the focus is on a window
 FIXED: Scrolling window deselect all selected files
 FIXED: Drag&Drop and Delete operates only on the selected items that are visible
 DONE: Better alerts in "Install Accessories". 

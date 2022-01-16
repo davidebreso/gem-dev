@@ -183,12 +183,14 @@ WORD  fun_op(WORD op, PNODE *pspath, BYTE *pdest,
 	FNODE       *pf;
 	
 
+/* 
     fprintf(logfile,"fun_op(%d,...) with selected items:\n", op);
     for (pf = pspath->p_flist; pf; pf = pf->f_next)
     {
         if(pf->f_selected)
             fprintf(logfile, "%s\n", pf->f_name);
     }
+ */
 
 						/* do the operation	*/
 	if (op != -1)
@@ -429,12 +431,14 @@ VOID  fun_del(WNODE *pdw)
 	FNODE       *pf;
 
 
+/* 
 	fprintf(logfile,"fun_del() for selected items:\n");
 	for (pf = pdw->w_path->p_flist; pf; pf = pf->f_next)
     {
         if(pf->f_selected)
             fprintf(logfile, "%s\n", pf->f_name);
     }
+ */
 
 
 	if (pdw->w_path->p_spec[0] != '@')

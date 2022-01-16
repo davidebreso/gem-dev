@@ -618,6 +618,7 @@ VOID  act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj,
 	GRECT		o, a, w;
 	FNODE       *fn;
 
+	// fprintf(logfile, "act_allchg(%d, tree, %d, ... )\n", wh, root);
 	olist = tree;
 	offx = olist[root].ob_x;
 	offy = olist[root].ob_y;
@@ -693,11 +694,11 @@ VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my,
 	WORD		state;
 	LPTREE		olist;
 
+	// fprintf(logfile, "act_bsclick()\n");
 	shifted = (keystate & K_LSHIFT) || (keystate & K_RSHIFT);
 	obj = gr_obfind(tree, root, mx, my);
 
-	if ( (obj == root) ||
-	     (obj == NIL)  )
+	if ( (obj == root) || (obj == NIL)  )
 	{
 	  act_allchg(wh, tree, root, obj, &gl_rfull, pc, FALSE, TRUE);
 	}
@@ -724,6 +725,7 @@ VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my,
 	  }  
 	  act_chg(wh, tree, root, obj, pc, state & SELECTED, TRUE, TRUE);
 	}
+	// fprintf(logfile, "END OF act_bsclick()\n");
 }
 
 /*
@@ -746,6 +748,7 @@ WORD  act_bdown(WORD wh, 		//22
 	WORD		numpts, *pxypts, view;
 	GRECT		m;
 
+	// fprintf(logfile, "act_bdown()\n");
 	dst_wh = NIL;
 	*pdobj = root;
 	l_mx = *in_mx;
@@ -802,5 +805,6 @@ WORD  act_bdown(WORD wh, 		//22
 	evnt_button(0x01, 0x01, 0x00, &l_mx, &l_my, &button, &keystate);
 	*in_mx = dulx;			/* pass back the dest. x,y	*/
 	*in_my = duly;
+	// fprintf(logfile, "END OF act_bdown()\n");
 	return(dst_wh);
 } /* act_bdown */

@@ -1,7 +1,7 @@
 INSTDIR=$(HOME)/Dosbox/c_drive/GEMAPPS/GEMSYS
 RELEASE=3.2.6
 
-all:	desktopl.app  desklm.app \
+all:	desktop.app desktopl.app desksm.app desklm.app \
 	icn2xml xml2icn desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn
@@ -46,9 +46,9 @@ largem/desktop.app:	*.c *.h
 smallm/desktop.app:	*.c *.h
 	$(MAKE) -C smallm
 
-install:	desktopl.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
+install:	desktop.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
 	cp deskhi.icn desklo.icn desktop.rsc skeleton.inf $(INSTDIR)
-	cp desktopl.app $(INSTDIR)/desktop.app
+	cp desktop.app $(INSTDIR)/desktop.app
 
 xminstall:	desksm.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
 	cp deskhi.icn desklo.icn desktop.rsc skeleton.inf $(INSTDIR)
