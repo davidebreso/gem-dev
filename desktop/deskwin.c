@@ -69,9 +69,9 @@ WORD	wh ;
     }
 
     if ( wkind & NAME )
-	wind_set(wh, WF_NAME, FP_OFF(title), FP_SEG(title), 0, 0); 
+		wind_setl(wh, WF_NAME, title); 
     if ( wkind & INFO )
-	wind_set(wh, WF_INFO, FP_OFF(info), FP_SEG(info), 0, 0); 
+		wind_setl(wh, WF_INFO, info); 
     
 /* open and draw window */    
     wind_open(wh, WORD_ALIGN(G.g_xfull), G.g_yfull, G.g_wfull, G.g_hfull);
@@ -799,7 +799,7 @@ VOID  win_sname(WNODE *pw)
 	pdst = &pw->w_name[0];
 	if (*psrc != '@')
 	{
-	  while ( (*psrc) && (*psrc != '*') )
+	  while ( *psrc )
 	    *pdst++ = *psrc++;
 	  *pdst = 0;
 	}

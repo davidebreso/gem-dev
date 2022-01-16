@@ -84,7 +84,7 @@ VOID  pn_close(PNODE *thepath);
 PNODE *  pn_open(WORD drive, BYTE *path, BYTE *name, BYTE *ext, 
 				WORD attr);
 FNODE *  pn_sort(WORD lstcnt, FNODE *pflist);
-WORD  pn_active(PNODE *thepath);
+WORD  pn_active(PNODE *thepath, BOOLEAN include_folders);
 VOID pn_select(WNODE *pw);
 VOID pn_count(WNODE *pw, WORD *psel, WORD *papp, WORD *pdoc, WORD *pfold);
 VOID pn_rebuild(WNODE *pw);
@@ -94,6 +94,7 @@ WORD  fun_alert(WORD defbut, WORD stnum, ...);
 VOID  fun_msg(WORD type, WORD w3, WORD w4, WORD w5, WORD w6, WORD w7);
 VOID  fun_rebld(WNODE *pwin);
 VOID fun_selectall(WNODE *pw);
+VOID  fun_mask(WNODE *pw_node);
 WORD  fun_mkdir(WNODE *pw_node);
 WORD  fun_op(WORD op, PNODE *pspath, BYTE *pdest, 
 			WORD dulx, WORD duly, WORD from_disk, WORD src_ob);
@@ -224,6 +225,7 @@ WORD  inf_gindex(LPTREE tree, WORD baseobj, WORD numobj);
 WORD  inf_what(LPTREE tree, WORD ok, WORD cncl);
 WORD  wildcmp(BYTE *pwld, BYTE *ptst);
 // VOID  ins_char(BYTE *str, WORD pos, BYTE chr, WORD tot_len);
+BYTE *filename_start(BYTE *path);
 
 /* deskcds.c */
 BOOLEAN  cd_isdrvcd( BYTE drvno );
@@ -241,10 +243,14 @@ VOID  rc_union    (LPGRECT p1, LPGRECT p2);
 
 
 #if DEBUG
-WORD  form_valert(WORD button, BYTE *str, ...);
-WORD  dbg(BYTE *str, ...);
-VOID  crashdump(BYTE ch);
-VOID  debugbreak(VOID);
+WORD form_valert(WORD button, BYTE *str, ...);
+VOID dbg(BYTE *str, ...);
+VOID start_log();
+VOID end_log();
+VOID crashdump(BYTE ch);
+VOID debugbreak(VOID);
+WORD getcs(VOID);
+WORD getip(VOID);
 #endif
 
 /* deskiacc.c */

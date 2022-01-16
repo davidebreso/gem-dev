@@ -652,58 +652,69 @@ WORD pn_active(PNODE *thepath)
 */
 
 /*
- *	Make a particular path the active path.  This involves
- *	reading its directory, initializing a file list, and filling
- *	out the information in the path node.
+ *  Make a particular path the active path.  This involves
+ *  reading its directory, initializing a file list, and filling
+ *  out the information in the path node.
+ *
+ *  if 'include_folders' is TRUE, the filenode list will include all
+ *  folders in the pathnode: this is required for correct display of
+ *  directory contents when the filemask is other than *.*
+ *
+ *  if 'include_folders' is FALSE, the filenode list will only include
+ *  files/folders matching the filespec in the pathnode: this is used by
+ *  fun_file2any() when dragging a desktop icon representing a file/folder
+ *
  */
-WORD  pn_active(PNODE *thepath)
+WORD  pn_active(PNODE *thepath, BOOLEAN include_folders)
 {
 	FNODE *thefile, *prevfile;
 	WORD ret;
+    BYTE search[LEN_ZPATH];
+    BYTE *match;
 
     // fprintf(logfile, "pn_active(%s)\n",thepath->p_spec);
 	thepath->p_count = 0;
 	thepath->p_size = 0x0L;
 	fl_free(thepath->p_flist);
 
-	thefile = (FNODE *) NULLPTR;
 	prevfile = (FNODE *) &thepath->p_flist;
+	thefile = fn_alloc();
+	if ( !thefile )
+		return(E_NOFNODES);
 
 	dos_sdta(G.a_wdta);
 
-	ret = dos_sfirst(ADDR(thepath->p_spec), thepath->p_attr);
-	while ( ret )
+    strcpy(search, thepath->p_spec);
+    /*
+     * do we want to include folders in the match list?
+     */
+    if (include_folders)                /* match all folders? */
+        del_fname(search);              /* yes - change search filespec to *.* */
+    match = filename_start(thepath->p_spec); /* the match filespec is always unaltered */
+
+	for(ret = dos_sfirst(search, thepath->p_attr); ret; ret = dos_snext())
 	{
-	  if ( !thefile )
-	  {
-	    thefile = fn_alloc();
-	    if ( !thefile )
-	    {	
-	      ret = FALSE;
-	      DOS_AX = E_NOFNODES;
-	    }
-	  }
-	  else
-	  {
-	    if ( G.g_wdta[30] != '.' )	// skip "." and ".." entries
-	    {
+	    if ( G.g_wdta[30] == '.' )	// skip "." and ".." entries
+	    	continue;
+		if (G.g_wdta[21] != F_SUBDIR) /* skip *files* that don't match */
+			if (!wildcmp(match, &G.g_wdta[30]))
+				continue;
 						// if it is a real file	//
 						//   or directory then	//
 						//   save it		//
-          thefile->f_selected = FALSE;
-	      memcpy(&thefile->f_junk, &G.g_wdta[20], 23);
-	      thefile->f_attr &= ~(F_DESKTOP | F_FAKE);
-	      /* Set the correct file type in f_type */
-		  win_icalc(thefile);
-          // fprintf(logfile, "%s of type %d with obid=%d and pa=%lX\n", thefile->f_name, 
-          //          thefile->f_type, thefile->f_obid, (LONG)thefile->f_pa);
-	      thepath->p_size += thefile->f_size;
-	      prevfile->f_next = ml_pfndx[thepath->p_count++] = thefile;
-	      prevfile = thefile;
-	      thefile = (FNODE *) NULL;
-	    }
-	    ret = dos_snext();
-	  }
+		thefile->f_selected = FALSE;
+		memcpy(&thefile->f_junk, &G.g_wdta[20], 23);
+		thefile->f_attr &= ~(F_DESKTOP | F_FAKE);
+		/* Set the correct file type in f_type */
+		win_icalc(thefile);
+		// fprintf(logfile, "%s of type %d with obid=%d and pa=%lX\n", thefile->f_name, 
+		//          thefile->f_type, thefile->f_obid, (LONG)thefile->f_pa);
+		thepath->p_size += thefile->f_size;
+		prevfile->f_next = ml_pfndx[thepath->p_count++] = thefile;
+		prevfile = thefile;
+		thefile = fn_alloc();
+		if ( !thefile )
+			return(E_NOFNODES);
 	}
 	prevfile->f_next = (FNODE *) NULLPTR;
 	if ( thefile ) fn_free(thefile);

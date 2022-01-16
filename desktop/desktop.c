@@ -596,6 +596,10 @@ MLOCAL WORD  do_windmenu(WORD item)
     	}
  */
 	  	 break;
+	  case MASKITEM:
+		if (pw)
+			fun_mask(pw);
+		break;
 	}
 	return(done);
 } /* do_windmenu */
@@ -1384,9 +1388,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 /* initialize libraries	*/
 
 #if DEBUG
-	// remove("c:/gemapp.log");        
-    logfile = fopen("desktop.log", "w");
-    fprintf(logfile, "Starting DESKTOP\n");
+	start_log();
 #endif
     
     memset(&gl_xbuf, 0, sizeof(gl_xbuf));
@@ -1683,8 +1685,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
 #if DEBUG
-	fprintf(logfile, "Closing DESKTOP.\n");
-	fclose(logfile);
+	end_log();
 #endif
 	appl_exit();
 

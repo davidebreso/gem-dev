@@ -221,7 +221,7 @@ MLOCAL WORD  fun_file2any(WORD sobj,	  // 12
 	pn_src = pn_open(ib_src->ib_char, "", "*", "*", F_SUBDIR);
 	if (pn_src)
 	{
-		okay = pn_active(pn_src);
+		okay = pn_active(pn_src, FALSE);
 		if (okay == 0x12) {}	// Meaningless test for DOS error...
 		if (pn_src->p_flist) 
 		{

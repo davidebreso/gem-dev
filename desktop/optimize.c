@@ -441,5 +441,21 @@ ins_char(str, pos, chr, tot_len)
 	  str[tot_len-1] = 0;
 }
 
+/*
+ * return pointer to start of last segment of path
+ * (assumed to be the filename)
+ */
+BYTE *filename_start(BYTE *path)
+{
+    BYTE *start = path;
+
+    while (*path)
+        if (*path++ == '\\')
+            start = path;
+
+    return start;
+}
+
+
 
 

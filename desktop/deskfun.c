@@ -77,7 +77,7 @@ VOID  fun_rebld(WNODE *pwin)
 						/*   path then rebuild	*/
 	  if ( (pwin->w_id) && (!strcmp(&pwin->w_path->p_spec[0], ptst)) )
 	  {
-	    pn_active(pwin->w_path);
+	    pn_active(pwin->w_path, TRUE);
 	    desk_verify(pwin->w_id, TRUE);
 // DESKTOP v1.2: Uncommented the "info line" bit.
 	    win_sinfo(pwin, FALSE);
@@ -115,6 +115,47 @@ VOID fun_selectall(WNODE *pw)
     win_sinfo(pw, TRUE);
 	wind_get(pw->w_id, WF_WXYWH, &xc, &yc, &wc, &hc);
     fun_msg(WM_REDRAW, pw->w_id, xc, yc, wc, hc);
+}
+
+/*
+ *  Routine to update the file mask for the current window
+ */
+VOID fun_mask(WNODE *pw)
+{
+    BYTE *maskptr, filemask[LEN_ZFNAME];
+    LPTREE tree;
+
+    tree = G.a_trees[ADFMASK];
+
+    /*
+     * get current filemask & insert in dialog
+     */
+    maskptr = filename_start(pw->w_path->p_spec);
+    fmt_str(maskptr, filemask);
+    inf_sset(tree, MKNAME, filemask);
+
+    /*
+     * get user input
+     */
+    inf_show(tree, ROOT);
+
+    /*
+     * if 'OK', extract filemask from dialog, update pnode/display
+     */
+    if (inf_what(tree, FMOK, FMCNCL))
+    {
+        inf_sget(tree, FMMASK, filemask, sizeof(filemask));
+        if (filemask[0])
+        {
+            unfmt_str(filemask, maskptr);
+        }
+        else    /* empty string => use the default of "*.*" */
+        {
+            strcpy(maskptr, "*.*");
+        }
+        win_sname(pw);
+        fun_rebld(pw);
+    }
 }
 
 
@@ -344,7 +385,7 @@ MLOCAL WORD  fun_disk(WORD src_ob, WNODE *pdw, WORD datype, FNODE *pdf, WORD dul
 	if (pspath)
 	{
 						/* read the directory	*/
-	  ret = pn_active(pspath);
+	  ret = pn_active(pspath, FALSE);
 						/* if files to copy	*/
 	  ret = FALSE;
 	  if (pspath->p_flist)

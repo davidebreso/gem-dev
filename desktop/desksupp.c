@@ -269,7 +269,7 @@ WORD  do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 						/* activate path by 	*/
 						/*   search and sort	*/
 						/*   of directory	*/
-	ret = pn_active(pw->w_path);
+	ret = pn_active(pw->w_path, TRUE);
 	if ( ret != E_NOFILES )
 	{
 						/* some error condition	*/

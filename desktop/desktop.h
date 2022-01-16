@@ -266,3 +266,7 @@
 #define SHOWITEM 29  	/* OBJECT in TREE #0 */
 #define DELTITEM 30  	/* OBJECT in TREE #0 */
 #define STINFST2 28		/* FREE STRING */
+#define ADFMASK 16  	/* TREE */
+#define FMMASK 5  	/* OBJECT in TREE #16 */
+#define FMOK 1  	/* OBJECT in TREE #16 */
+#define FMCNCL 2  	/* OBJECT in TREE #16 */
