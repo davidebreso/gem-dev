@@ -63,6 +63,8 @@ VOID  fun_rebld(WNODE *pwin)
 	WORD		i, x, y, w, h;
 	BYTE		*ptst;
 
+	// fprintf(logfile, "fun_rebld(%d)\n", pwin->w_id);
+
 	graf_mouse(HGLASS, 0x0L);
 						/* set up path to check	*/
 						/*   against all windows*/
@@ -78,8 +80,7 @@ VOID  fun_rebld(WNODE *pwin)
 	    pn_active(pwin->w_path);
 	    desk_verify(pwin->w_id, TRUE);
 // DESKTOP v1.2: Uncommented the "info line" bit.
-	    win_sinfo(pwin);
-	    wind_setl(pwin->w_id, WF_INFO, ADDR(&pwin->w_info[0]));
+	    win_sinfo(pwin, FALSE);
 
 	    wind_get(pwin->w_id, WF_WXYWH, &x, &y, &w, &h);
 	    fun_msg(WM_REDRAW, pwin->w_id, x, y, w, h);
@@ -94,7 +95,7 @@ VOID fun_selectall(WNODE *pw)
 	WORD		xc, yc, wc, hc;
     FNODE *pf;
 
-//    fprintf(logfile, "fun_selectall(). Selecting items:\n");
+    // fprintf(logfile, "fun_selectall(%d)\n", pw->w_id);
     /* paranoia - check for desktop pseudo-window */
     if (pw->w_root == DROOT)
         return;
@@ -111,6 +112,7 @@ VOID fun_selectall(WNODE *pw)
     /*
      * update info line & redisplay window
      */
+    win_sinfo(pw, TRUE);
 	wind_get(pw->w_id, WF_WXYWH, &xc, &yc, &wc, &hc);
     fun_msg(WM_REDRAW, pw->w_id, xc, yc, wc, hc);
 }
@@ -363,7 +365,7 @@ MLOCAL WORD  fun_disk(WORD src_ob, WNODE *pdw, WORD datype, FNODE *pdf, WORD dul
 	  } /* if */
 	  pn_close(pspath);
   		/* rebuild any windows with dpib.ib_char in title	*/
-	  desk_clear(0);
+	  desk_clear(DESKWH);
 	} /* if pspath */
 	return(ret);
 } /* fun_disk */

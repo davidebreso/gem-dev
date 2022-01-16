@@ -1,17 +1,17 @@
-#define STNOAPPL 28  	/* STRING */
-#define STNOWIND 29  	/* STRING */
-#define STNOOPEN 30  	/* STRING */
-#define STBADCOP 31  	/* STRING */
-#define STNOSTAK 32  	/* STRING */
-#define STDELDIS 33  	/* STRING */
-#define STAPGONE 35  	/* STRING */
-#define STNODRA1 36  	/* STRING */
-#define STNODRA2 37  	/* STRING */
-#define STFOEXIS 38  	/* STRING */
-#define STDISKFU 39  	/* STRING */
-#define STNOFILE 40  	/* STRING */
-#define STNOINF 42  	/* STRING */
-#define STFO8DEE 43  	/* STRING */
+#define STNOAPPL 29  	/* STRING */
+#define STNOWIND 30  	/* STRING */
+#define STNOOPEN 31  	/* STRING */
+#define STBADCOP 32  	/* STRING */
+#define STNOSTAK 33  	/* STRING */
+#define STDELDIS 34  	/* STRING */
+#define STAPGONE 36  	/* STRING */
+#define STNODRA1 37  	/* STRING */
+#define STNODRA2 38  	/* STRING */
+#define STFOEXIS 39  	/* STRING */
+#define STDISKFU 40  	/* STRING */
+#define STNOFILE 41  	/* STRING */
+#define STNOINF 43  	/* STRING */
+#define STFO8DEE 44  	/* STRING */
 #define ADMENU 0  	/* TREE */
 #define ADFILEIN 1  	/* TREE */
 #define ADDISKIN 2  	/* TREE */
@@ -177,9 +177,9 @@
 #define STFSCAN 18		/* FREE STRING */
 #define STFBYTES 19		/* FREE STRING */
 #define STFWORDS 20		/* FREE STRING */
-#define STBADOPN 34  	/* STRING */
-#define STEMPTY 44  	/* STRING */
-#define STNOMEM 45  	/* STRING */
+#define STBADOPN 35  	/* STRING */
+#define STEMPTY 45  	/* STRING */
+#define STNOMEM 46  	/* STRING */
 #define DRCD 10  	/* OBJECT in TREE #7 */
 #define DRNET 11  	/* OBJECT in TREE #7 */
 #define DR5QRTR 12  	/* OBJECT in TREE #7 */
@@ -192,15 +192,15 @@
 #define DRVCLINE 27		/* FREE STRING */
 #define SPNOSCAN 36  	/* OBJECT in TREE #13 */
 #define SPNONET 38  	/* OBJECT in TREE #13 */
-#define STDEEPPA 48  	/* STRING */
+#define STDEEPPA 49  	/* STRING */
 #define DEMEMSIZ 19  	/* OBJECT in TREE #4 */
 #define DEMEMCAP 20  	/* OBJECT in TREE #4 */
-#define STEXTDSK 49  	/* STRING */
+#define STEXTDSK 50  	/* STRING */
 #define IACCITEM 55  	/* OBJECT in TREE #0 */
-#define STNOROOM 51  	/* STRING */
+#define STNOROOM 52  	/* STRING */
 #define APMEMSZ 36  	/* OBJECT in TREE #8 */
-#define STNOFSTP 52  	/* STRING */
-#define STACFMEM 53  	/* STRING */
+#define STNOFSTP 53  	/* STRING */
+#define STACFMEM 54  	/* STRING */
 #define ADINSACC 15  	/* TREE */
 #define ACINST 2  	/* OBJECT in TREE #15 */
 #define ACCNCL 3  	/* OBJECT in TREE #15 */
@@ -221,7 +221,7 @@
 #define ACC1FMEM 18  	/* OBJECT in TREE #15 */
 #define ACC2FMEM 19  	/* OBJECT in TREE #15 */
 #define ACC3FMEM 20  	/* OBJECT in TREE #15 */
-#define STACCMEM 41  	/* STRING */
+#define STACCMEM 42  	/* STRING */
 #define ACC1NAME 21  	/* OBJECT in TREE #15 */
 #define ACC2NAME 22  	/* OBJECT in TREE #15 */
 #define ACC3NAME 23  	/* OBJECT in TREE #15 */
@@ -235,21 +235,21 @@
 #define FMT_BAR 10  	/* OBJECT in TREE #14 */
 #define FMT_OK 1  	/* OBJECT in TREE #14 */
 #define FMT_CNCL 2  	/* OBJECT in TREE #14 */
-#define STFMTERR 54  	/* STRING */
-#define STFMTINF 55  	/* STRING */
-#define STNODRIV 56  	/* STRING */
+#define STFMTERR 55  	/* STRING */
+#define STFMTINF 56  	/* STRING */
+#define STNODRIV 57  	/* STRING */
 #define FMTBOX 5  	/* OBJECT in TREE #14 */
 #define FMT_3HD 9  	/* OBJECT in TREE #14 */
 #define FMEMTEXT 24  	/* OBJECT in TREE #15 */
 #define ACSCROLL 30  	/* OBJECT in TREE #15 */
-#define STACFERR 46  	/* STRING */
-#define STACINST 47  	/* STRING */
-#define ACC18ERR 57  	/* STRING */
-#define ACC04ERR 58  	/* STRING */
-#define ACC05ERR 59  	/* STRING */
-#define ACC08ERR 60  	/* STRING */
-#define ACCXXERR 61  	/* STRING */
-#define STEXTRST 50  	/* STRING */
+#define STACFERR 47  	/* STRING */
+#define STACINST 48  	/* STRING */
+#define ACC18ERR 58  	/* STRING */
+#define ACC04ERR 59  	/* STRING */
+#define ACC05ERR 60  	/* STRING */
+#define ACC08ERR 61  	/* STRING */
+#define ACCXXERR 62  	/* STRING */
+#define STEXTRST 51  	/* STRING */
 #define WINDMENU 5  	/* OBJECT in TREE #0 */
 #define SRCHITEM 26  	/* OBJECT in TREE #0 */
 #define DOSITEM 27  	/* OBJECT in TREE #0 */
@@ -265,3 +265,4 @@
 #define L3ITEM 28  	/* OBJECT in TREE #0 */
 #define SHOWITEM 29  	/* OBJECT in TREE #0 */
 #define DELTITEM 30  	/* OBJECT in TREE #0 */
+#define STINFST2 28		/* FREE STRING */

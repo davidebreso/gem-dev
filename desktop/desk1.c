@@ -243,7 +243,7 @@ MLOCAL WORD  fun_file2any(WORD sobj,	  // 12
 			G.g_screen->ob_state = 0;
 		}
 		pn_close(pn_src);
-		desk_clear(0);
+		desk_clear(DESKWH);
 	}
 	return okay;
 }

@@ -201,7 +201,7 @@ VOID  win_shwall(VOID);
 WORD  win_isel(OBJECT *olist, WORD root, WORD curr);
 // LPBYTE  win_iname(WORD curr);
 VOID  win_sname(WNODE *pw);
-VOID  win_sinfo(WNODE *pw);
+VOID  win_sinfo(WNODE *pw, BOOLEAN check_selected);
 
 /* optimize.c */
 

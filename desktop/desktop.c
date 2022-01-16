@@ -757,6 +757,8 @@ WORD  hndl_button(WORD clicks, 	// bp+1e
 
 	wh = wind_find(mx, my);
 
+	// fprintf(logfile, "hndl_buttons: wh %d, clicks: %d\n", wh, clicks);
+
 	if (wh != G.g_cwin) desk_clear(G.g_cwin);
 
 /* BUGFIX	not in DESKTOP v1.2
@@ -801,6 +803,11 @@ WORD  hndl_button(WORD clicks, 	// bp+1e
 	      desk_clear(wh);
 	    } /* if !NIL */
 	  } /* if button */
+	  if(wh != DESKWH)
+	  {
+		  wn = win_find(wh);
+		  win_sinfo(wn, TRUE);
+	  }
 	} /* if clicks */
 	else
 	{

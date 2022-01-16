@@ -361,6 +361,8 @@ VOID  win_icalc(FNODE *pfnode)
 	if (pfnode->f_attr & F_SUBDIR) 
 	{
 	  pfnode->f_pa = app_afind(FALSE, AT_ISFOLD, -1, &pfnode->f_name[0], &pfnode->f_type);
+	  /* set size 0 for directories */
+	  pfnode->f_size = 0;
 	}
 	else
 	{
@@ -802,17 +804,54 @@ VOID  win_sname(WNODE *pw)
 	  *pdst = 0;
 	}
 	// Not in DESKTOP v1.2 else strlcpy(pdst, ini_str(STDSKDRV), LEN_ZPATH);
+	wind_setl(pw->w_id, WF_NAME, pw->w_name);
 } /* win_sname */
 
 
-/* Added for DESKTOP v1.2 */
-VOID  win_sinfo(WNODE *pwin)
+/* 
+ * Set the info line for a window
+ * Added from EMUtos
+ * Optionally, count selected items
+ */
+VOID win_sinfo(WNODE *pwin, BOOLEAN check_selected)
 {
-	PNODE *pn;
+    PNODE *pn;
+    FNODE *fn;
+    WORD select_count = 0;
+    LONG select_size = 0L;
 
-	pn = pwin->w_path;
-	rsrc_gaddr(R_STRING, STINFOST, (LPVOID *)&G.a_alert);
+	// fprintf(logfile, "win_sinfo(%d, %d)\n", pwin->w_id, check_selected);
+    pn = pwin->w_path;
+
+    if (check_selected)
+    {
+        /* count selected FNODEs */
+        for (fn = pn->p_flist; fn; fn = fn->f_next)
+        {
+            if (fn->f_selected)
+            {
+                select_count++;
+                select_size += fn->f_size;
+            }
+        }
+    }
+
+    /*
+     * choose the appropriate string
+     */
+    if (select_count)
+    {
+		rsrc_gaddr(R_STRING, STINFST2, (LPVOID *)&G.a_alert);
+    }
+    else
+    {
+		rsrc_gaddr(R_STRING, STINFOST, (LPVOID *)&G.a_alert);
+        select_count = pn->p_count;     /* so we can use common code below */
+        select_size = pn->p_size;
+    }
 	lstlcpy(ADDR(G.g_1text), G.a_alert, sizeof(G.g_1text));
-	sprintf(pwin->w_info, G.g_1text, pn->p_size, pn->p_count);
+	sprintf(pwin->w_info, G.g_1text, select_size, select_count);
+	wind_setl(pwin->w_id, WF_INFO, pwin->w_info);
 }
+
 

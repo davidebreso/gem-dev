@@ -38,6 +38,11 @@ VOID  desk_clear(WORD wh)
 	else    root = DROOT;
 						/* clear all selections	*/
 	act_allchg(wh, G.a_screen, root, 0, &gl_rfull, &c, FALSE, TRUE);
+
+    if (wh != DESKWH)           /* not the desktop */
+    {
+        win_sinfo(pw, TRUE);    /* may need to update info line */
+    }
 	// fprintf(logfile, "END of desk_clear()\n");
 }
 
@@ -272,9 +277,7 @@ WORD  do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 						/* set new name and info*/
 						/*   lines for window	*/
 	win_sname(pw);
-	win_sinfo(pw);		// DESKTOP v1.2 reinstated 
-	wind_setl(pw->w_id, WF_NAME, ADDR(&pw->w_name[0]));
-	wind_setl(pw->w_id, WF_INFO, ADDR(&pw->w_info[0])); // DESKTOP v1.2
+	win_sinfo(pw, FALSE);		// DESKTOP v1.2 reinstated 
 	
 						/* do actual wind_open	*/
 	if (curr_icon)

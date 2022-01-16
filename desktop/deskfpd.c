@@ -719,10 +719,12 @@ WORD  pn_active(PNODE *thepath)
 VOID pn_select(WNODE *pw)
 {
     FNODE *pf;
+    WORD  obid;
 
     for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
     {
-    	if(G.g_screen[pf->f_obid].ob_state & SELECTED)
+    	obid = pf->f_obid;
+    	if((obid != NIL) && (G.g_screen[obid].ob_state & SELECTED))
     		pf->f_selected = TRUE;
     	else
     		pf->f_selected = FALSE;
