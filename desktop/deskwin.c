@@ -350,18 +350,21 @@ MLOCAL VOID   win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart)
 *	Calculate a bunch of parameters dealing with a particular
 *	icon.
 */
-MLOCAL VOID  win_icalc(FNODE *pfnode)
+VOID  win_icalc(FNODE *pfnode)
 {
 /* 	No such check in DESKTOP v1.2
     if (pfnode->f_attr & F_DESKTOP)
 	  return;*/
 
-	if (pfnode->f_attr & F_SUBDIR)
-	  pfnode->f_pa = app_afind(FALSE, AT_ISFOLD, -1, 
-				&pfnode->f_name[0], &pfnode->f_isap);
+	if (pfnode->f_attr & F_SUBDIR) 
+	{
+	  pfnode->f_pa = app_afind(FALSE, AT_ISFOLD, -1, &pfnode->f_name[0], &pfnode->f_type);
+	}
 	else
-	  pfnode->f_pa = app_afind(FALSE, AT_ISFILE, -1, 
-				&pfnode->f_name[0], &pfnode->f_isap);
+	{
+	  pfnode->f_pa = app_afind(FALSE, AT_ISFILE, -1, &pfnode->f_name[0], &pfnode->f_type);
+	}
+	// fprintf(logfile,"win_icalc(%s), f_type: %d, f_pa=%lX\n", pfnode->f_name, pfnode->f_type, (LONG)pfnode->f_pa);
 }
 
 /*
@@ -388,9 +391,7 @@ VOID  win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 	o_wfit = min(pwin->w_pncol + 1, pwin->w_vncol - pwin->w_cvcol);
 	o_hfit = min(pwin->w_pnrow + 1, pwin->w_vnrow - pwin->w_cvrow);
 	r_cnt = c_cnt = 0;
-	while ( (c_cnt < o_wfit) &&
-		(r_cnt < o_hfit) && 
-		(pstart) )
+	while ( (c_cnt < o_wfit) && (r_cnt < o_hfit) && (pstart) )
 	{
 						/* calc offset		*/
 	  yoff = r_cnt * G.g_ihspc;
@@ -413,6 +414,8 @@ VOID  win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 	  pstart->f_obid = obid;
 						/* build object		*/
 	  G.g_screen[obid].ob_state = WHITEBAK /* Not in DESKTOP v1.2 | DRAW3D */;
+      if (pstart->f_selected)
+		G.g_screen[obid].ob_state |= SELECTED;
 	  G.g_screen[obid].ob_flags = 0x0;
 	  switch(G.g_iview)
 	  {
@@ -421,12 +424,12 @@ VOID  win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 		G.g_udefs[obid].ub_code = dr_code;
 		G.g_udefs[obid].ub_parm = (LPVOID)( &pstart->f_junk );
 		wcc_userdef(G.g_screen, obid, &G.g_udefs[obid]);
-		win_icalc(pstart);
+		// win_icalc(pstart);
 		break;
 	    case V_ICON:
 		G.g_screen[obid].ob_type = G_ICON;
-	    win_icalc(pstart);
-		i_index = (pstart->f_isap) ? pstart->f_pa->a_aicon :
+	    // win_icalc(pstart);
+		i_index = (pstart->f_type == FT_ISAPP) ? pstart->f_pa->a_aicon :
 					     pstart->f_pa->a_dicon;
 		G.g_index[obid] = i_index;
 		G.g_screen[obid].ob_spec = ADDR( &gl_icons[obid] );
@@ -698,15 +701,20 @@ win_bdall()
 	WORD		ii;
 	WORD		wh, xc, yc, wc, hc;
 	
+	fprintf(logfile,"win_bdall(), G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 	for (ii = 0; ii < NUM_WNODES; ii++)
 	{
 	  wh = G.g_wlist[ii].w_id;
 	  if ( wh )
 	  {
+		fprintf(logfile,"%d, G.g_screen->ob_tail=%d\n", wh, G.g_screen->ob_tail);
 	    wind_get(wh, WF_WXYWH, &xc, &yc, &wc, &hc);
+		fprintf(logfile,"wind_get, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 	    win_bldview(&G.g_wlist[ii], xc, yc, wc, hc);
+		fprintf(logfile,"win_bldview, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 	  }
 	}
+	fprintf(logfile,"END OF win_bdall, G.g_screen->ob_tail=%d\n", G.g_screen->ob_tail);
 }
 
 /*

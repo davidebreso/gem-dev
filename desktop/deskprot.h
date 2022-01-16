@@ -1,7 +1,6 @@
 
 /* deskapp.c */
-ANODE *  app_afind(WORD isdesk, WORD atype, WORD obid, 
- 				BYTE *pname, WORD *pisapp);
+ANODE *  app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *ptype);
 EXTERN VOID  app_tran(WORD bi_num);
 EXTERN WORD  app_save(WORD todisk);
 VOID  app_detect(VOID);
@@ -17,7 +16,7 @@ WORD  hndl_button(WORD clicks, WORD mx, WORD my, WORD button, WORD keystate);
 WORD  hndl_kbd(WORD thechar);
 WORD  hndl_menu(WORD title, WORD item);
 VOID  wind_setl(WORD hw, WORD var, LPVOID data);
-ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp);
+ANODE *i_find(WORD wh, WORD item, FNODE **ppf, WORD *ptype);
 VOID  men_list(LPTREE mlist, BYTE *dlist, WORD enable);
 
 /* deskdir.c */
@@ -65,15 +64,14 @@ WNODE *win_ontop(VOID);
 
 /* deskact.c */
 WORD  act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc, 
-			UWORD chgvalue, WORD dochg, WORD dodraw, WORD chkdisabled);
+			  WORD dochg, WORD dodraw, WORD chkdisabled);
 VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my, 
 				WORD keystate, GRECT *pc, WORD dclick);
 WORD  act_bdown(WORD wh, LPTREE tree, WORD root, 
 				WORD *in_mx, WORD *in_my, WORD keystate, 
 				GRECT *pc, WORD *pdobj);
 VOID  act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj, 
-			GRECT *pt, GRECT *pc, 
-			WORD chgvalue, WORD dochg, WORD dodraw);
+			GRECT *pt, GRECT *pc, WORD doset, WORD dodraw);
 
 /* deskfpd.c */
 VOID  fpd_start(VOID);
@@ -87,6 +85,8 @@ PNODE *  pn_open(WORD drive, BYTE *path, BYTE *name, BYTE *ext,
 				WORD attr);
 FNODE *  pn_sort(WORD lstcnt, FNODE *pflist);
 WORD  pn_active(PNODE *thepath);
+VOID pn_select(WNODE *pw);
+VOID pn_count(WNODE *pw, WORD *psel, WORD *papp, WORD *pdoc, WORD *pfold);
 
 /* deskfun.c */
 WORD  fun_alert(WORD defbut, WORD stnum, ...);
@@ -189,7 +189,7 @@ VOID  win_top(WNODE *thewin);
 WORD  win_cnt(WORD level);
 WNODE *  win_ith(WORD level);
 // VOID  win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart);
-// VOID  win_icalc(FNODE *pfnode);
+VOID  win_icalc(FNODE *pfnode);
 // VOID  win_blt(WNODE *pw, BOOLEAN vertical, WORD newcv);
 //VOID win_slide(WORD wh, WORD sl_value); // DESKTOP v1.2 has 2 sliders...
 VOID  win_slide(WORD wh, WORD sl_value, WORD vertical);

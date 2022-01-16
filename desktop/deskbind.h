@@ -61,6 +61,8 @@
 #define OK 21
 #define CANCEL 22
 
+#define DESKWH  0               /* the desktop's window handle */
+
 #ifndef ARROW
 #define ARROW 0x0
 #endif

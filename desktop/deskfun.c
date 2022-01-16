@@ -94,6 +94,7 @@ VOID fun_selectall(WNODE *pw)
 	WORD		xc, yc, wc, hc;
     FNODE *pf;
 
+//    fprintf(logfile, "fun_selectall(). Selecting items:\n");
     /* paranoia - check for desktop pseudo-window */
     if (pw->w_root == DROOT)
         return;
@@ -103,9 +104,10 @@ VOID fun_selectall(WNODE *pw)
      */
     for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
     {
+        // fprintf(logfile, "%s\n", pf->f_name);
+        pf->f_selected = TRUE;        
         G.g_screen[pf->f_obid].ob_state |= SELECTED;
     }
-
     /*
      * update info line & redisplay window
      */
@@ -178,6 +180,16 @@ WORD  fun_op(WORD op, PNODE *pspath, BYTE *pdest,
 {
 	WORD		fcnt, dcnt;
 	LONG		size;
+	FNODE       *pf;
+	
+
+    fprintf(logfile,"fun_op(%d,...) with selected items:\n", op);
+    for (pf = pspath->p_flist; pf; pf = pf->f_next)
+    {
+        if(pf->f_selected)
+            fprintf(logfile, "%s\n", pf->f_name);
+    }
+
 						/* do the operation	*/
 	if (op != -1)
 	{
@@ -414,6 +426,16 @@ VOID  fun_del(WNODE *pdw)
 	WORD		src_ob, ret;
 	LPICON		spib;
 	BYTE		drvch, *ptmp;
+	FNODE       *pf;
+
+
+	fprintf(logfile,"fun_del() for selected items:\n");
+	for (pf = pdw->w_path->p_flist; pf; pf = pf->f_next)
+    {
+        if(pf->f_selected)
+            fprintf(logfile, "%s\n", pf->f_name);
+    }
+
 
 	if (pdw->w_path->p_spec[0] != '@')
 	{

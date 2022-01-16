@@ -1122,7 +1122,7 @@ Caller	: do_filemenu() in desktop.c
 */
 WORD  do_type(WORD curr)
 {
-    WORD	i;
+    WORD	junk;
     WORD	wh;			/* View window handle */
     WORD	drive;
     LONG	mem_avail;
@@ -1138,7 +1138,7 @@ WORD  do_type(WORD curr)
 
     return_value = 0;
 
-    panode = i_find(G.g_cwin, curr, &pfnode, &i);
+    panode = i_find(G.g_cwin, curr, &pfnode, &junk);
     pwnode = win_find(G.g_cwin);
 
     if (panode) {
@@ -1275,7 +1275,7 @@ WORD  do_type(WORD curr)
                     dos_free( file_buffer );
                 } /* endif NULL file_buffer */
    /* reset text alignment (JFL) */
-                vst_alignment(gl_handle, ALI_LEFT, ALI_BASE, &i, &i);
+                vst_alignment(gl_handle, ALI_LEFT, ALI_BASE, &junk, &junk);
                 wind_update(BEG_UPDATE);
 		/* close_window( wh ) ; */
 		wind_get(wh, WF_WXYWH, &c.g_x, &c.g_y, &c.g_w, &c.g_h);

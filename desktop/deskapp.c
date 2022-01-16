@@ -1175,10 +1175,11 @@ BYTE  app_blddesk()
 /*
 *	Find the ANODE that is appropriate for this object.
 */
-ANODE *  app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *pisapp)
+ANODE *  app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *ptype)
 {
 	ANODE		*pa;
 
+	// fprintf(logfile, "app_afind(%d, %d, %d, ..., ... )\n", isdesk, atype, obid);
 	for(pa = G.g_ahead; pa; pa = pa->a_next)
 	{
 	  if (isdesk)
@@ -1192,13 +1193,26 @@ ANODE *  app_afind(WORD isdesk, WORD atype, WORD obid, BYTE *pname, WORD *pisapp
 	    {
 	      if ( wildcmp(pa->a_pdata, pname) )
 	      {
-		*pisapp = FALSE;
-		return(pa);
+	        switch(atype)
+	        {
+	        	case AT_ISFOLD:
+	        		*ptype = FT_ISFOLD;
+	        		break;
+	        	case AT_ISFILE:
+	        		if(is_installed(pa))
+	        			*ptype = FT_ISINST;
+	        		else
+	        			*ptype = FT_ISDOC;
+	        		break;
+	        	default:
+	        		*ptype = 0;
+	        }
+			return(pa);
 	      }
 	      if ( wildcmp(pa->a_pappl, pname) )
 	      {
-		*pisapp = TRUE;
-		return(pa);
+			*ptype = FT_ISAPP;
+			return(pa);
 	      } /* if */
 	    } /* if */
 	  } /* else */

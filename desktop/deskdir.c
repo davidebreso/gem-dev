@@ -786,6 +786,9 @@ dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
 	pglsrc = &G.g_srcpth[0]; pglsrclen = sizeof(G.g_srcpth);
 	pgldst = &G.g_dstpth[0]; pgldstlen = sizeof(G.g_dstpth);
 
+
+    fprintf(logfile,"dir_op(%d,...) with selected items:\n", op);
+
 	tree = 0x0L;
 	ml_havebox = FALSE;
 	dirop_init(op, &tree);
@@ -799,10 +802,9 @@ dir_op(op, psrc_path, pflist, pdst_path, pfcnt, pdcnt, psize,
 	more = ret;
 	for (pf = pflist; pf && more; pf = pf->f_next)
 	{
-	  if ( (pf->f_obid != NIL) &&
-	       (G.g_screen[pf->f_obid].ob_state & SELECTED) &&
-	       !(pf->f_attr & F_FAKE) )
+	  if ( pf->f_selected )
 	  {
+        fprintf(logfile, "%s\n", pf->f_name);
 	    strcpy(pglsrc, psrc_path);
 	    if (op == OP_COPY)
 	    {

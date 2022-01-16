@@ -163,7 +163,7 @@ VOID  fpd_parse(BYTE *pspec, WORD *pdrv, BYTE *ppath, BYTE *pname,
 *	Find the file node that matches a particular object id.
 */
 
-FNODE *  fpd_ofind(FNODE *pf, WORD obj)
+FNODE *fpd_ofind(FNODE *pf, WORD obj)
 {
 	while(pf)
 	{
@@ -662,6 +662,7 @@ WORD  pn_active(PNODE *thepath)
 	FNODE *thefile, *prevfile;
 	WORD ret;
 
+    fprintf(logfile, "pn_active(%s)\n",thepath->p_spec);
 	thepath->p_count = 0;
 	thepath->p_size = 0x0L;
 	fl_free(thepath->p_flist);
@@ -690,9 +691,13 @@ WORD  pn_active(PNODE *thepath)
 						// if it is a real file	//
 						//   or directory then	//
 						//   save it		//
+          thefile->f_selected = FALSE;
 	      memcpy(&thefile->f_junk, &G.g_wdta[20], 23);
 	      thefile->f_attr &= ~(F_DESKTOP | F_FAKE);
-	      
+	      /* Set the correct file type in f_type */
+		  win_icalc(thefile);
+          // fprintf(logfile, "%s of type %d with obid=%d and pa=%lX\n", thefile->f_name, 
+          //          thefile->f_type, thefile->f_obid, (LONG)thefile->f_pa);
 	      thepath->p_size += thefile->f_size;
 	      prevfile->f_next = ml_pfndx[thepath->p_count++] = thefile;
 	      prevfile = thefile;
@@ -706,5 +711,69 @@ WORD  pn_active(PNODE *thepath)
 	thepath->p_flist = pn_sort(thepath->p_count, thepath->p_flist);
 	return(DOS_AX);
 		
+}
+
+/*
+ *  Set the selection flag in all FNODES chained from the PNODE in the specified WNODE
+ *  that are visible and with ob_state = SELECTED. Clear all other FNODES.
+ */
+VOID pn_select(WNODE *pw)
+{
+    FNODE *pf;
+
+    for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
+    {
+    	if(G.g_screen[pf->f_obid].ob_state & SELECTED)
+    		pf->f_selected = TRUE;
+    	else
+    		pf->f_selected = FALSE;
+    }
+}
+
+
+/*
+ *  Count the number of selected FNODES and (of those) the number of
+ *  application FNODEs, document FNODEs and folders FNODEs
+ */
+VOID pn_count(WNODE *pw, WORD *psel, WORD *papp, WORD *pdoc, WORD *pfold)
+{
+    WORD sel = 0, app = 0, doc = 0, fold = 0;
+    FNODE *pf;
+    ANODE *appl;
+    
+    fprintf(logfile, "pn_count()\n");
+    for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
+    {
+        if (pf->f_selected)
+        {
+            fprintf(logfile, "%s selected", pf->f_name);
+            sel++;
+            switch(pf->f_type)
+            {
+                case FT_ISDOC:
+                    fprintf(logfile, " is doc");
+                    doc++;
+                    break;
+                case FT_ISAPP:
+                case FT_ISINST:
+                     fprintf(logfile, " is app or installed");
+                     app++;
+                     break; 
+                case FT_ISFOLD:
+                    fprintf(logfile, " is folder");
+                    fold++;
+                    break; 
+                default:
+                    fprintf(logfile, " is %d", appl->a_type); 
+                    break;                          
+            }
+            fprintf(logfile, "\n");
+        }
+    }
+
+    *psel = sel;
+    *papp = app;
+    *pdoc = doc;
+    *pfold = fold;
 }
 

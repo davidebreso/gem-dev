@@ -35,8 +35,7 @@ VOID  desk_clear(WORD wh)
 	if (pw) root = pw->w_root;
 	else    root = 1;
 						/* clear all selections	*/
-	act_allchg(wh, G.a_screen, root, 0, &gl_rfull, &c,
-		 SELECTED, FALSE, TRUE);
+	act_allchg(wh, G.a_screen, root, 0, &gl_rfull, &c, FALSE, TRUE);
 }
 
 /*
@@ -47,6 +46,7 @@ VOID  desk_verify(WORD wh, WORD changed)
 	WNODE		*pw;
 	WORD		xc, yc, wc, hc;
 
+    // fprintf(logfile, "desk_verify(%d)\n", wh);
 	/* DESKTOP v1.2: The desktop itself... */
 	if (wh)
 	{ 
@@ -140,7 +140,8 @@ VOID  do_xyfix(WORD *px, WORD *py)
 VOID  do_wopen(WORD new_win, WORD wh, WORD curr, WORD x, WORD y, WORD w, WORD h)
 {
 	GRECT		d,c;
-
+    
+    fprintf(logfile, "do_wopen()\n");
 	do_xyfix(&x, &y);
 	// DESKTOP v1.2: Zooming box effect
 	get_xywh(G.g_screen, curr,      &d.g_x, &d.g_y, &d.g_w, &d.g_h);
@@ -152,8 +153,7 @@ VOID  do_wopen(WORD new_win, WORD wh, WORD curr, WORD x, WORD y, WORD w, WORD h)
 				
 	graf_growbox(d.g_x, d.g_y, d.g_w, d.g_h, x, y, w, h);
 	
-	act_chg(G.g_cwin, G.a_screen, G.g_croot, curr, &c, SELECTED, 
-			FALSE, TRUE, TRUE);
+	act_chg(G.g_cwin, G.a_screen, G.g_croot, curr, &c, FALSE, TRUE, TRUE);
 	if (new_win)
 	{
 	  wind_open(wh, x, y, w, h);
@@ -243,7 +243,7 @@ WORD  do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 	WORD		ret;
 	PNODE		*tmp;
 
-//	dbg("do_diropen: ppath=%s pname=%s pext=%s\n", ppath, pname, pext);	
+    fprintf(logfile, "do_diropen: ppath=%s pname=%s pext=%s\n", ppath, pname, pext);	
 						/* convert to hourglass	*/
 	graf_mouse(HGLASS, 0x0L);
 						/* open a path node	*/
@@ -290,6 +290,7 @@ WORD  do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 	if (/*redraw && */( !new_win ))
 	  fun_msg(WM_REDRAW, pw->w_id, pt->g_x, pt->g_y, pt->g_w, pt->g_h);
 
+    fprintf(logfile,"END OF do_diropen\n");
 	graf_mouse(ARROW, 0x0L);
 	return(TRUE);
 } /* do_diropen */
@@ -298,11 +299,11 @@ WORD  do_diropen(WNODE *pw, WORD new_win, WORD curr_icon, WORD drv,
 *	Open an application
 */
 
-MLOCAL WORD  do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv, 
+MLOCAL WORD  do_aopen(ANODE *pa, WORD atype, WORD curr, WORD drv, 
 			  BYTE *ppath, BYTE *pname)
 {
 	WORD		ret, done;
-	WORD		isgraf, isover, isparm, uninstalled;
+	WORD		isgraf, isover, isparm;
 	BYTE		*ptmp, *pcmd, *ptail;
 	BYTE		name[13];
 
@@ -324,9 +325,6 @@ MLOCAL WORD  do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 	isover = (pa->a_flags & AF_ISFMEM) ? 2 : 1;
 #endif
 	isparm = pa->a_flags & AF_ISPARM;
-	uninstalled = ( (*pa->a_pappl == '*') || 
-			(*pa->a_pappl == '?') ||
-			(*pa->a_pappl == 0) );
 						/* change current dir.	*/
 						/*   to selected icon's	*/
 	pro_chdir(drv, ppath);
@@ -340,7 +338,7 @@ MLOCAL WORD  do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 	G.g_cmd[0] = G.g_tail[1] = 0;
 	ret = TRUE;
 
-	if ( (!uninstalled) && (!isapp) )
+	if ( atype == FT_ISINST )
 	{
 						/* an installed	docum.	*/
 	  pcmd = pa->a_pappl;
@@ -354,7 +352,7 @@ MLOCAL WORD  do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 	}
 	else
 	{
-	  if ( isapp )
+	  if ( atype == FT_ISAPP )
 	  {
 						/* DOS-based app. has	*/
 						/*   been selected	*/
@@ -366,7 +364,7 @@ MLOCAL WORD  do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 	    }
 	    else
 	      pcmd = pname;
-	  } /* if isapp */
+	  } /* if FT_ISAPP */
 	  else
 	  {
 						/* DOS-based document 	*/
@@ -384,7 +382,7 @@ MLOCAL WORD  do_aopen(ANODE *pa, WORD isapp, WORD curr, WORD drv,
 						/*   tail, else it was	*/
 						/*   a document installed*/
 						/*   to run a batch file*/
-	  strlcpy(G.g_1text, (isapp) ? &G.g_tail[1] : ptail, sizeof(G.g_1text));
+	  strlcpy(G.g_1text, (atype == FT_ISAPP) ? &G.g_tail[1] : ptail, sizeof(G.g_1text));
 	  ptmp = &name[0];
 	  pname = pcmd;
 	  while ( *pname != '.' )
@@ -551,12 +549,12 @@ WORD  do_open(WORD curr)
 	ANODE		*pa;
 	WNODE		*pw;
 	FNODE		*pf;
-	WORD		drv, isapp;
+	WORD		drv, atype;
 	BYTE		path[66], name[9], ext[4];
 
 	done = FALSE;
 
-	pa = i_find(G.g_cwin, curr, &pf, &isapp);
+	pa = i_find(G.g_cwin, curr, &pf, &atype);
 	pw = win_find(G.g_cwin);
 	if ( pf )
 	  fpd_parse(&pw->w_path->p_spec[0],&drv,&path[0],&name[0],&ext[0]);
@@ -570,7 +568,7 @@ WORD  do_open(WORD curr)
 		if (!strcmp("DESKTOP.APP", &pf->f_name[0]))
 		  break;
 #endif
-		done = do_aopen(pa,isapp,curr,drv,&path[0],&pf->f_name[0]);
+		done = do_aopen(pa,atype,curr,drv,&path[0],&pf->f_name[0]);
 		break;
 	    case AT_ISFOLD:
 	    /* No "New folder" in DESKTOP v1.2 

@@ -299,8 +299,7 @@ MLOCAL VOID  gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD numpts,
 	  {
 	    if (curr_sel)
 	    {
-	      act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc,
-			SELECTED, FALSE, TRUE, TRUE);
+	      act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc, FALSE, TRUE, TRUE);
 	      curr_wh = 0x0;
 	      curr_tree = 0x0L;
 	      curr_root = 0x0;
@@ -313,8 +312,7 @@ MLOCAL VOID  gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD numpts,
 	  {
 		if (curr_sel)
 		{
-	      act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc,
-			SELECTED, FALSE, TRUE, TRUE);
+	      act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc, FALSE, TRUE, TRUE);
 	      curr_wh = 0x0;
 	      curr_tree = 0x0L;
 	      curr_root = 0x0;
@@ -333,14 +331,12 @@ MLOCAL VOID  gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD numpts,
 			  curr_tree = tree;
 			  curr_root = root;
 	          curr_sel = *pdobj;
-	          act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc,
-			 	SELECTED, TRUE, TRUE, TRUE);
+	          act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc, TRUE, TRUE, TRUE);
 			} /* if */
 	      } /* if !SELECTED */
 	} while (down);
 	if (curr_sel)
-	    act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc,
-			SELECTED, FALSE, TRUE, TRUE);
+	    act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc, FALSE, TRUE, TRUE);
 	*pdulx = l_mx;				/* pass back dest. x,y	*/
 	*pduly = l_my;
 	*pdwh = dst_wh;
@@ -436,8 +432,7 @@ MLOCAL VOID  gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD *pdulx,
 	  {
 	    if (curr_sel)
 	    {
-	      act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc,
-			SELECTED, FALSE, TRUE, TRUE);
+	      act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc, FALSE, TRUE, TRUE);
 	      curr_wh = 0x0;
 	      curr_tree = 0x0L;
 	      curr_root = 0x0;
@@ -457,16 +452,14 @@ MLOCAL VOID  gr_drgplns(WORD in_mx, WORD in_my, GRECT *pc, WORD *pdulx,
 		  curr_tree = tree;
 		  curr_root = root;
 	          curr_sel = *pdobj;
-	          act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc,
-			 SELECTED, TRUE, TRUE, TRUE);
+	          act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc, TRUE, TRUE, TRUE);
 		} /* if */
 	      } /* if !SELECTED */
 	    } /* if !overwhite */
 	  } /* if */
 	} while (down);
 	if (curr_sel)
-	    act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc,
-			SELECTED, FALSE, TRUE, TRUE);
+	    act_chg(curr_wh, curr_tree, curr_root, curr_sel, pc, FALSE, TRUE, TRUE);
 	*pdulx = l_mx;				/* pass back dest. x,y	*/
 	*pduly = l_my;
 	*pdwh = dst_wh;
@@ -542,17 +535,25 @@ MLOCAL WORD  act_chkobj(LPTREE tree, WORD root, WORD obj, WORD mx, WORD my, WORD
 	return(obj);
 }
 
-
 /*
-*	Change a single objects state.
-*/
+ *  Change the SELECTED bit in a single screen object
+ *
+ *  Usage of (some) arguments:
+ *      WORD   obj              * object to affect
+ *      BOOL   doset            * set or reset value
+ *      BOOL   dodraw           * draw resulting change
+ *
+ *  We do not change the state if chkdisabled is true and the item is disabled
+ */
 WORD  act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc, 
-			UWORD chgvalue, WORD dochg, WORD dodraw, WORD chkdisabled)
+			  WORD doset, WORD dodraw, WORD chkdisabled)
 {
 	UWORD		curr_state;
 	UWORD		old_state;
 	LPTREE		olist;
 	GRECT		t;
+	FNODE		*fn;
+	WNODE		*pw;
 
 	olist = tree;
 	old_state = curr_state = olist[obj].ob_state;
@@ -564,10 +565,18 @@ WORD  act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc,
 	t.g_x += olist[root].ob_x;
 	t.g_y += olist[root].ob_y;
 						/* make change		*/
-	if ( dochg )
-	  curr_state |= chgvalue;
+	if ( doset )
+	  curr_state |= SELECTED;
 	else
-	  curr_state &= ~chgvalue;
+	  curr_state &= ~SELECTED;
+
+	pw = win_find(wh);
+	if(pw->w_path)
+	{
+		fn = fpd_ofind(pw->w_path->p_flist, obj);
+		if (fn)
+			fn->f_selected = (curr_state & SELECTED) ? TRUE : FALSE;
+	}
 						/* get it updated on	*/
 						/*   screen		*/
 	if ( old_state != curr_state )
@@ -590,17 +599,24 @@ WORD  act_chg(WORD wh, LPTREE tree, WORD root, WORD obj, GRECT *pc,
 }
 
 /*
-*	Change state of all objects partially intersecting the given rectangle
-*	but allow one object to be excluded.
-*/
+ *  Change the SELECTED bit of multiple objects in a window
+ *
+ *  If setting the SELECTED bit, we set it in all objects partially
+ *  intersecting the given rectangle, allowing one object to be excluded.
+ *  We also set the 'selected' indicator in the corresponding FNODEs.
+ *
+ *  If clearing the SELECTED bit, we clear it in all objects associated
+ *  with the window.  We also clear the 'selected' indicator in all
+ *  the FNODEs associated with this window
+ */
 VOID  act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj, 
-			GRECT *pt, GRECT *pc, 
-			WORD chgvalue, WORD dochg, WORD dodraw)
+			GRECT *pt, GRECT *pc, WORD doset, WORD dodraw)
 {
 	WORD		obj, newstate;
 	LPTREE	olist;
 	WORD		offx, offy;
 	GRECT		o, a, w;
+	FNODE       *fn;
 
 	olist = tree;
 	offx = olist[root].ob_x;
@@ -625,29 +641,39 @@ VOID  act_allchg(WORD wh, LPTREE tree, WORD root, WORD ex_obj,
 	    o.g_y = o.g_y + offy + 1;
 	    o.g_h -= 1;
 	    if ( ( rc_intersect(&w, &o) ) &&
-/* */
 	         ( root != act_chkobj(tree,root,obj,o.g_x,o.g_y,o.g_w,o.g_h)))
 	    {
-						/* make change		*/
+		  /* make change		*/
 	      newstate = olist[obj].ob_state;
-	      if ( dochg )
-	        newstate |= chgvalue;
+	      if ( doset )
+	        newstate |= SELECTED;
 	      else
-	        newstate &= ~chgvalue;
+	        newstate &= ~SELECTED;
 	      if (newstate != olist[obj].ob_state)
 	      {
-		olist[obj].ob_state= newstate;
-		rc_copy((LPGRECT)&olist[obj].ob_x, &o);
-		o.g_x += offx;
-		o.g_y += offy;
-		if (a.g_w)
-		  rc_union(&o, &a);
-		else
-		  rc_copy(&o, &a);
+            olist[obj].ob_state= newstate;
+            rc_copy((LPGRECT)&olist[obj].ob_x, &o);
+            o.g_x += offx;
+            o.g_y += offy;
+            if (a.g_w)
+              rc_union(&o, &a);
+            else
+              rc_copy(&o, &a);
 	      }
 	    }
+		else
+		{
+			if (!doset)
+				tree[obj].ob_state &= ~SELECTED;
+		}
 	  }
 	}
+	/*
+	 * mark newly selected FNODEs and clear selections of
+	 * all FNODEs, not just the visible ones 
+	 */
+	pn_select(win_find(wh));
+
 	if ( ( dodraw ) &&
 	     ( rc_intersect(pc, &a) ) )
 	{
@@ -673,8 +699,7 @@ VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my,
 	if ( (obj == root) ||
 	     (obj == NIL)  )
 	{
-	  act_allchg(wh, tree, root, obj, &gl_rfull, pc,
-			SELECTED, FALSE, TRUE);
+	  act_allchg(wh, tree, root, obj, &gl_rfull, pc, FALSE, TRUE);
 	}
 	else
 	{
@@ -685,8 +710,7 @@ VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my,
 /* BugFix	*/
 	    if ( dclick || !(state & SELECTED) )
 	    {
-	      act_allchg(wh, tree, root, obj, &gl_rfull, pc,
-	      		 SELECTED, FALSE, TRUE);
+	      act_allchg(wh, tree, root, obj, &gl_rfull, pc, FALSE, TRUE);
 	      state |= SELECTED;
 	    }
 /* */
@@ -698,8 +722,7 @@ VOID  act_bsclick(WORD wh, LPTREE tree, WORD root, WORD mx, WORD my,
 	    else
 	      state |= SELECTED;
 	  }  
-	  act_chg(wh, tree, root, obj, pc, SELECTED, 
-			state & SELECTED, TRUE, TRUE);
+	  act_chg(wh, tree, root, obj, pc, state & SELECTED, TRUE, TRUE);
 	}
 }
 
@@ -733,7 +756,7 @@ WORD  act_bdown(WORD wh, 		//22
 	{
 	  r_set(&m, l_mx, l_my, 6, 6);
 	  graf_rubbox(m.g_x, m.g_y, 6, 6, &m.g_w, &m.g_h);
-	  act_allchg(wh, tree, root, sobj, &m, pc, SELECTED, TRUE, TRUE);
+	  act_allchg(wh, tree, root, sobj, &m, pc, TRUE, TRUE);
 	} /* if */
 	else
 	{					/* drag icon(s)		*/

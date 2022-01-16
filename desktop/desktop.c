@@ -157,17 +157,21 @@ MLOCAL VOID  desk_wait(WORD turnon)
 */
 MLOCAL VOID  desk_all(WORD sort)
 {
+	fprintf(logfile,"desk_all(%d), G.g_screen->ob_tail=%d\n", sort, G.g_screen->ob_tail);
 	desk_wait(TRUE);
 	if (sort) win_srtall();
 	win_bdall();
+	fprintf(logfile,"2: G.g_screen->ob_tail=%d\n", sort, G.g_screen->ob_tail);
 	win_shwall();
+	fprintf(logfile,"3: G.g_screen->ob_tail=%d\n", sort, G.g_screen->ob_tail);
 	desk_wait(FALSE);
+	fprintf(logfile,"END OF desk_all\n");
 }
 
 /*
 *	Given an icon index, go find the ANODE which it represents
 */
-ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
+ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *ptype)
 {
 	ANODE 	*pa;
 	BYTE 	*pname;
@@ -180,7 +184,7 @@ ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 	if (!wh)	// DESKTOP v1.2: On desktop?
 	{
 		pname = (BYTE *)(WORD)(win_iname(item));
-		pa = app_afind(TRUE, -1, item, pname, pisapp);
+		pa = app_afind(TRUE, -1, item, pname, ptype);
 	}
 	else
 	{
@@ -192,11 +196,11 @@ ANODE *  i_find(WORD wh, WORD item, FNODE **ppf, WORD *pisapp)
 		  // DESKTOP v1.2: Completely different check here
 		  if (pf->f_attr & F_SUBDIR) 
 		  {
-			pa = app_afind(FALSE, 1, -1, pname, pisapp);
+			pa = app_afind(FALSE, 1, -1, pname, ptype);
 		  }
 		  else
 		  {
-		 	pa = app_afind(FALSE, 0, -1, pname, pisapp);
+		 	pa = app_afind(FALSE, 0, -1, pname, ptype);
 		  }
 
 		  /* 
@@ -227,10 +231,14 @@ VOID  men_list(LPTREE mlist, BYTE *dlist, WORD enable)
 */
 MLOCAL VOID  men_update(LPTREE tree)
 {
-	WORD		item, nsel, isapp;
+	WORD		item, junk;
+	WORD		napp, nsel, ndoc, nfold;
 	BYTE		*pvalue;
 	ANODE		*appl;
 	FNODE		*pjunk;
+	WNODE 		*pw;
+		
+	fprintf(logfile, "men_update()\n");
 						/* enable all items	*/
 	for (item = OPENITEM; item <= PREFITEM; item++)
 	  menu_ienable(tree, item, TRUE);
@@ -243,39 +251,43 @@ MLOCAL VOID  men_update(LPTREE tree)
 	  					/* disable some items	*/
 	men_list(tree, ILL_ITEM, FALSE);
 
-	nsel = 0;
-	for (item = 0; (item = win_isel(G.g_screen, G.g_croot, item)) != 0;
-	     nsel++)
-	{
-	  appl = i_find(G.g_cwin, item, &pjunk, &isapp);
-	  switch (appl->a_type)
-	  {
-	    case AT_ISFILE:
-		if ( (isapp) || is_installed(appl) )
-		  pvalue = ILL_FILE;
-		else
+    /*
+     * process all selected icons, counting types of icons: applications,
+     * desktop icons, trash/printer icons, and selected icons.
+     *
+     * we handle the desktop "window" and real windows separately, since
+     * in a real window there can be selected items that are not visible.
+     */
+    napp = nsel = ndoc = nfold = 0;
+
+    if (G.g_cwin == DESKWH)
+    {
+		for (item = 0; (item = win_isel(G.g_screen, G.g_croot, item)) != 0; nsel++)
 		{
-		  pvalue = ILL_DOCU;
-		  can_iapp = FALSE;
-		} 
-		break;
-	    case AT_ISFOLD:
-		pvalue = ILL_FOLD;
-		can_iapp = FALSE;
-		can_output = FALSE;
-		break;
-	    case AT_ISDISK:
-		pvalue = (appl->a_aicon == IG_FLOPPY) ? ILL_FDSK : ILL_HDSK;
-		can_iapp = FALSE;
-		can_output = FALSE;
-		break;
-		case AT_ISTRSH:	/* DESKTOP v1.2 */
-		pvalue = ILL_TRASH;
-		can_iapp = FALSE;
-		can_output = FALSE; 
-	  } /* switch */
-	  men_list(tree, pvalue, FALSE);       /* disable certain items	*/
-	} /* for */
+		  appl = i_find(G.g_cwin, item, &pjunk, &junk);
+		  fprintf(logfile, "%d: type %d\n", nsel, appl->a_type);
+		  switch (appl->a_type)
+		  {
+			case AT_ISDISK:
+			pvalue = (appl->a_aicon == IG_FLOPPY) ? ILL_FDSK : ILL_HDSK;
+			can_iapp = FALSE;
+			can_output = FALSE;
+			break;
+			case AT_ISTRSH:	/* DESKTOP v1.2 */
+			pvalue = ILL_TRASH;
+			can_iapp = FALSE;
+			can_output = FALSE; 
+		  } /* switch */
+		  men_list(tree, pvalue, FALSE);       /* disable certain items	*/
+		} /* for */
+	}
+    else    /* real window */
+    {
+        pw = win_find(G.g_cwin);
+        pn_count(pw, &nsel, &napp, &ndoc, &nfold);
+        fprintf(logfile, "%d selected items, %d apps, %d docs, %d folders\n", 
+        		nsel, napp, ndoc, nfold);
+    }
 
 	if (win_ontop()) pvalue = ILL_DESKTOP;	/* DESKTOP v1.2 */
 	else			 pvalue = ILL_NOTOP;
@@ -289,7 +301,23 @@ MLOCAL VOID  men_update(LPTREE tree)
 	} else {
 		men_list(tree, pvalue, FALSE);
 	}
-	
+
+    /* disable items in ILL_FOLD if folders are selected */
+    if (nfold)
+    {
+        men_list(tree, ILL_FOLD, FALSE);
+		can_iapp = FALSE;
+		can_output = FALSE;
+	}
+    /* disable items in ILL_FILE if applications are selected */
+    if (napp)
+        men_list(tree, ILL_FILE, FALSE);
+    /* disable items in if documents are selected */
+    if (ndoc) {
+        men_list(tree, ILL_DOCU, FALSE);
+		can_iapp = FALSE;        
+	}
+    /* disable items based on number of selections */
 	if ( nsel != 1 )
 	{
 	  if (nsel)
@@ -308,7 +336,7 @@ MLOCAL VOID  men_update(LPTREE tree)
 	} /* if */
 	/* If showing contents of one file, can't repeat for another */
 	if( in_type ) menu_ienable(tree, TYPITEM, FALSE);
-
+	fprintf(logfile, "men_update completed.\n");
 } /* men_update */
 
 MLOCAL WORD  do_deskmenu(WORD item)
@@ -523,6 +551,7 @@ MLOCAL WORD  do_windmenu(WORD item)
 	WORD		done, ii, last;
 	WNODE		*pw;
 	WORD		xc, yc, wc, hc;
+	FNODE		*pf;
 	
 	done = FALSE;
 	pw = win_ontop();	/* DESKTOP v1.2  win_find(G.g_cwin);*/
@@ -560,6 +589,14 @@ MLOCAL WORD  do_windmenu(WORD item)
 	  case ALLITEM:
 	  	if (pw)
 	  	  fun_selectall(pw);
+/* 
+	  	fprintf(logfile,"Selected items after fun_selectall:\n");
+	  	for (pf = pw->w_path->p_flist; pf; pf = pf->f_next)
+    	{
+        	if(pf->f_selected)
+        		fprintf(logfile, "%s\n", pf->f_name);
+    	}
+ */
 	  	 break;
 	}
 	return(done);
@@ -632,12 +669,9 @@ MLOCAL WORD  do_optnmenu(WORD item)
 	ANODE		*pa;
 	WORD		done, rebld, curr;
 	FNODE		*pf;
-	WORD		isapp;
+	WORD		junk;
 	BYTE		*pstr;
 	GRECT		rect;
-#if MULTIAPP
-	WORD		junk;
-#endif
 
 	done = FALSE;
 	rebld = FALSE;
@@ -645,7 +679,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 
 	curr = win_isel(G.g_screen, G.g_croot, 0);
 	if (curr)
-	  pa = i_find(G.g_cwin, curr, &pf, &isapp);
+	  pa = i_find(G.g_cwin, curr, &pf, &junk);
 
 	switch( item )
 	{
@@ -659,17 +693,17 @@ MLOCAL WORD  do_optnmenu(WORD item)
 */
 /* << DESKTOP v1.2: */
 			app_blddesk();
-			wind_get(0, WF_WXYWH, &rect.g_x, &rect.g_y, &rect.g_w, &rect.g_h);
-			do_wredraw(0, rect.g_x, rect.g_y, rect.g_w, rect.g_h);
+			wind_get(DESKWH, WF_WXYWH, &rect.g_x, &rect.g_y, &rect.g_w, &rect.g_h);
+			do_wredraw(DESKWH, rect.g_x, rect.g_y, rect.g_w, rect.g_h);
 /* >> DESKTOP v1.2 */
 	    }
 		break;
 	  case IAPPITEM:
 		if (pa)
 		{
-		  if (isapp)
+		  if (pf->f_type == FT_ISAPP)
 		    pstr = &pf->f_name[0];
-		  else if (is_installed(pa))
+		  else if (pf->f_type == FT_ISINST)
 		    pstr = pa->a_pappl;
 		  rebld = ins_app(pstr, pa);
 		  rebld = TRUE;	/* WORKAROUND for bug that shows up with */
@@ -679,11 +713,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		}
 		if (rebld)
 		{
-		 	// DESKTOP v2.x desk_all(FALSE);
-		 	desk_wait(TRUE);
-			win_bdall();
-		 	win_shwall();
-		 	desk_wait(FALSE);
+		 	desk_all(FALSE);
 		}
 		break;
 
@@ -761,7 +791,7 @@ WORD  hndl_button(WORD clicks, 	// bp+1e
 //	    if ( (dest_wh != NIL) && (dest_wh != 0) )
 		if (dest_wh != NIL)
 	    {
-		  if (dest_wh == 0)
+		  if (dest_wh == DESKWH)
 		  {
 			root = 1;
 		  }
@@ -1032,34 +1062,24 @@ WORD  hndl_msg()
 	WORD		done;
 	WNODE		*pw;
 	WORD		change, menu;
-	WORD		cols, shrunk;
+	WORD		shrunk;
 
 	done = change = menu = shrunk = FALSE;
 	if ( G.g_rmsg[0] == WM_CLOSED && ig_close )
 	{
+	  fprintf(logfile, "hndl_msg(): WM_CLOSED && ig_close\n");
 	  ig_close = FALSE;
 	  return(done);
 	}
 	switch( G.g_rmsg[0] )
 	{
-	  case WM_TOPPED:
-	  case WM_CLOSED:
-	  // case WM_FULLED:
-	  // case WM_ARROWED:
-	  // case WM_HSLID: // reinstated in DESKTOP v1.2
-	  // case WM_VSLID:
-	  // case WM_SIZED: // reinstated in DESKTOP v1.2
-	  // case WM_MOVED: // reinstated in DESKTOP v1.2
-		desk_clear(G.g_cwin);
-		break;
-	}
-	switch( G.g_rmsg[0] )
-	{
 	  case MN_SELECTED:
+	  	fprintf(logfile, "hndl_msg(): MN_SELECTED\n");
 		desk_verify(G.g_wlastsel, FALSE);
 		done = hndl_menu(G.g_rmsg[3], G.g_rmsg[4]);
 		break;
 	  case WM_REDRAW:
+	  	fprintf(logfile, "hndl_msg(): WM_REDRAW %d\n", G.g_rmsg[3]);
 		menu = TRUE;
 #if MULTIAPP
 		if (gl_untop)
@@ -1076,6 +1096,8 @@ WORD  hndl_msg()
 		}
 		break;
 	  case WM_TOPPED:
+	  	fprintf(logfile, "hndl_msg(): WM_TOPPED %d\n", G.g_rmsg[3]);
+		desk_clear(G.g_cwin);
 		wind_set(G.g_rmsg[3], WF_TOP, 0, 0, 0, 0);
 		// DESKTOP v1.2 version
 		wind_get(G.g_rmsg[3], WF_WXYWH, &x, &y, &w, &h);
@@ -1098,10 +1120,12 @@ WORD  hndl_msg()
 		break;
 #endif
 	  case WM_CLOSED:
+	  	fprintf(logfile, "hndl_msg(): WM_CLOSED %d\n", G.g_rmsg[3]);
 	//	hot_close(G.g_rmsg[3]);	// DESKTOP v1.2 change
 		do_windmenu(CLOSITEM);
 		break;
 	  case WM_FULLED:
+	  	fprintf(logfile, "hndl_msg(): WM_FULLED %d\n", G.g_rmsg[3]);
 /* DESKTOP v1.2 doesn't bother with these checks...
 		pw = win_find(G.g_rmsg[3]);
 		if (pw)
@@ -1114,23 +1138,27 @@ WORD  hndl_msg()
 		change = TRUE;
 		break;
 	  case WM_ARROWED:
+	  	fprintf(logfile, "hndl_msg(): WM_ARROWED %d\n", G.g_rmsg[3]);
 		win_arrow(G.g_rmsg[3], G.g_rmsg[4]);
 		break;
 	  case WM_HSLID:	// Reinstated in DESKTOP v1.2
+	  	fprintf(logfile, "hndl_msg(): WM_HSLID %d\n", G.g_rmsg[3]);
 	  	win_slide(G.g_rmsg[3], G.g_rmsg[4], FALSE);
 	  	break;
 	  case WM_VSLID:
+	  	fprintf(logfile, "hndl_msg(): WM_VSLID %d\n", G.g_rmsg[3]);
 		win_slide(G.g_rmsg[3], G.g_rmsg[4], TRUE);
 		break;
 	  case WM_MOVED:
 	  case WM_SIZED:	// Reinstated in DESKTOP v1.2
+	  	fprintf(logfile, "hndl_msg(): WM_MOVED or WM_SIZED %d\n", G.g_rmsg[3]);
+		// cols = pw->w_pncol;
 		x = G.g_rmsg[4];
 		y = G.g_rmsg[5];
 		do_xyfix(&x, &y);
 		wind_set(G.g_rmsg[3], WF_CXYWH, x, y, G.g_rmsg[6], G.g_rmsg[7]);
 		if (G.g_rmsg[0] == WM_SIZED)
 		{
-			cols = pw->w_pncol;
 			wind_get(G.g_rmsg[3], WF_PXYWH, &x, &y, &w, &h);
 			if ((G.g_rmsg[6] <= w) && (G.g_rmsg[7] <= h))
 			    shrunk = TRUE;
@@ -1147,11 +1175,11 @@ WORD  hndl_msg()
 	}
 
 	/*
-	 * if our window has shrunk AND we're displaying a different number
-	 * of columns, we need to send a redraw message because the AES won't
+	 * if our window has shrunk, we need to send a redraw message because the AES won't
 	 */
-	if (shrunk) // && (pw->w_pncol != cols))
+	if (shrunk ) // && (pw->w_pncol != cols))
 	{
+	  	fprintf(logfile, "hndl_msg(): shrunk, redraw %d\n", G.g_rmsg[3]);
 		wind_get(G.g_rmsg[3], WF_WXYWH, &x, &y, &w, &h);
 		fun_msg(WM_REDRAW, G.g_rmsg[3], x, y, w, h);
 	}
@@ -1353,11 +1381,11 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	BYTE		docopyrt;
 /* initialize libraries	*/
 
-/* #if DEBUG
+#if DEBUG
 	// remove("c:/gemapp.log");        
     logfile = fopen("desktop.log", "w");
     fprintf(logfile, "Starting DESKTOP\n");
-#endif */
+#endif
     
     memset(&gl_xbuf, 0, sizeof(gl_xbuf));
 	gl_xbuf.buf_len = sizeof(gl_xbuf);
@@ -1652,10 +1680,10 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 						/* close gsx virtual ws	*/
 	v_clsvwk(gl_handle);
 						/* exit the gem AES	*/
-/* #if DEBUG
+#if DEBUG
 	fprintf(logfile, "Closing DESKTOP.\n");
 	fclose(logfile);
-#endif */
+#endif
 	appl_exit();
 
 	return(TRUE);

@@ -29,7 +29,13 @@
 #define S_TYPE 3
 #define S_DISK 4
 
-#define E_NOERROR 0
+/* Type of file in f_type filed of FNODE */
+#define FT_ISAPP    1       /* application file */
+#define FT_ISINST   2       /* document with installed app */
+#define FT_ISDOC    3       /* document without installed app */
+#define FT_ISFOLD   4       /* folder   */
+
+#define E_NOERROR  0
 #define E_NOFNODES 100
 #define E_NOPNODES 101
 #define E_NODNODES 102
@@ -53,7 +59,8 @@ typedef struct filenode
 	char		f_name[LEN_ZFNAME];	// 0C
 	WORD		f_obid;				// 19 1A 
 	ANODE		*f_pa;				// 1B 1C
-	WORD		f_isap;				// 1D 1E
+	WORD		f_type;			    // 1D 
+	WORD        f_selected;         // 1E 
 } FNODE;
 
 

@@ -225,9 +225,11 @@ MLOCAL WORD  fun_file2any(WORD sobj,	  // 12
 		if (okay == 0x12) {}	// Meaningless test for DOS error...
 		if (pn_src->p_flist) 
 		{
+            /* mark all files as selected */
 			for (bp8 = pn_src->p_flist; bp8; bp8 = bp8->f_next)
 			{
 				bp8->f_obid = 0;
+                bp8->f_selected = TRUE;
 			}
 			G.g_screen->ob_state = SELECTED;
 			if (wn_dest)
@@ -250,16 +252,16 @@ MLOCAL VOID  fun_desk2win(WORD wh, WORD dobj)
 {
 	WNODE *wn_dest;
 	FNODE *fn_dest;
-	WORD sobj, copied, isapp;
+	WORD sobj, copied, junk;
 	FNODE *fn_src;
 	ANODE *an_src, *an_dest;
 
 	wn_dest = win_find(wh);
-	an_dest = i_find(wh, dobj, &fn_dest, &isapp);
+	an_dest = i_find(wh, dobj, &fn_dest, &junk);
 	sobj = 0;
 	while ((sobj = win_isel(G.g_screen, 1, sobj)))
 	{
-		an_src = i_find(0, sobj, &fn_src, &isapp);
+		an_src = i_find(0, sobj, &fn_src, &junk);
 		if (an_src->a_type == AT_ISTRSH)
 		{
 			fun_alert(1, STNODRA2);
@@ -273,7 +275,7 @@ MLOCAL VOID  fun_desk2win(WORD wh, WORD dobj)
 
 MLOCAL VOID  fun_desk2desk(WORD dobj)
 {
-	WORD sobj,  isapp;
+	WORD sobj,  junk;
 	FNODE *fn;
 	WORD cont;
 	ANODE *source;
@@ -285,7 +287,7 @@ MLOCAL VOID  fun_desk2desk(WORD dobj)
 	sobj  = 0;
 	while (sobj = win_isel(G.g_screen, 1, sobj))
 	{	
-		source = i_find(0, sobj, &fn, &isapp);
+		source = i_find(0, sobj, &fn, &junk);
 		
 		if (source == target) continue;
 		if (source->a_type == AT_ISTRSH)
