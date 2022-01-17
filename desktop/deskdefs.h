@@ -80,6 +80,16 @@
 #define F_FAKE 0x40
 #define F_DESKTOP 0x80
 
+#define ALLFILES    (F_SUBDIR|F_SYSTEM|F_HIDDEN)
+
+/*
+ * attributes used to select files/folders for desktop window display.
+ * used by pn_active() when building the list of FNODEs to display, and
+ * by search_recursive() when searching for matching FNODEs.
+ */
+#define DISPATTR    F_SUBDIR
+
+
 #define F_GETMOD 0x0
 #define F_SETMOD 0x1
 

@@ -4,11 +4,9 @@ GEM/3 Desktop: Open Watcom version (Release 3.2.7)
 This files lists known bugs, todos and desired new functionalities.
 Open items are on top.
 
-TODO: Implement all new menu options correctly:
-        * Search...
 OPEN: Installed applications must be in PATH or in GEMAPPS to open documents
 
-DONE: Set file mask
+DONE: "Set file mask" and "Search..." from EMUTos
 DONE: Status bar with number of selected files
 FIXED: Items on the desktop stay selected when the focus is on a window
 FIXED: Scrolling window deselect all selected files

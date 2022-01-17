@@ -26,6 +26,22 @@ rename SKELETON.INF into DESKTOP.INF to have a minimal configuration file.
 Release 3.2.7 Changes (most recent at the top) -- Davide Bresolin
 ===============================================================================
 
+* Added "Set file mask" and "Search..." menu items. The code to implement the
+  functionalities has been ported from EmuTOS. 
+  
+  "Search" prompts for a search string, then searches for matching files and
+  folders. If there are no icons currently selected, Search just selects all
+  matching files and folders in the topmost window, and the search ends.
+  Otherwise, the folders corresponding to the selected icons are searched
+  recursively. If a folder contains a matching name, the folder is displayed 
+  in a window, with the matched files selected, and the user is prompted to 
+  continue to search or cancel. The search ends either when the user cancels
+  it, or when all folders have been searched.
+
+  "Set file mask" changes the file mask of the currently-topped window, to
+  control which files are displayed within the window. Folders are always 
+  displayed; the mask affects the display of files only.
+
 * The structure of the menus have been changed. There is a  "Window" menu with 
   the commands to close folders and windows, cycle through open windows, select
   all items and set file mask. "Execute DOS commands" is now "To DOS shell" 

@@ -270,3 +270,10 @@
 #define FMMASK 5  	/* OBJECT in TREE #16 */
 #define FMOK 1  	/* OBJECT in TREE #16 */
 #define FMCNCL 2  	/* OBJECT in TREE #16 */
+#define ADSEARCH 17  	/* TREE */
+#define SFCNCL 2  	/* OBJECT in TREE #17 */
+#define SFOK 1  	/* OBJECT in TREE #17 */
+#define SFNAME 5  	/* OBJECT in TREE #17 */
+#define STFILENF 63  	/* STRING */
+#define STCNSRCH 64  	/* STRING */
+#define STNOMORE 65  	/* STRING */

@@ -83,6 +83,7 @@
 
 #define LEN_ZPATH 67
 #define LEN_ZFNAME 13
+#define MAXPATHLEN (LEN_ZPATH+LEN_ZFNAME+1)
 
 #define NUM_ANODES 64				/* # of appl. nodes	*/
 #define SIZE_AFILE 2048				/* size of DESKTOP.APP	*/

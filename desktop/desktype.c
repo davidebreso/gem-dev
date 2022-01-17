@@ -65,6 +65,14 @@
 
 #include "wccdesk.h"
 
+#if MULTIAPP
+WORD  do_type(WORD curr)
+{
+    return 0;
+}
+
+#else
+
 		    /* Bytes per line when displaying file in hexadecimal */
 #define BYTES_PER_HEX_LINE  16
 
@@ -1290,6 +1298,8 @@ WORD  do_type(WORD curr)
 
     return(return_value);
 } /* do_type() */
+
+#endif
 
 /*
  *	EOF:	desktype.c

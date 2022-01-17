@@ -16,6 +16,7 @@ WORD  hndl_button(WORD clicks, WORD mx, WORD my, WORD button, WORD keystate);
 WORD  hndl_kbd(WORD thechar);
 WORD  hndl_menu(WORD title, WORD item);
 VOID  wind_setl(WORD hw, WORD var, LPVOID data);
+VOID  desk_wait(WORD turnon);
 ANODE *i_find(WORD wh, WORD item, FNODE **ppf, WORD *ptype);
 VOID  men_list(LPTREE mlist, BYTE *dlist, WORD enable);
 
@@ -93,6 +94,7 @@ VOID pn_rebuild(WNODE *pw);
 WORD  fun_alert(WORD defbut, WORD stnum, ...);
 VOID  fun_msg(WORD type, WORD w3, WORD w4, WORD w5, WORD w6, WORD w7);
 VOID  fun_rebld(WNODE *pwin);
+VOID fun_search(WNODE *pw, WORD curr);
 VOID fun_selectall(WNODE *pw);
 VOID  fun_mask(WNODE *pw_node);
 WORD  fun_mkdir(WNODE *pw_node);
@@ -193,6 +195,7 @@ WNODE *  win_ith(WORD level);
 // VOID  win_ocalc(WNODE *pwin, WORD wfit, WORD hfit, FNODE **ppstart);
 VOID  win_icalc(FNODE *pfnode);
 // VOID  win_blt(WNODE *pw, BOOLEAN vertical, WORD newcv);
+VOID win_dispfile(WNODE *pw, WORD file);
 //VOID win_slide(WORD wh, WORD sl_value); // DESKTOP v1.2 has 2 sliders...
 VOID  win_slide(WORD wh, WORD sl_value, WORD vertical);
 VOID  win_arrow(WORD wh, WORD arrow_type);

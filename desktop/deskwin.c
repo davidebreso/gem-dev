@@ -484,6 +484,7 @@ VOID  win_bldview(WNODE *pwin, WORD x, WORD y, WORD w, WORD h)
 	wind_set(wh, WF_VSLIDE, sl_value, 0, 0, 0);
 }
 
+
 /*
 *	Routine to blt the contents of a window based on a new 
 *	current row or column
@@ -573,6 +574,36 @@ MLOCAL VOID  win_blt(WNODE *pw, BOOLEAN vertical, WORD newcv)
 	}
 	do_wredraw(pw->w_id, c.g_x, c.g_y, c.g_w, c.g_h);
 }
+
+/*
+ *  Routine to update the window display so that it shows the
+ *  specified file number (numbered sequentially from 0, in the
+ *  current display sequence)
+ */
+VOID win_dispfile(WNODE *pw, WORD file)
+{
+    GRECT gr;
+    WORD col, delcv;
+
+    /*
+     * adjust starting row of display
+     */
+    col = G.g_ifit ? pw->w_pncol : pw->w_vncol;
+    delcv = min(pw->w_vnrow - pw->w_pnrow, file/col) - pw->w_cvrow;
+
+    pw->w_cvrow += delcv;
+
+    /*
+     * adjust starting column of display to be as far left as possible,
+     * while still displaying the item
+     */
+    pw->w_cvcol = max(0, file%col - pw->w_pncol + 1);
+
+	wind_get(pw->w_id, WF_WXYWH, &gr.g_x, &gr.g_y, &gr.g_w, &gr.g_h);
+    win_bldview(pw, gr.g_x, gr.g_y, gr.g_w, gr.g_h);	
+	do_wredraw(pw->w_id, gr.g_x, gr.g_y, gr.g_w, gr.g_h);
+}
+
 
 /*
 *	Routine to change the current virtual row or column being viewed

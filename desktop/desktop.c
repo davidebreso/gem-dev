@@ -25,7 +25,7 @@
 
 /* DESKTOP v1.2: Different sets of illegal items */
 #if MULTIAPP
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM,TYPITEM, 0};
 #else
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM, 0};
 #endif
@@ -145,7 +145,7 @@ MLOCAL VOID  fix_wins()
 *	Turn on the hour glass to signify a wait and turn it off when were
 *	done.
 */
-MLOCAL VOID  desk_wait(WORD turnon)
+VOID  desk_wait(WORD turnon)
 {
 	graf_mouse( (turnon) ? HGLASS : ARROW, 0x0L);
 }
@@ -397,7 +397,12 @@ MLOCAL WORD  do_filemenu(WORD item)
 		if (curr)
 		  do_info(curr);
 		break;
-/* case FINDITEM */
+	  case SRCHITEM:
+		if (pw || curr)
+			fun_search(pw, curr);
+		// if (curr)
+		//	desk_clear(DESKWH);     /* deselect desktop icon(s) */
+		break;
 	  case TYPITEM:
 /* 'Show contents' - copied from ViewMAX */
 		if (curr)
