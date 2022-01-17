@@ -1,4 +1,4 @@
-GEM/3 Desktop: Open Watcom version (Release 3.2.6)
+GEM/3 Desktop: Open Watcom version (Release 3.2.7)
 ===============================================================================
 
 This files lists known bugs, todos and desired new functionalities.

@@ -523,7 +523,7 @@ MLOCAL WORD  do_filemenu(WORD item)
         {
             case 2:     /* Restart */
             	G.g_tail[0] = '\0';
-    		    pro_restart(&gl_gemvdi, G.a_tail);
+    		    pro_restart(gl_nopexe, G.a_tail);
     		    done = TRUE;
     		    break;             
 #endif    		      
@@ -721,7 +721,8 @@ MLOCAL WORD  do_optnmenu(WORD item)
 
 	  case IACCITEM:
 		if(ins_acc() == 2) {
-		    pro_restart(&gl_gemvdi, G.a_tail);
+			G.g_tail[0] = '\0';
+		    pro_restart(gl_nopexe, G.a_tail);
 		    done = TRUE;
 		}
 		break;
@@ -1385,6 +1386,7 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	BYTE		memszstr[8];
 #endif
 	BYTE		docopyrt;
+	BYTE		*pfile;
 /* initialize libraries	*/
 
 #if DEBUG
@@ -1435,6 +1437,14 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	wind_update(BEG_UPDATE);
 	desk_wait(TRUE);
 	wind_update(END_UPDATE);
+
+	/*** get desktop.app path and create path to NOP.EXE ***/
+	shel_read(gl_nopexe, G.a_tail);
+	pfile = filename_start(gl_nopexe);
+	strcpy(pfile, "NOP.EXE");
+	/* save boot drive */
+	gl_bootdr = gl_nopexe[0];
+
 						/* initialize resources	*/
 	// DESKTOP v1.2 puts this in its own function
 	rsrc_init();
@@ -1515,10 +1525,6 @@ WORD GEMAIN(WORD ARGC, BYTE *ARGV[])
 	  return(FALSE);
 	}
 
-	strcpy(gl_gemvdi, "GEMVDI.EXE");	
-						/* get boot drive */
-	ii = shel_find(&gl_gemvdi);
-	gl_bootdr = gl_gemvdi[0];
 #if MULTIAPP
 #define LOFFSET(x) ((((x)&0xFFFF0000l)>>12)+((x)&0x0FFFFl))
 	gl_untop = 0;

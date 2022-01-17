@@ -52,7 +52,7 @@ EXT WORD gl_iconstart;	/* Was gl_pstart. Renamed so I can check all
 EXT BYTE gl_lngstr[256];
 
 EXT BYTE	gl_bootdr;
-EXT BYTE    gl_gemvdi[82];
+EXT BYTE    gl_nopexe[128];
 
 #if MULTIAPP
 EXT WORD	gl_untop;

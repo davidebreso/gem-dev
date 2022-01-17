@@ -2,7 +2,7 @@ INSTDIR=$(HOME)/Dosbox/c_drive/GEMAPPS/GEMSYS
 RELEASE=3.2.6
 
 all:	desktop.app desktopl.app desksm.app desklm.app \
-	icn2xml xml2icn desklo.icn deskhi.icn
+	nop.exe icn2xml xml2icn desklo.icn deskhi.icn
 
 desklo.icn:	desklo.xml xml2icn
 	./xml2icn $< $@
@@ -21,6 +21,12 @@ xml2icn:	xml2icn.c
 
 xml2icn.exe:	xml2icn.c
 	wcl -bt=dos -0 -ml $<
+	
+nop.exe:	nop.obj
+	wlink system dos name $@ file $<
+	
+nop.obj:	nop.asm
+	wasm -bt=dos -0 -fo=$@ $<
 
 desktop.app:	small/desktop.app
 	cp small/desktop.app $@
@@ -46,8 +52,8 @@ largem/desktop.app:	*.c *.h
 smallm/desktop.app:	*.c *.h
 	$(MAKE) -C smallm
 
-install:	desktop.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
-	cp deskhi.icn desklo.icn desktop.rsc skeleton.inf $(INSTDIR)
+install:	desktop.app deskhi.icn desklo.icn desktop.rsc skeleton.inf nop.exe
+	cp deskhi.icn desklo.icn desktop.rsc skeleton.inf nop.exe $(INSTDIR)
 	cp desktop.app $(INSTDIR)/desktop.app
 
 xminstall:	desksm.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
@@ -78,6 +84,8 @@ clean:
 	rm -f xml2icn.exe
 	rm -f desklo.icn 
 	rm -f deskhi.icn
+	rm -f nop.exe
+	rm -f *.obj
 	rm -f *.err
 	rm -f wccdesk*.zip
 	
