@@ -61,7 +61,7 @@ xminstall:	desksm.app deskhi.icn desklo.icn desktop.rsc skeleton.inf
 	cp desksm.app $(INSTDIR)/desktop.app
 
 release:	desktop.app desktopl.app desksm.app desklm.app \
-			deskhi.icn desklo.icn desktop.rsc \
+			deskhi.icn desklo.icn desktop.rsc nop.exe \
 			skeleton.inf readme.txt copying.txt
 	rm -f wccdesk$(RELEASE).zip
 	zip -9 wccdesk$(RELEASE).zip $^

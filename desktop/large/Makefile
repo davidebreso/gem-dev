@@ -3,7 +3,7 @@ include ../makedefs.i
 CC=wcc
 LD=wlink
 AS=wasm
-CFLAGS=-bt=dos -os -s -0 -I$(GDKDIR)/include
+CFLAGS=-bt=dos -oaisk -oh -ol+ -ei -s -0 -I$(GDKDIR)/include
 LIBDIR=$(GDKDIR)/lib
 
 OBJECTS0=desktop.obj  
