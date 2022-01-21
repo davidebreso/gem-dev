@@ -13,7 +13,10 @@ OBJECTS=main.obj rcsmain.obj rcsdata.obj rcslib.obj wccerror.obj rcsvdi.obj \
 
 HEADERS=wccrcs.h
 
-all:	rcs.app
+all:	../rcs.app ../rcs.rsc ../rcslow.rsc
+
+../%: %
+	cp $< $@
 
 rcs.app:	$(OBJECTS) 
 	$(LD) name $@ system dos file \{ $(OBJECTS) \} lib $(LIBDIR)/wccgem-l.lib \
@@ -35,3 +38,5 @@ clean:
 	rm -f *.lib
 	rm -f *.map
 	rm -f *.err
+	
+tidy: clean

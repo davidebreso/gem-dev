@@ -4,11 +4,13 @@ LD=wlink
 AS=wasm
 CFLAGS=-bt=dos -os -s -0 -I../../toolkit/include
 LIBDIR=../../toolkit/lib
-INSTDIR=../../toolkit/tools
 
 OBJECTS=main.obj rcfile.obj rclib.obj rcmain.obj
 
-all:	rsconv.app
+all:	../rsconv.app ../rsconv.rsc
+
+../%: %
+	cp $< $@
 
 rsconv.app:	$(OBJECTS) 
 	$(LD) name $@ system dos file \{ $(OBJECTS) \} lib $(LIBDIR)/wccgem-l.lib option map
@@ -19,9 +21,6 @@ rsconv.app:	$(OBJECTS)
 %.obj:	%.asm
 	$(AS) -0 $< -fo=$@ -ml
 
-install: rsconv.app rsconv.rsc
-	cp $^ $(INSTDIR)
-
 clean:
 	rm -f *.obj 
 	rm -f *.exe 
@@ -29,3 +28,6 @@ clean:
 	rm -f *.lib
 	rm -f *.map
 	rm -f *.err
+	
+tidy: clean
+
