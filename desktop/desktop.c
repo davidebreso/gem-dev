@@ -27,7 +27,7 @@
 #if MULTIAPP
   GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM,TYPITEM, 0};
 #else
-  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM, 0};
+  GLOBAL BYTE	ILL_ITEM[] = {L2ITEM,L3ITEM,L4ITEM,L5ITEM,L6ITEM,L7ITEM,IACCITEM, 0};
 #endif
 GLOBAL BYTE	ILL_FILE[] = {0};
 GLOBAL BYTE	ILL_DOCU[] = {IAPPITEM,0};
@@ -723,7 +723,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		 	desk_all(FALSE);
 		}
 		break;
-
+#if MULTIAPP
 	  case IACCITEM:
 		if(ins_acc() == 2) {
 			G.g_tail[0] = '\0';
@@ -731,7 +731,7 @@ MLOCAL WORD  do_optnmenu(WORD item)
 		    done = TRUE;
 		}
 		break;
-
+#endif
 	  case PREFITEM:
 		if (inf_pref())
 		  desk_all(FALSE);
