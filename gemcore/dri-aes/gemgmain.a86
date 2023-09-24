@@ -1,11 +1,11 @@
 ;/*	GEMGMAIN.A86		4/18/84 - 06/07/85	Lee Lorenzen	*/
 ;
 ;
-;       Copyright 1999, Caldera Thin Clients, Inc.                      
-;       This software is licenced under the GNU Public License.         
-;       Please see LICENSE.TXT for further information.                 
-;                                                                       
-;                  Historical Copyright                                 
+;       Copyright 1999, Caldera Thin Clients, Inc.
+;       This software is licenced under the GNU Public License.
+;       Please see LICENSE.TXT for further information.
+;
+;                  Historical Copyright
 ;/*
 ;*	-------------------------------------------------------------
 ;*	GEM Application Environment Services		  Version 2.3
@@ -16,6 +16,11 @@
 ;
 ;
 ;
+    DSEG
+    extrn       dos_ver:byte        ; in GEMSTART.A86
+    extrn       strat:word          ; in GEMSTART.A86
+    extrn       umblink:word        ; in GEMSTART.A86
+
 	CSEG
 	PUBLIC		gomain
 	PUBLIC		terminate
@@ -30,6 +35,28 @@ gomain:
 ;	go back to dos
 ;
 terminate:
+;
+;   check dos_ver to see if we have to restore allocation strategy
+;
+    mov al, dos_ver
+    or  al, al
+    jz  dosterm
+;
+;   restore memory allocation strategy
+;
+    mov ax, 5801h       ; set memory allocation strategy
+    mov bx, strat       ; restore saved strategy
+    int 21h
+;
+;   restore UMB link state
+;
+    mov ax, 5803h       ; set UMB link state
+    mov bx, umblink     ; restore saved link state
+    int 21h
+;
+;   terminate
+;
+dosterm:
 	mov	ax,04c00h
 	int	21h
 ;

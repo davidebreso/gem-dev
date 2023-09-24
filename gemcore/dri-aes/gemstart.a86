@@ -2,11 +2,11 @@
 ;/*	GEM20			12/17/85		Lowell Webster	*/
 ;
 ;
-;       Copyright 1999, Caldera Thin Clients, Inc.                      
-;       This software is licenced under the GNU Public License.         
-;       Please see LICENSE.TXT for further information.                 
-;                                                                       
-;                  Historical Copyright                                 
+;       Copyright 1999, Caldera Thin Clients, Inc.
+;       This software is licenced under the GNU Public License.
+;       Please see LICENSE.TXT for further information.
+;
+;                  Historical Copyright
 ;/*
 ;*	-------------------------------------------------------------
 ;*	GEM Application Environment Services		  Version 3.0
@@ -19,7 +19,10 @@
 	PUBLIC	gintstk
 	PUBLIC	totpds
 	PUBLIC	pgmld
-	PUBLIC   ad_psp				; actually longs
+    PUBLIC  dos_ver
+    PUBLIC  strat
+    PUBLIC  umblink
+	PUBLIC  ad_psp				; actually longs
 	PUBLIC 	PARABEG
 	extrn	PROGEND:word
 	extrn	ad_s1fcb:word			; actually longs, SHLIB.C
@@ -29,9 +32,12 @@
 	extrn	D:word				; static data, gl_uda 1st
 ;
 ;
+dos_ver dw  0   ; to save DOS version
+strat   dw  0   ; to save DOS allocation strategy
+umblink dw  0   ; to save UMB link state
 parmblk	dw	0,0	; for load overlay function
 hdrbuf	rb	20h
-ad_psp 	rw	1 
+ad_psp 	rw	1
 PARABEG rw	1
 ;
 ;
@@ -102,6 +108,34 @@ start:
 	mov	ad_stail,80h
 	mov	ad_stail+2,ax
 ;
+;   check DOS version
+;
+    mov ax, 3000h       ; get DOS version
+    int 21h             ; call DOS: version is returned in AX
+    cmp al, 5           ; check if major version is >= 5
+    jb  assumelrg       ; skip setting allocation stategy if DOS < 5.0
+    mov dos_ver, ax     ; save DOS version
+;
+;   save current DOS allocation strategy to strat
+;   set new strategy to first fit, try high then low
+;
+    mov ax, 5800h       ; get memory allocation strategy
+    int 21h             ; call DOS: returns strategy in AX
+    mov strat, ax       ; save current strategy
+    mov ax, 5801h       ; set memory allocation strategy
+    mov bx, 0080h       ; first fit, try high then low
+    int 21h
+;
+;   save current umb link state to umblink
+;   and then link UMBs into the memory chain
+;
+    mov ax, 5802h       ; get UMB link state
+    int 21h             ; call DOS: link state is returned in AL
+    xor ah, ah
+    mov umblink, ax     ; save current link state
+    mov ax, 5803h       ; set UMB link state
+    mov bx, 0001h       ; link UMBs in DOS memory chain
+    int 21h
 ;
 ;
 assumelrg:
@@ -123,7 +157,7 @@ chksmall:
 ;
 ;	set up uda
 ;
-setuda:	
+setuda:
 	mov	bx,offset D
 	mov	ax,ss
 	mov	04[bx],ax
@@ -167,7 +201,7 @@ memshrnk:
 	add	bx,cx			; bx = last used paragraph in image
 	mov	ax,PARABEG
 	mov	es,ax
-	sub	bx,ax			; bx = # of paras to shrink to 
+	sub	bx,ax			; bx = # of paras to shrink to
 	mov	ah,4ah
 	int	21h
 	mov	dx,offset memerrmsg
